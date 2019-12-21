@@ -1,10 +1,224 @@
-var boardSetUp = false;
-var placementError = false;
-
-$(document).ready(function() {
+// the Player object will keep track of tokens and points
+function Player(num, name, gold, silver, bronze, defender, bomb) {
+  this.num = num;
+  this.name = name;
+  this.gold = gold;
+  this.silver = silver;
+  this.bronze = bronze;
+  this.defender = defender;
+  this.bomb = bomb;
+  
+  this.playGold = function() {
+	  this.gold--;
+	  this.addTokenClass("gold");
+	  this.display();
+  }
+  
+  this.playSilver = function() {
+	  this.silver--;
+	  this.addTokenClass("silver");
+	  this.display();
+  }
+  
+  this.playBronze = function() {
+	  this.bronze--;
+	  this.addTokenClass("bronze");
+	  this.display();
+  }
+  
+  this.playDefender = function() {
+	  this.defender--;
+	  this.addTokenClass("defender");
+	  this.display();
+  }
+  
+  this.playBomb = function() {
+	  this.bomb--;
+	  this.addTokenClass("bomb");
+	  this.display();
+  }
+  
+  // display current statistics
+  this.display = function() {
+    var string = "<b><u>" + this.name + "</u></b><br>";
+	string += "Gold x " + this.gold + "<br>";
+	string += "Silver x " + this.silver + "<br>";
+	string += "Bronze x " + this.bronze + "<br>";
+	string += "Defender x " + this.defender + "<br>";
+	string += "Bomb x " + this.bomb + "<br><br>";
+		
+	$("#tokenDisplay" + (this.num)).html(string);
+  }
+  
+  this.addTokenClass = function(type) {
+	// note what token it is and what player played it
+	var tile = $("#" + bag.getCurrent());
+	tile.addClass(type);
+	tile.addClass("player" + num);
 	
+	// add the relevant picture to the board
+	tile.text("");
+	tile.append("<img src='images/tokens/" + type + playerNum + ".png' alt='token' style='width:20px;height:20px;'>");
+  }
+
+}
+
+// the NumberBag object will keep track of the numbers that are drawn
+function NumberBag() {
+	var numberBag = [];
+	var previousNumber = -1;
+	var currentNumber = -1;
+	
+	// fill up the number bag array
+	this.fillBag = function() {
+		for (var i = 0; i < 5; i++) {
+			numberBag.push(i);
+		}
+	}
+	
+	this.randomize = function() {
+		// take the highlight away from the previous number
+		if ($("#" + previousNumber).hasClass("current")) {
+			$("#" + previousNumber).removeClass("current");
+		}
+		
+		// choose a random number from what's left in the number bag
+		var randInd = Math.floor(Math.random() * numberBag.length);
+		currentNumber = numberBag[randInd];
+		
+		// discard that random tile
+		var usedTile = numberBag.indexOf(currentNumber);
+		if (usedTile !== -1) numberBag.splice(usedTile, 1);
+		
+		// keep track of previous number to remove the highlight later
+		previousNumber = currentNumber;
+		
+		// highlight the current tile in red
+		var tile = $("#" + currentNumber);
+		tile.addClass("current");
+		
+		return currentNumber;
+	}
+	
+	this.checkIfEnd = function() {
+		console.log(numberBag.length);
+		if (numberBag.length == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	this.getCurrent = function() {
+		return currentNumber;
+	}
+}
+
+/******************************************* USER TURN *******************************************/
+var playerNum = 1;
+
+// start the user's turn when "Draw a Number" is clicked
+$("#pickNumber").click(function() {
+	$("#pickNumber").hide();
+	
+	// draw a random number
+	var tileNum = drawNumber();
+	console.log(bag.getCurrent());
+	
+	// take a turn with that number
+	takeTurn(tileNum);
 });
 
+// this function will be the same for both the user and computer
+function drawNumber() {
+	
+	// IMPORTANT: keeps the players alernating
+	playerNum = (playerNum + 1) % 2;
+	
+	// return a random number
+	var rand = bag.randomize();
+	return rand;
+}
+
+function takeTurn(rand) {
+	
+	// determine if it's the user or computer playing
+	if (playerNum == 0) {
+		$("#turnDisplay").text("You drew " + rand + ". What would you like to do?");
+		displayTurnChoices();
+	} else {
+		$("#turnChoices").hide();
+		$("#turnDisplay").text("Robot drew " + rand + ".");
+	}
+}
+
+// display the appropriate choices based on token inventory
+function displayTurnChoices() {
+	$("#turnChoices").show();
+
+	if (players[playerNum].gold == 0) {
+		$("#playGold").hide();
+	}
+	if (players[playerNum].silver == 0) {
+		$("#playSilver").hide();
+	}
+	if (players[playerNum].bronze == 0) {
+		$("#playBronze").hide();
+	}
+	if (players[playerNum].defender == 0) {
+		$("#playDefender").hide();
+	}
+	if (players[playerNum].bomb == 0) {
+		$("#playBomb").hide();
+	}
+}
+
+// user choices
+$("#doNothing").click(function() {
+	endTurn();
+});
+$("#playGold").click(function() {
+	players[playerNum].playGold();
+	endTurn();
+});
+$("#playSilver").click(function() {
+	players[playerNum].playSilver();
+	endTurn();
+});
+$("#playBronze").click(function() {
+	players[playerNum].playBronze();
+	endTurn();
+});
+$("#playDefender").click(function() {
+	players[playerNum].playDefender();
+	endTurn();
+});
+$("#playBomb").click(function() {
+	players[playerNum].playBomb();
+	endTurn();
+});
+
+// start the robot's turn
+function endTurn() {
+	if (!bag.checkIfEnd()) {
+		var tileNum = drawNumber();
+		takeTurn(tileNum);
+	} else {
+		alert("Game over!")
+	}
+	
+	if (bag.checkIfEnd()) {
+		alert("Game over!")
+	} else {
+		$("#pickNumber").show();
+	}
+}
+
+/******************************************* BOARD SETUP *******************************************/
+
+// set the board up initially
+var boardSetUp = false;
+var placementError = false;
 $("#setBoard").click(function() {
 	clearBoard();
 	boardSetUp = false;
@@ -12,124 +226,6 @@ $("#setBoard").click(function() {
 	while (boardSetUp == false) {
 		setUpBoard();
 	}
-});
-
-$("#startGame").click(function() {
-	$("#setBoard").hide();
-	$("#startGame").hide();
-	$("#pickNumber").show();
-	
-	fillNumberBag();
-	fillTokens(2);
-	displayTokens();
-});
-
-var numberBag = [];
-function fillNumberBag() {
-	for (var i = 0; i < 100; i++) {
-		numberBag.push(i);
-	}
-	console.log(numberBag);
-}
-
-function Player(type, name, playerNumber, gold, silver, bronze, defender, bomb) {
-  this.type = type;
-  this.name = name;
-  this.playerNumber = playerNumber;
-  this.gold = gold;
-  this.silver = silver;
-  this.bronze = bronze;
-  this.defender = defender;
-  this.bomb = bomb;
-  
-  this.stats = function() {
-    var string = "<b><u>" + this.name + "</u></b><br>";
-	string += "Gold x " + this.gold + "<br>";
-	string += "Silver x " + this.silver + "<br>";
-	string += "Bronze x " + this.bronze + "<br>";
-	string += "Defender x " + this.defender + "<br>";
-	string += "Bomb x " + this.bomb + "<br><br>";
-	
-	return string;
-  }
-  
-  this.getPlayerNum = function() {
-	  return this.playerNumber;
-  }
-}
-
-var players = [];
-function fillTokens(numPlayers) {
-	if (numPlayers == 2) {
-		var player1 = new Player("human", "Liz", 1, 2, 5, 8, 5, 5);
-		var player2 = new Player("comp", "Robot", 2, 2, 5, 8, 5, 5);
-		players.push(player1);
-		players.push(player2);
-	}
-	console.log(players);
-}
-
-function displayTokens() {
-	for (var i = 0; i < players.length; i++) {
-		$("#tokenDisplay" + (i + 1)).html(players[i].stats());
-	}
-}
-
-var previousNumber = -1;
-$("#pickNumber").click(function() {
-	// take the highlight away from the previous number
-	if ($("#" + previousNumber).hasClass("current")) {
-		$("#" + previousNumber).removeClass("current");
-	}
-	
-	// choose a random number from what's left in the number bag
-	var randInd = Math.floor(Math.random() * numberBag.length);
-	var rand = numberBag[randInd];
-	
-	// discard that random tile
-	var usedTile = numberBag.indexOf(rand);
-	if (usedTile !== -1) numberBag.splice(usedTile, 1);
-	
-	console.log(rand);
-	console.log("There are " + numberBag.length + " numbers remaining.");
-	
-	// keep track of previous number to remove the highlight later
-	previousNumber = rand;
-	
-	$("#playerNum").text(1);
-	takeTurn(rand);
-});
-
-function takeTurn(rand) {
-	var tile = $("#" + rand);
-	tile.addClass("current");
-	
-	$("#turnDisplay").text("You picked " + rand + ". What would you like to do?");
-	$("#turnChoices").show();
-	
-	// to-do: place this elsewhere because it doesn't fit here
-	if (numberBag.length == 0) {
-		alert("Game over!")
-	}
-}
-
-$("#doNothing").click(function() {
-	console.log("turn");
-});
-$("#playGold").click(function() {
-	console.log("turn");
-});
-$("#playSilver").click(function() {
-	console.log("turn");
-});
-$("#playBronze").click(function() {
-	console.log("turn");
-});
-$("#playDefender").click(function() {
-	console.log("turn");
-});
-$("#playBomb").click(function() {
-	console.log("turn");
 });
 
 // place all the animal figures and question tiles on the board
@@ -170,6 +266,7 @@ function setUpBoard() {
 	}
 }
 
+// properly clear the board to randomize again if user wants to
 function clearBoard() {
 	for (var i = 0; i < 100; i++) {
 		var tile = $("#" + i);
@@ -297,7 +394,7 @@ function placeAnimal(w, h, id) {
 	
 }
 
-// this function places the 20 question tiles in free places
+// place the 20 question tiles in free places
 function placeQuestions(id) {
 	
 	var placed = false;
@@ -323,4 +420,30 @@ function placeQuestions(id) {
 		}
 	}
 	
+}
+
+var bag;
+// start the game by filling the numbers and tokens and displaying them
+$("#startGame").click(function() {
+	$("#setBoard").hide();
+	$("#startGame").hide();
+	$("#pickNumber").show();
+	
+	bag = new NumberBag();
+	bag.fillBag();
+	fillTokens();
+	
+	players[0].display();
+	players[1].display();
+});
+
+// set up the number of tokens for the players
+var players = [];
+function fillTokens() {
+	var player = new Player(0, "Liz", 2, 5, 8, 5, 5);
+	var comp = new Player(1, "Robot", 2, 5, 8, 5, 5);
+	players.push(player);
+	players.push(comp);
+	
+	console.log(players);
 }

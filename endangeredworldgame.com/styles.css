@@ -1,5 +1,5 @@
 .tg  {border-collapse:collapse;border-spacing:0;table-layout: fixed;width: 350px;}
-.tg td{font-family:Arial, sans-serif;font-size:14px;padding:7px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;width:31.8px;height:32px;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:6px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;width:31.8px;height:32px;}
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:7px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;height:32px;}
 .tg .tg-m0sm{font-size:16px;background-color:#ce8de0;border-color:#000000;text-align:center;vertical-align:top}
 .tg .tg-kbpn{font-size:16px;background-color:#fd6864;border-color:#000000;text-align:center;vertical-align:top}
@@ -14,7 +14,7 @@
 .tg .tg-vwxq{font-size:16px;background-color:#90c4e2;border-color:#000000;text-align:center;vertical-align:top}
 
 .current {
-	border: 3px ridge red !important;
+	border: 3px dashed #00ff00 !important;
 }
 
 #pickNumber {
@@ -27,8 +27,4 @@
 
 #tokenDisplay1,#tokenDisplay2,#tokenDisplay3,#tokenDisplay4 {
 	margin-top: 20px;
-}
-
-#playerNum {
-	display: hidden;
 }
