@@ -67,75 +67,6 @@ function Player(num, name, gold, silver, bronze, defender, bomb) {
   };
 }
 
-// // the Computer object will keep track of tokens and points
-// function Computer(num, name, gold, silver, bronze, defender, bomb) {
-//   this.num = num;
-//   this.name = name;
-//   this.gold = gold;
-//   this.silver = silver;
-//   this.bronze = bronze;
-//   this.defender = defender;
-//   this.bomb = bomb;
-
-//   this.compGold = function() {
-//     this.gold--;
-//     this.addTokenClass("gold");
-//     this.display();
-//   };
-
-//   this.compSilver = function() {
-//     this.silver--;
-//     this.addTokenClass("silver");
-//     this.display();
-//   };
-
-//   this.compBronze = function() {
-//     this.bronze--;
-//     this.addTokenClass("bronze");
-//     this.display();
-//   };
-
-//   this.compDefender = function() {
-//     this.defender--;
-//     this.addTokenClass("defender");
-//     this.display();
-//   };
-
-//   this.compBomb = function() {
-//     this.bomb--;
-//     this.addTokenClass("bomb");
-//     this.display();
-//   };
-
-//   // display current statistics
-//   this.display = function() {
-//     let string = "<b><u>" + this.name + "</u></b><br>";
-//     string += "Gold x " + this.gold + "<br>";
-//     string += "Silver x " + this.silver + "<br>";
-//     string += "Bronze x " + this.bronze + "<br>";
-//     string += "Defender x " + this.defender + "<br>";
-//     string += "Bomb x " + this.bomb + "<br><br>";
-
-//     $("#tokenDisplay" + this.num).html(string);
-//   };
-
-//   this.addTokenClass = function(type) {
-//     // note what token it is and what computer played it
-//     let tile = $("#" + bag.getCurrent());
-//     tile.addClass(type);
-//     tile.addClass("computer" + num);
-
-//     // add the relevant picture to the board
-//     tile.text("");
-//     tile.append(
-//       "<img src='images/tokens/" +
-//         type +
-//         computerNum +
-//         ".png' alt='token' style='width:20px;height:20px;'>"
-//     );
-//   };
-// }
-
 // the NumberBag object will keep track of the numbers that are drawn
 function NumberBag() {
   let numberBag = [];
@@ -144,10 +75,10 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 20; i++) {
       numberBag.push(i);
-      console.log("Filling bag: " + numberBag.length);
     }
+    console.log("Filled bag with " + numberBag.length + " numbers.");
   };
 
   this.randomize = function() {
@@ -174,8 +105,7 @@ function NumberBag() {
   };
 
   this.checkIfEnd = function() {
-    console.log(numberBag.length);
-    console.log(numberBag);
+    console.log("Numbers left in the bag: " + numberBag);
     if (numberBag.length == 0) {
       return true;
     } else {
@@ -194,10 +124,8 @@ let playerNum = 1;
 // start the user's turn when "Draw a Number" is clicked
 $("#pickNumber").click(function() {
   $("#pickNumber").hide();
-
   // draw a random number
   let tileNum = drawNumber();
-  console.log(bag.getCurrent());
 
   // take a turn with that number
   takeTurn(tileNum);
@@ -210,7 +138,12 @@ function drawNumber() {
 
   // return a random number
   let rand = bag.randomize();
-  console.log("My random number: " + rand);
+
+  // just console.log
+  let whoseTurn;
+  playerNum == 0 ? (whoseTurn = "Liz") : (whoseTurn = "Robot");
+  console.log(`${whoseTurn} random number is: ${rand}`);
+
   return rand;
 }
 
@@ -222,6 +155,7 @@ function takeTurn(rand) {
   } else {
     $("#turnChoices").hide();
     $("#turnDisplay").text("Robot drew " + rand + ".");
+    calculateRobotChoice();
   }
 }
 
@@ -271,24 +205,89 @@ $("#playBomb").click(function() {
   endTurn();
 });
 
+/******************************************* ROBOT TURN *******************************************/
+
+let isFirstMove = true;
+let robotChoices = [];
+function calculateRobotChoice() {
+  if (isFirstMove) {
+    robotChoices = [
+      "doNothing",
+      "gold",
+      "silver",
+      "bronze",
+      "defender",
+      "bomb"
+    ];
+    isFirstMove = false;
+  }
+
+  let randChoice = Math.floor(Math.random() * robotChoices.length);
+  robotChoice = robotChoices[randChoice];
+
+  if (robotChoice == "gold") {
+    players[playerNum].playGold();
+  } else if (robotChoice == "silver") {
+    players[playerNum].playSilver();
+  } else if (robotChoice == "bronze") {
+    players[playerNum].playBronze();
+  } else if (robotChoice == "defender") {
+    players[playerNum].playDefender();
+  } else if (robotChoice == "bomb") {
+    players[playerNum].playBomb();
+  }
+
+  function deleteChoice(choice) {
+    let i = robotChoices.indexOf(choice);
+    // i == -1 - choice was deleted already
+    if (i != -1) {
+      robotChoices.splice(i, 1);
+    }
+
+    // if (i >= 0) {
+    //   robotChoices.splice(i, 1);
+    // }
+  }
+
+  if (players[playerNum].gold == 0) {
+    deleteChoice("gold");
+  }
+  if (players[playerNum].silver == 0) {
+    deleteChoice("silver");
+  }
+  if (players[playerNum].bronze == 0) {
+    deleteChoice("bronze");
+  }
+  if (players[playerNum].defender == 0) {
+    deleteChoice("defender");
+  }
+  if (players[playerNum].bomb == 0) {
+    deleteChoice("bomb");
+  }
+
+  console.log("Robot choice is: " + robotChoice);
+  console.log("Length:" + robotChoices.length);
+  console.log(robotChoices);
+}
+
 // display the appropriate choices based on token inventory
 // function displayTurnChoicesComp() {
 //   $("#turnChoices").show();
 
 //   if (players[playerNum].gold == 0) {
-//     $("#compGold").hide();
+//     $("#playGold").hide();
 //   }
 //   if (players[playerNum].silver == 0) {
-//     $("#compSilver").hide();
+//     $("#playSilver").hide();
 //   }
 //   if (players[playerNum].bronze == 0) {
-//     $("#compBronze").hide();
+//     $("#playBronze").hide();
 //   }
 //   if (players[playerNum].defender == 0) {
-//     $("#compDefender").hide();
+//     $("#playDefender").hide();
 //   }
 //   if (players[playerNum].bomb == 0) {
-//     $("#compBomb").hide();
+//     $("#playBomb").hide();
 //   }
 // }
 
@@ -520,6 +519,7 @@ $("#startGame").click(function() {
 
   bag = new NumberBag();
   bag.fillBag();
+
   fillTokens();
 
   players[0].display();
@@ -534,5 +534,12 @@ function fillTokens() {
   players.push(player);
   players.push(comp);
 
-  console.log(players);
+  console.log("Filled tokens for each player.");
+
+  console.log(
+    `${players[0].name} {id:${players[0].num}, gold:${players[0].gold}, silver:${players[0].silver}, bronze:${players[0].bronze}, defender:${players[0].defender}, bomb:${players[0].bomb}}`
+  );
+  console.log(
+    `${players[1].name} {id:${players[1].num}, gold:${players[1].gold}, silver:${players[1].silver}, bronze:${players[1].bronze}, defender:${players[1].defender}, bomb:${players[1].bomb}}`
+  );
 }

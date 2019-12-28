@@ -126,3 +126,8 @@
 #tokenDisplay4 {
   margin-top: 20px;
 }
+
+#setBoard,
+#startGame {
+  font-size: 1.4rem;
+}
