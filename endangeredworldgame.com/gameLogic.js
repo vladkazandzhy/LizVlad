@@ -1,10 +1,11 @@
 // the Player object will keep track of tokens and points
-function Player(num, name, gold, silver, bronze, defender, bomb) {
+function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   this.num = num;
   this.name = name;
   this.gold = gold;
   this.silver = silver;
   this.bronze = bronze;
+  this.plain = plain;
   this.defender = defender;
   this.bomb = bomb;
 
@@ -26,6 +27,12 @@ function Player(num, name, gold, silver, bronze, defender, bomb) {
     this.display();
   };
 
+  this.playPlain = function() {
+    this.plain--;
+    this.addTokenClass("plain");
+    this.display();
+  };
+
   this.playDefender = function() {
     this.defender--;
     this.addTokenClass("defender");
@@ -44,6 +51,7 @@ function Player(num, name, gold, silver, bronze, defender, bomb) {
     string += "Gold x " + this.gold + "<br>";
     string += "Silver x " + this.silver + "<br>";
     string += "Bronze x " + this.bronze + "<br>";
+    string += "Plain x " + this.plain + "<br>";
     string += "Defender x " + this.defender + "<br>";
     string += "Bomb x " + this.bomb + "<br><br>";
 
@@ -75,7 +83,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 6; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -126,9 +134,11 @@ $("#pickNumber").click(function() {
   $("#pickNumber").hide();
   // draw a random number
   let tileNum = drawNumber();
-
   // take a turn with that number
   takeTurn(tileNum);
+  if (bagOfQuestions.includes(tileNum)) {
+    console.log("You have a question");
+  }
 });
 
 // this function will be the same for both the user and computer
@@ -155,7 +165,7 @@ function takeTurn(rand) {
   } else {
     $("#turnChoices").hide();
     $("#turnDisplay").text("Robot drew " + rand + ".");
-    calculateRobotChoice();
+    calculateRobotChoice(rand);
   }
 }
 
@@ -171,6 +181,9 @@ function displayTurnChoices() {
   }
   if (players[playerNum].bronze == 0) {
     $("#playBronze").hide();
+  }
+  if (players[playerNum].plain == 0) {
+    $("#playPlain").hide();
   }
   if (players[playerNum].defender == 0) {
     $("#playDefender").hide();
@@ -196,6 +209,10 @@ $("#playBronze").click(function() {
   players[playerNum].playBronze();
   endTurn();
 });
+$("#playPlain").click(function() {
+  players[playerNum].playPlain();
+  endTurn();
+});
 $("#playDefender").click(function() {
   players[playerNum].playDefender();
   endTurn();
@@ -209,13 +226,18 @@ $("#playBomb").click(function() {
 
 let isFirstMove = true;
 let robotChoices = [];
-function calculateRobotChoice() {
+function calculateRobotChoice(tileNum) {
+  if (bagOfQuestions.includes(tileNum)) {
+    console.log("You have a question");
+  }
+
   if (isFirstMove) {
     robotChoices = [
       "doNothing",
       "gold",
       "silver",
       "bronze",
+      "plain",
       "defender",
       "bomb"
     ];
@@ -231,6 +253,8 @@ function calculateRobotChoice() {
     players[playerNum].playSilver();
   } else if (robotChoice == "bronze") {
     players[playerNum].playBronze();
+  } else if (robotChoice == "plain") {
+    players[playerNum].playPlain();
   } else if (robotChoice == "defender") {
     players[playerNum].playDefender();
   } else if (robotChoice == "bomb") {
@@ -243,10 +267,6 @@ function calculateRobotChoice() {
     if (i != -1) {
       robotChoices.splice(i, 1);
     }
-
-    // if (i >= 0) {
-    //   robotChoices.splice(i, 1);
-    // }
   }
 
   if (players[playerNum].gold == 0) {
@@ -257,6 +277,9 @@ function calculateRobotChoice() {
   }
   if (players[playerNum].bronze == 0) {
     deleteChoice("bronze");
+  }
+  if (players[playerNum].plain == 0) {
+    deleteChoice("plain");
   }
   if (players[playerNum].defender == 0) {
     deleteChoice("defender");
@@ -269,27 +292,6 @@ function calculateRobotChoice() {
   console.log("Length:" + robotChoices.length);
   console.log(robotChoices);
 }
-
-// display the appropriate choices based on token inventory
-// function displayTurnChoicesComp() {
-//   $("#turnChoices").show();
-
-//   if (players[playerNum].gold == 0) {
-//     $("#playGold").hide();
-//   }
-//   if (players[playerNum].silver == 0) {
-//     $("#playSilver").hide();
-//   }
-//   if (players[playerNum].bronze == 0) {
-//     $("#playBronze").hide();
-//   }
-//   if (players[playerNum].defender == 0) {
-//     $("#playDefender").hide();
-//   }
-//   if (players[playerNum].bomb == 0) {
-//     $("#playBomb").hide();
-//   }
-// }
 
 // start the robot's turn
 function endTurn() {
@@ -349,7 +351,7 @@ function setUpBoard() {
   if (placementError) {
     clearBoard();
   } else {
-    // place 25 question tiles
+    // place 20 question tiles
     for (let i = 1; i <= 20; i++) {
       placeQuestions(i);
     }
@@ -484,9 +486,11 @@ function placeAnimal(w, h, id) {
   }
 }
 
+let bagOfQuestions = [];
 // place the 20 question tiles in free places
 function placeQuestions(id) {
   let placed = false;
+
   while (!placed) {
     // determine an initial candidate for the question
     let rand = Math.floor(Math.random() * 100);
@@ -506,6 +510,8 @@ function placeQuestions(id) {
 
       // break the loop because we placed the question
       placed = true;
+
+      bagOfQuestions.push(rand);
     }
   }
 }
@@ -529,17 +535,17 @@ $("#startGame").click(function() {
 // set up the number of tokens for the players
 let players = [];
 function fillTokens() {
-  let player = new Player(0, "Liz", 2, 5, 8, 5, 5);
-  let comp = new Player(1, "Robot", 2, 5, 8, 5, 5);
+  let player = new Player(0, "Liz", 2, 5, 8, 40, 5, 5);
+  let comp = new Player(1, "Robot", 2, 5, 8, 40, 5, 5);
   players.push(player);
   players.push(comp);
 
   console.log("Filled tokens for each player.");
 
   console.log(
-    `${players[0].name} {id:${players[0].num}, gold:${players[0].gold}, silver:${players[0].silver}, bronze:${players[0].bronze}, defender:${players[0].defender}, bomb:${players[0].bomb}}`
+    `${players[0].name} {id:${players[0].num}, gold:${players[0].gold}, silver:${players[0].silver}, bronze:${players[0].bronze}, plain:${players[0].plain}, defender:${players[0].defender}, bomb:${players[0].bomb}}`
   );
   console.log(
-    `${players[1].name} {id:${players[1].num}, gold:${players[1].gold}, silver:${players[1].silver}, bronze:${players[1].bronze}, defender:${players[1].defender}, bomb:${players[1].bomb}}`
+    `${players[1].name} {id:${players[1].num}, gold:${players[1].gold}, silver:${players[1].silver}, bronze:${players[1].bronze}, plain:${players[1].plain}, defender:${players[1].defender}, bomb:${players[1].bomb}}`
   );
 }
