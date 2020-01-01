@@ -126,6 +126,18 @@ function NumberBag() {
   };
 }
 
+const showModal = () => {
+  let divEl = document.getElementsByClassName("modal");
+  divEl[0].style.visibility = "visible";
+  divEl[0].style.transform = "translate(0, 100px)";
+  divEl[0].style.opasity = "1.0";
+};
+
+const showBackdrop = () => {
+  let divEl = document.getElementsByClassName("backdrop");
+  divEl[0].style.visibility = "visible";
+};
+
 /******************************************* USER TURN *******************************************/
 let playerNum = 1;
 
@@ -134,10 +146,13 @@ $("#pickNumber").click(function() {
   $("#pickNumber").hide();
   // draw a random number
   let tileNum = drawNumber();
-  // take a turn with that number
-  takeTurn(tileNum);
+
   if (bagOfQuestions.includes(tileNum)) {
-    console.log("You have a question");
+    showModal();
+    showBackdrop();
+  } else {
+    // take a turn with that number
+    takeTurn(tileNum);
   }
 });
 
@@ -227,10 +242,6 @@ $("#playBomb").click(function() {
 let isFirstMove = true;
 let robotChoices = [];
 function calculateRobotChoice(tileNum) {
-  if (bagOfQuestions.includes(tileNum)) {
-    console.log("You have a question");
-  }
-
   if (isFirstMove) {
     robotChoices = [
       "doNothing",
@@ -247,18 +258,23 @@ function calculateRobotChoice(tileNum) {
   let randChoice = Math.floor(Math.random() * robotChoices.length);
   robotChoice = robotChoices[randChoice];
 
-  if (robotChoice == "gold") {
-    players[playerNum].playGold();
-  } else if (robotChoice == "silver") {
-    players[playerNum].playSilver();
-  } else if (robotChoice == "bronze") {
-    players[playerNum].playBronze();
-  } else if (robotChoice == "plain") {
-    players[playerNum].playPlain();
-  } else if (robotChoice == "defender") {
-    players[playerNum].playDefender();
-  } else if (robotChoice == "bomb") {
-    players[playerNum].playBomb();
+  if (bagOfQuestions.includes(tileNum)) {
+    showModal();
+    showBackdrop();
+  } else {
+    if (robotChoice == "gold") {
+      players[playerNum].playGold();
+    } else if (robotChoice == "silver") {
+      players[playerNum].playSilver();
+    } else if (robotChoice == "bronze") {
+      players[playerNum].playBronze();
+    } else if (robotChoice == "plain") {
+      players[playerNum].playPlain();
+    } else if (robotChoice == "defender") {
+      players[playerNum].playDefender();
+    } else if (robotChoice == "bomb") {
+      players[playerNum].playBomb();
+    }
   }
 
   function deleteChoice(choice) {
