@@ -133,9 +133,19 @@ const showModal = () => {
   divEl[0].style.opasity = "1.0";
 };
 
+const closeModal = () => {
+  let divEl = document.getElementsByClassName("modal");
+  divEl[0].style.visibility = "hidden";
+};
+
 const showBackdrop = () => {
   let divEl = document.getElementsByClassName("backdrop");
   divEl[0].style.visibility = "visible";
+};
+
+const closeBackdrop = () => {
+  let divEl = document.getElementsByClassName("backdrop");
+  divEl[0].style.visibility = "hidden";
 };
 
 /******************************************* USER TURN *******************************************/
@@ -150,6 +160,16 @@ $("#pickNumber").click(function() {
   if (bagOfQuestions.includes(tileNum)) {
     showModal();
     showBackdrop();
+
+    $("#back").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
+
+    $("#backdrop").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
   } else {
     // take a turn with that number
     takeTurn(tileNum);
@@ -241,6 +261,7 @@ $("#playBomb").click(function() {
 
 let isFirstMove = true;
 let robotChoices = [];
+
 function calculateRobotChoice(tileNum) {
   if (isFirstMove) {
     robotChoices = [
@@ -261,6 +282,16 @@ function calculateRobotChoice(tileNum) {
   if (bagOfQuestions.includes(tileNum)) {
     showModal();
     showBackdrop();
+
+    $("#back").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
+
+    $("#backdrop").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
   } else {
     if (robotChoice == "gold") {
       players[playerNum].playGold();
