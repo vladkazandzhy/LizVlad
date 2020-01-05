@@ -33,15 +33,50 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
     this.display();
   };
 
-  this.playDefender = function() {
+  this.playDefender = function(tileNum) {
     this.defender--;
     this.addTokenClass("defender");
+	
+	// note that the surrounding tiles are now defended
+	let surSpaces = getSurroundingSpaces(tileNum);
+	for (i = 0; i < surSpaces.length; i++) {
+		$("#" + surSpaces[i]).addClass("defendedByPlayer" + this.num.toString());
+	}
+	
     this.display();
   };
 
-  this.playBomb = function() {
+  this.playBomb = function(tileNum) {
     this.bomb--;
-    this.addTokenClass("bomb");
+	
+	let opponent = Math.abs(num - 1).toString();
+	console.log("opponent is " + opponent);
+	
+	// destroy the surrounding vulnerable tiles (they no longer count as points, image removed, classes removed)
+	let surSpaces = getSurroundingSpaces(tileNum);
+	for (i = 0; i < surSpaces.length; i++) {
+		// if it has the opponent's token that isn't defended
+		if ($("#" + surSpaces[i]).hasClass("player" + opponent) && !$("#" + surSpaces[i]).hasClass("defendedByPlayer" + opponent)) {
+			// remove the player class and image
+			$("#" + surSpaces[i]).removeClass("player" + opponent);
+			$("#" + surSpaces[i] + " img:last-child").remove();
+			
+			// remove the bronze/silver/gold class
+			if ($("#" + surSpaces[i]).hasClass("gold")) {
+				$("#" + surSpaces[i]).removeClass("gold");
+			} else if ($("#" + surSpaces[i]).hasClass("silver")) {
+				$("#" + surSpaces[i]).removeClass("silver");
+			} else if ($("#" + surSpaces[i]).hasClass("bronze")) {
+				$("#" + surSpaces[i]).removeClass("bronze");
+			}
+			
+			// put the number back in the space if unoccupied
+			if (!$("#" + surSpaces[i]).hasClass("filled")) {
+				$("#" + surSpaces[i]).text(surSpaces[i]);
+			}
+		}
+	}
+	
     this.display();
   };
 
@@ -61,15 +96,21 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   this.addTokenClass = function(type) {
     // note what token it is and what player played it
     let tile = $("#" + bag.getCurrent());
-    tile.addClass(type);
-    tile.addClass("player" + num);
+	
+	// defenders don't have a separate "player0" or "player1" because that will be used to record points
+	if (type == "defender") {
+		tile.addClass("player" + this.num + "Defender");
+	} else {
+		tile.addClass(type);
+		tile.addClass("player" + num);
+	}
 
     // add the relevant picture to the board
     tile.text("");
     tile.append(
       "<img src='images/tokens/" +
         type +
-        playerNum +
+        playerNum.toString() +
         ".png' alt='token' style='width:20px;height:20px;'>"
     );
   };
@@ -83,7 +124,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 10; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -113,7 +154,8 @@ function NumberBag() {
   };
 
   this.checkIfEnd = function() {
-    console.log("Numbers left in the bag: " + numberBag);
+    //console.log("Numbers left in the bag: " + numberBag);
+	console.log("There are " + numberBag.length + " numbers left.");
     if (numberBag.length == 0) {
       return true;
     } else {
@@ -126,6 +168,7 @@ function NumberBag() {
   };
 }
 
+/*
 const showModal = () => {
   let divEl = document.getElementsByClassName("modal");
   divEl[0].style.visibility = "visible";
@@ -147,6 +190,7 @@ const closeBackdrop = () => {
   let divEl = document.getElementsByClassName("backdrop");
   divEl[0].style.visibility = "hidden";
 };
+*/
 
 /******************************************* USER TURN *******************************************/
 let playerNum = 1;
@@ -156,7 +200,9 @@ $("#pickNumber").click(function() {
   $("#pickNumber").hide();
   // draw a random number
   let tileNum = drawNumber();
+  takeTurn(tileNum);
 
+  /*
   if (bagOfQuestions.includes(tileNum)) {
     showModal();
     showBackdrop();
@@ -174,6 +220,7 @@ $("#pickNumber").click(function() {
     // take a turn with that number
     takeTurn(tileNum);
   }
+  */
 });
 
 // this function will be the same for both the user and computer
@@ -263,6 +310,52 @@ let isFirstMove = true;
 let robotChoices = [];
 
 function calculateRobotChoice(tileNum) {
+	// determine which spaces are around the drawn tile
+	let surSpaces = getSurroundingSpaces(tileNum);
+	console.log(surSpaces);
+	
+	// find out how many animal figures and player points are around
+	animalTiles = 0;
+	playerPoints = 0;
+	
+	for (i = 0; i < surSpaces.length; i++) {
+		// only count animal figures if the opponent doesn't have a token there and it isn't already defended
+		if ($("#" + surSpaces[i]).hasClass("animal")
+			&& !$("#" + surSpaces[i]).hasClass("player0")
+			&& !$("#" + surSpaces[i]).hasClass("defendedByPlayer1")) {
+			// this if/else gives the animals different weights based on size
+			if ($("#" + surSpaces[i]).hasClass("xs")) {
+				animalTiles++;
+			} else if ($("#" + surSpaces[i]).hasClass("s")) {
+				animalTiles += 2;
+			} else if ($("#" + surSpaces[i]).hasClass("m")) {
+				animalTiles += 3;
+			} else if ($("#" + surSpaces[i]).hasClass("l")) {
+				animalTiles += 4;
+			} else if ($("#" + surSpaces[i]).hasClass("xl")) {
+				animalTiles += 5;
+			}
+		}
+		// only count player's points if they are undefended
+		if ($("#" + surSpaces[i]).hasClass("player0") && !$("#" + surSpaces[i]).hasClass("defendedByPlayer0")) {
+			playerPoints++;
+		}
+	}
+	
+	console.log("animalTiles is " + animalTiles);
+	console.log("surrounding playerPoints is " + playerPoints);
+	
+	// if there are a significant number of animal tiles around that aren't the opponent's,
+	// then place a defender
+	if ((players[1].defender > 0) && (animalTiles >= 12)) {
+		players[1].playDefender(tileNum);
+	}
+	// if there are at least 1 opponent points around, then play a bomb
+	else if ((players[1].defender > 0) && (playerPoints >= 1)) {
+		players[1].playBomb(tileNum);
+	}
+	
+	/*
   if (isFirstMove) {
     robotChoices = [
       "doNothing",
@@ -338,6 +431,40 @@ function calculateRobotChoice(tileNum) {
   console.log("Robot choice is: " + robotChoice);
   console.log("Length:" + robotChoices.length);
   console.log(robotChoices);
+  */
+}
+
+// this returns an array with all the numbers of the surrounding spaces for each drawn number
+function getSurroundingSpaces(num) {
+	let surSpaces = [];
+	
+	switch(num) {
+		case 0: surSpaces = [1, 10, 11];
+		break;
+		case 9: surSpaces = [8, 18, 19];
+		break;
+		case 90: surSpaces = [80, 81, 91];
+		break;
+		case 99: surSpaces = [88, 89, 98];
+		break;
+		case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8:
+			surSpaces = [(num-1), (num+1), (num+9), (num+10), (num+11)];
+		break;
+		case 91: case 92: case 93: case 94: case 95: case 96: case 97: case 98:
+			surSpaces = [(num-1), (num+1), (num-9), (num-10), (num-11)];
+		break;
+		case 10: case 20: case 30: case 40: case 50: case 60: case 70: case 80:
+			surSpaces = [(num-10), (num+10), (num-9), (num+1), (num+11)];
+		break;
+		case 19: case 29: case 39: case 49: case 59: case 69: case 79: case 89:
+			surSpaces = [(num-10), (num+10), (num+9), (num-1), (num-11)];
+		break;
+		default:
+			surSpaces = [(num-10), (num+10), (num-9), (num+9), (num-11), (num+11), (num-1), (num+1)];
+	}
+	
+	surSpaces.sort();
+	return surSpaces;
 }
 
 // start the robot's turn
@@ -375,25 +502,25 @@ $("#setBoard").click(function() {
 // place all the animal figures and question tiles on the board
 function setUpBoard() {
   // place 1 very large animal
-  placeAnimal(4, 3, 1);
+  placeAnimal(4, 3, 1, "xl");
   // place 2 large animals
   for (let i = 2; i < 4; i++) {
-    placeAnimal(4, 2, i);
+    placeAnimal(4, 2, i, "l");
   }
   // place 3 medium animals
   for (let i = 4; i < 7; i++) {
-    placeAnimal(3, 2, i);
+    placeAnimal(3, 2, i, "m");
   }
   // place 4 small animals
   for (let i = 7; i < 11; i++) {
-    placeAnimal(2, 2, i);
+    placeAnimal(2, 2, i, "sm");
   }
   // place 4 very small animals
   for (let i = 11; i < 15; i++) {
-    placeAnimal(2, 1, i);
+    placeAnimal(2, 1, i, "xs");
   }
   // place 1 very small animals (lynx)
-  placeAnimal(1, 2, 15);
+  placeAnimal(1, 2, 15, "xs");
 
   if (placementError) {
     clearBoard();
@@ -436,7 +563,7 @@ function clearBoard() {
 }
 
 // place an animal on the board based on its width and height (the third parameter is the animal's id)
-function placeAnimal(w, h, id) {
+function placeAnimal(w, h, id, animalType) {
   let tries = 0;
   let placed = false;
   while (!placed || tries > 10000) {
@@ -509,6 +636,8 @@ function placeAnimal(w, h, id) {
       let tile = $("#" + animalTiles[i]);
       tile.removeClass("free");
       tile.addClass("filled");
+	  tile.addClass("animal");
+	  tile.addClass(animalType);
       tile.addClass(id.toString());
 
       let imageUrl = "images/" + id + "/" + (i + 1) + ".jpg";

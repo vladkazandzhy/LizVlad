@@ -112,6 +112,10 @@
   border: 3px dashed #00ff00 !important;
 }
 
+.special {
+	border: 2px dashed #65EFD3 !important;
+}
+
 #pickNumber {
   display: none;
 }
