@@ -40,9 +40,9 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
 	// note that the surrounding tiles are now defended
 	let surSpaces = getSurroundingSpaces(tileNum);
 	for (i = 0; i < surSpaces.length; i++) {
-		$("#" + surSpaces[i]).addClass("defendedByPlayer" + this.num.toString());
+		$("#" + surSpaces[i]).addClass("defendedbyplayer" + this.num.toString());
 	}
-	
+		
     this.display();
   };
 
@@ -99,7 +99,7 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
 	
 	// defenders don't have a separate "player0" or "player1" because that will be used to record points
 	if (type == "defender") {
-		tile.addClass("player" + this.num + "Defender");
+		tile.addClass("player" + this.num + "defender");
 	} else {
 		tile.addClass(type);
 		tile.addClass("player" + num);
@@ -319,14 +319,16 @@ function calculateRobotChoice(tileNum) {
 	playerPoints = 0;
 	
 	for (i = 0; i < surSpaces.length; i++) {
-		// only count animal figures if the opponent doesn't have a token there and it isn't already defended
+		// only count animal figures if empty there and it isn't already defended
 		if ($("#" + surSpaces[i]).hasClass("animal")
 			&& !$("#" + surSpaces[i]).hasClass("player0")
-			&& !$("#" + surSpaces[i]).hasClass("defendedByPlayer1")) {
+			&& !$("#" + surSpaces[i]).hasClass("player1")
+			&& !$("#" + surSpaces[i]).hasClass("player0defender")
+			&& !$("#" + surSpaces[i]).hasClass("defendedbyplayer1")) {
 			// this if/else gives the animals different weights based on size
 			if ($("#" + surSpaces[i]).hasClass("xs")) {
 				animalTiles++;
-			} else if ($("#" + surSpaces[i]).hasClass("s")) {
+			} else if ($("#" + surSpaces[i]).hasClass("sm")) {
 				animalTiles += 2;
 			} else if ($("#" + surSpaces[i]).hasClass("m")) {
 				animalTiles += 3;
@@ -337,8 +339,16 @@ function calculateRobotChoice(tileNum) {
 			}
 		}
 		// only count player's points if they are undefended
-		if ($("#" + surSpaces[i]).hasClass("player0") && !$("#" + surSpaces[i]).hasClass("defendedByPlayer0")) {
-			playerPoints++;
+		if ($("#" + surSpaces[i]).hasClass("player0") && !$("#" + surSpaces[i]).hasClass("defendedbyplayer0")) {
+			if ($("#" + surSpaces[i]).hasClass("gold")) {
+				playerPoints += 6;
+			} else if ($("#" + surSpaces[i]).hasClass("silver")) {
+				playerPoints += 4;
+			} else if ($("#" + surSpaces[i]).hasClass("bronze")) {
+				playerPoints += 2;
+			} else {
+				playerPoints++;
+			}
 		}
 	}
 	
@@ -346,13 +356,21 @@ function calculateRobotChoice(tileNum) {
 	console.log("surrounding playerPoints is " + playerPoints);
 	
 	// if there are a significant number of animal tiles around that aren't the opponent's,
-	// then place a defender
+	// then place a defender if you have one
 	if ((players[1].defender > 0) && (animalTiles >= 12)) {
 		players[1].playDefender(tileNum);
 	}
-	// if there are at least 1 opponent points around, then play a bomb
-	else if ((players[1].defender > 0) && (playerPoints >= 1)) {
+	// if there are at least 3 opponent points around, then play a bomb if you have one
+	else if ((players[1].defender > 0) && (playerPoints >= 3)) {
 		players[1].playBomb(tileNum);
+	}
+	// if it's an unclaimed animal space, find the best token to place
+	else if ($("#" + tileNum).hasClass("animal")) {
+		console.log("animal");
+		
+		// find the animal id
+		
+		
 	}
 	
 	/*
@@ -432,6 +450,31 @@ function calculateRobotChoice(tileNum) {
   console.log("Length:" + robotChoices.length);
   console.log(robotChoices);
   */
+}
+
+function checkSurroundingPoints(surroundingSpaces, player) {
+	let playerTiles = [];
+	let playerPoints = 0;
+	
+	for (var i = 0; i < surroundingSpaces.length; i++) {
+		if ($("#" + surroundingSpaces[i]).hasClass("player" + player)) {
+			playerTiles.push(i);
+		}
+	}
+	
+	for (var i = 0; i < playerTiles.length; i++) {
+		if ($("#" + playerTiles[i]).hasClass(i)) {
+			playerPoints += 6;
+		} else if ($("#" + playerTiles[i]).hasClass(i)) {
+			playerPoints += 4;
+		} else if ($("#" + playerTiles[i]).hasClass(i)) {
+			playerPoints += 2;
+		} else {
+			playerPoints++;
+		}
+	}
+	
+	return playerPoints;
 }
 
 // this returns an array with all the numbers of the surrounding spaces for each drawn number
