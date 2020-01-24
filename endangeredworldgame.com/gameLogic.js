@@ -50,7 +50,6 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
     this.bomb--;
 
     let opponent = Math.abs(num - 1).toString();
-    console.log("opponent is " + opponent);
 
     // destroy the surrounding vulnerable tiles (they no longer count as points, image removed, classes removed)
     let surSpaces = getSurroundingSpaces(tileNum);
@@ -197,12 +196,15 @@ const closeBackdrop = () => {
 
 /******************************************* USER TURN *******************************************/
 let playerNum = 1;
+// we need to declare tileNum as global so that the player can play a bomb or defender later
+// and the program knows what to destroy or defend
+let tileNum;
 
 // start the user's turn when "Draw a Number" is clicked
 $("#pickNumber").click(function() {
   $("#pickNumber").hide();
   // draw a random number
-  let tileNum = drawNumber();
+  tileNum = drawNumber();
   takeTurn(tileNum);
 
   /*
@@ -299,11 +301,11 @@ $("#playPlain").click(function() {
   endTurn();
 });
 $("#playDefender").click(function() {
-  players[playerNum].playDefender();
+  players[playerNum].playDefender(tileNum);
   endTurn();
 });
 $("#playBomb").click(function() {
-  players[playerNum].playBomb();
+  players[playerNum].playBomb(tileNum);
   endTurn();
 });
 
@@ -330,7 +332,7 @@ function calculateRobotChoice(tileNum) {
       !$("#" + surSpaces[i]).hasClass("player0defender") &&
       !$("#" + surSpaces[i]).hasClass("defendedbyplayer1")
     ) {
-      // this if/else gives the animals different weights based on size
+      // this if/else gives the animals different weights based on the animal size
       if ($("#" + surSpaces[i]).hasClass("xs")) {
         animalTiles++;
       } else if ($("#" + surSpaces[i]).hasClass("sm")) {
@@ -360,42 +362,108 @@ function calculateRobotChoice(tileNum) {
     }
   }
 
-  console.log("animalTiles is " + animalTiles);
-  console.log("surrounding playerPoints is " + playerPoints);
-
   // if there are a significant number of animal tiles around that aren't the opponent's,
   // then place a defender if you have one
-  if (players[1].defender > 0 && animalTiles >= 12) {
+  if (players[1].defender > 0 && animalTiles >= 13) {
     players[1].playDefender(tileNum);
+	$("#turnDisplay").append(" It played a Defender token.");
   }
-  // if there are at least 3 opponent points around, then play a bomb if you have one
-  else if (players[1].defender > 0 && playerPoints >= 3) {
+  // if there are at least 5 opponent points around, then play a bomb if you have one
+  else if (players[1].defender > 0 && playerPoints >= 5) {
     players[1].playBomb(tileNum);
+	$("#turnDisplay").append(" It played a Bomb token and destroyed your surrounding tiles!");
   }
   // if it's an unclaimed animal space, find the best token to place
   else if ($("#" + tileNum).hasClass("animal")) {
-    console.log("animal");
 
-    // find the animal id
+    // find the animal size
+	let animalSize = "";
+	if ($("#" + tileNum).hasClass("xs")) {
+		animalSize = "xs";
+	} else if ($("#" + tileNum).hasClass("sm")) {
+		animalSize = "sm";
+	} else if ($("#" + tileNum).hasClass("m")) {
+		animalSize = "m";
+	} else if ($("#" + tileNum).hasClass("l")) {
+		animalSize = "l";
+	} else if ($("#" + tileNum).hasClass("xl")) {
+		animalSize = "xl";
+	}
+	
+	// find how many points are on the animal figure
+	let animalId = getAnimalId(tileNum);
+	let compPoints = checkAnimalPoints(animalId, 0);
+	let playerPoints = checkAnimalPoints(animalId, 1);
+	
+	console.log("id is " + animalId);
+	console.log("size is " + animalSize);
+	console.log("compPoints is " + compPoints);
+	console.log("playerPoints is " + playerPoints);
+	
+	// determine if the computer is winning
+	let compWinning;
+	if (compPoints >= playerPoints) {
+		compWinning = true;
+	} else {
+		compWinning = false;
+	}
+	
+	// determine if the score is close on that particular animal
+	let closeScore;
+	if (Math.abs(compPoints - playerPoints) >= 3) {
+		closeScore = true;
+	} else {
+		closeScore = false;
+	}
+	
+	console.log("compWinning is " + compWinning);
+	console.log("closeScore is " + closeScore);
+	
+	let defended = false;
+	if ($("#" + tileNum).hasClass("defendedbyplayer1")) {
+		defended = true;
+	}
+	// logic for maximum token to play
+	// TO DO: maybe add defendedbyplayer1 to logic?
+	switch(animalSize) {
+		case "xs":
+			playMax("plain");
+			break;
+		case "sm":
+			if (defended) {
+				playMax("bronze");
+			} else {
+				playMax("plain");
+			}
+			break;
+		case "m":
+			if (defended) {
+				playMax("silver");
+			} else {
+				playMax("bronze");
+			}
+			break;
+		case "l":
+		case "xl":
+			if (defended) {
+				playMax("gold");
+			} else {
+				if (closeScore && !compWinning) {
+					playMax("silver");
+				} else if (closeScore && compWinning) {
+					playMax("bronze");
+				} else {
+					playMax("plain");
+				}
+			}
+			break;
+	}
+	
+  } else {
+	  $("#turnDisplay").append(" It chose to do nothing.");
   }
 
   /*
-  if (isFirstMove) {
-    robotChoices = [
-      "doNothing",
-      "gold",
-      "silver",
-      "bronze",
-      "plain",
-      "defender",
-      "bomb"
-    ];
-    isFirstMove = false;
-  }
-
-  let randChoice = Math.floor(Math.random() * robotChoices.length);
-  robotChoice = robotChoices[randChoice];
-
   if (bagOfQuestions.includes(tileNum)) {
     showModal();
     showBackdrop();
@@ -409,78 +477,143 @@ function calculateRobotChoice(tileNum) {
       closeModal();
       closeBackdrop();
     });
-  } else {
-    if (robotChoice == "gold") {
-      players[playerNum].playGold();
-    } else if (robotChoice == "silver") {
-      players[playerNum].playSilver();
-    } else if (robotChoice == "bronze") {
-      players[playerNum].playBronze();
-    } else if (robotChoice == "plain") {
-      players[playerNum].playPlain();
-    } else if (robotChoice == "defender") {
-      players[playerNum].playDefender();
-    } else if (robotChoice == "bomb") {
-      players[playerNum].playBomb();
-    }
   }
-
-  function deleteChoice(choice) {
-    let i = robotChoices.indexOf(choice);
-    // i == -1 - choice was deleted already
-    if (i != -1) {
-      robotChoices.splice(i, 1);
-    }
-  }
-
-  if (players[playerNum].gold == 0) {
-    deleteChoice("gold");
-  }
-  if (players[playerNum].silver == 0) {
-    deleteChoice("silver");
-  }
-  if (players[playerNum].bronze == 0) {
-    deleteChoice("bronze");
-  }
-  if (players[playerNum].plain == 0) {
-    deleteChoice("plain");
-  }
-  if (players[playerNum].defender == 0) {
-    deleteChoice("defender");
-  }
-  if (players[playerNum].bomb == 0) {
-    deleteChoice("bomb");
-  }
-
-  console.log("Robot choice is: " + robotChoice);
-  console.log("Length:" + robotChoices.length);
-  console.log(robotChoices);
   */
 }
 
-function checkSurroundingPoints(surroundingSpaces, player) {
-  let playerTiles = [];
-  let playerPoints = 0;
+// this just returns the id of the animal in the current space
+function getAnimalId(tileNum) {
+	
+	if ($("#" + tileNum).hasClass("a1")) {
+		return 1;
+	} else if ($("#" + tileNum).hasClass("a2")) {
+		return 2;
+	} else if ($("#" + tileNum).hasClass("a3")) {
+		return 3;
+	} else if ($("#" + tileNum).hasClass("a4")) {
+		return 4;
+	} else if ($("#" + tileNum).hasClass("a5")) {
+		return 5;
+	} else if ($("#" + tileNum).hasClass("a6")) {
+		return 6;
+	} else if ($("#" + tileNum).hasClass("a7")) {
+		return 7;
+	} else if ($("#" + tileNum).hasClass("a8")) {
+		return 8;
+	} else if ($("#" + tileNum).hasClass("a9")) {
+		return 9;
+	} else if ($("#" + tileNum).hasClass("a10")) {
+		return 10;
+	} else if ($("#" + tileNum).hasClass("a11")) {
+		return 11;
+	} else if ($("#" + tileNum).hasClass("a12")) {
+		return 12;
+	} else if ($("#" + tileNum).hasClass("a13")) {
+		return 13;
+	} else if ($("#" + tileNum).hasClass("a14")) {
+		return 14;
+	} else if ($("#" + tileNum).hasClass("a15")) {
+		return 15;
+	}
+}
 
-  for (var i = 0; i < surroundingSpaces.length; i++) {
-    if ($("#" + surroundingSpaces[i]).hasClass("player" + player)) {
-      playerTiles.push(i);
+// this determines the points on the given animal for a certain player
+function checkAnimalPoints(animalId, playerId) {
+  let playerPoints = 0;
+  let animalSquares = [];
+
+	// find all the spaces where the player has tokens on that specific animal
+  for (var i = 0; i < 100; i++) {
+    if ($("#" + i).hasClass("a" + animalId) && $("#" + i).hasClass("player" + playerId)) {
+      animalSquares.push(i);
     }
   }
 
-  for (var i = 0; i < playerTiles.length; i++) {
-    if ($("#" + playerTiles[i]).hasClass(i)) {
+  for (var i = 0; i < animalSquares.length; i++) {
+    if ($("#" + animalSquares[i]).hasClass("gold")) {
       playerPoints += 6;
-    } else if ($("#" + playerTiles[i]).hasClass(i)) {
+    } else if ($("#" + animalSquares[i]).hasClass("silver")) {
       playerPoints += 4;
-    } else if ($("#" + playerTiles[i]).hasClass(i)) {
+    } else if ($("#" + animalSquares[i]).hasClass("bronze")) {
       playerPoints += 2;
     } else {
       playerPoints++;
     }
   }
 
+	//console.log("points on animal " + animalId + " for player " + playerId + " is " + playerPoints + ".");
   return playerPoints;
+}
+
+// this is used by the computer to play a maximum number
+// of points depending on what tokens are left
+function playMax(tokenName) {
+	
+	let choice = "";
+	
+	// determine what tokens the computer has
+	let hasGold = false;
+	let hasSilver = false;
+	let hasBronze = false;
+	if (players[1].gold > 0) {
+		hasGold = true;
+	}
+	if (players[1].silver > 0) {
+		hasSilver = true
+	}
+	if (players[1].bronze > 0) {
+		hasBronze = true;
+	}
+	
+	switch(tokenName) {
+		case "gold":
+			if (hasGold) {
+				choice = "gold coin";
+			} else if (hasSilver) {
+				choice = "silver coin";
+			} else if (hasBronze) {
+				choice = "bronze coin";
+			} else {
+				choice = "plain token";
+			}
+			break;
+		case "silver":
+			if (hasSilver) {
+				choice = "silver coin";
+			} else if (hasBronze) {
+				choice = "bronze coin";
+			} else {
+				choice = "plain token";
+			}
+			break;
+		case "bronze":
+			if (hasBronze) {
+				choice = "bronze coin";
+			} else {
+				choice = "plain token";
+			}
+			break;
+		case "plain":
+			choice = "plain token";
+			break;
+	}
+	
+	switch(choice) {
+		case "gold coin":
+			players[1].playGold();
+			break;
+		case "silver coin":
+			players[1].playSilver();
+			break;
+		case "bronze coin":
+			players[1].playBronze();
+			break;
+		case "plain token":
+			players[1].playPlain();
+			break;
+	}
+	
+	$("#turnDisplay").append(" It played a " + choice +".");
 }
 
 // this returns an array with all the numbers of the surrounding spaces for each drawn number
@@ -564,13 +697,94 @@ function endTurn() {
     takeTurn(tileNum);
   } else {
     alert("Game over!");
+	countFinalScore();
   }
 
   if (bag.checkIfEnd()) {
     alert("Game over!");
+	countFinalScore();
   } else {
     $("#pickNumber").show();
   }
+}
+
+// calculate the final score
+function countFinalScore() {
+	let playerPoints = 0;
+	let compPoints = 0;
+	let animalsWonByPlayer = [];
+	let animalsWonByComp = [];
+	
+	// this loops through each animal and counts up who won each
+	for (var i = 1; i <= 15; i++) {
+		playerPoints = checkAnimalPoints(i, 0);
+		compPoints = checkAnimalPoints(i, 1);
+		
+		if (playerPoints > compPoints) {
+			animalsWonByPlayer.push(i);
+		} else if (compPoints > playerPoints) {
+			animalsWonByComp.push(i);
+		}
+		
+		//reset the points because we're moving to the next animal
+		playerPoints = 0;
+		compPoints = 0;
+	}
+	
+	console.log("The player won the following animals:");
+	console.log(animalsWonByPlayer);
+	console.log("The computer won the following animals:");
+	console.log(animalsWonByComp);
+
+	let playerFinalScore = 0;
+	let compFinalScore = 0;
+	// count the points for each animal won by player and comp
+	if (animalsWonByPlayer.length > 0) {
+		for (var i = 0; i < animalsWonByPlayer.length; i++) {
+			playerFinalScore += calculateAnimalScore(animalsWonByPlayer[i]);
+		}
+	}
+	
+	if (animalsWonByComp.length > 0) {
+		for (var i = 0; i < animalsWonByComp.length; i++) {
+			compFinalScore += calculateAnimalScore(animalsWonByComp[i]);
+		}
+	}
+	
+	
+	
+	console.log("Player's final score is " + playerFinalScore);
+	console.log("Comp's final score is " + compFinalScore);
+}
+
+function calculateAnimalScore(animalId) {
+	switch(animalId) {
+		case 1:
+			return 60;
+			break;
+		case 2:
+		case 3:
+			return 50;
+			break;
+		case 4:
+		case 5:
+		case 6:
+			return 40;
+			break;
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			return 30;
+			break;
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			return 20;
+			break;
+	}
 }
 
 /******************************************* BOARD SETUP *******************************************/
@@ -729,7 +943,9 @@ function placeAnimal(w, h, id, animalType) {
       tile.addClass("filled");
       tile.addClass("animal");
       tile.addClass(animalType);
-      tile.addClass(id.toString());
+	  
+	  // we have to add a before the id so that ids don't overlap
+      tile.addClass("a" + id.toString());
 
       let imageUrl = "images/" + id + "/" + (i + 1) + ".jpg";
       tile.css("background-image", "url(" + imageUrl + ")");
@@ -737,8 +953,6 @@ function placeAnimal(w, h, id, animalType) {
 
       // remove number
       tile.text("");
-
-      console.log(tile);
     }
 
     // break the while loop because we finally placed the animal
@@ -809,7 +1023,6 @@ function fillTokens() {
   players.push(player);
   players.push(comp);
 
-  console.log("Filled tokens for each player.");
 
   console.log(
     `${players[0].name} {id:${players[0].num}, gold:${players[0].gold}, silver:${players[0].silver}, bronze:${players[0].bronze}, plain:${players[0].plain}, defender:${players[0].defender}, bomb:${players[0].bomb}}`
