@@ -112,6 +112,10 @@
   border: 3px dashed #00ff00 !important;
 }
 
+.highlight {
+  border: 3px solid yellow !important;
+}
+
 .special {
 	border: 2px dashed #65EFD3 !important;
 }
@@ -120,8 +124,12 @@
   display: none;
 }
 
-#turnChoices {
+#turnChoices, #turnChoicesPlayAgain {
   display: none;
+}
+
+#playDefenderRule3 {
+	display: none;
 }
 
 #tokenDisplay1,
@@ -170,4 +178,8 @@
   position: absolute;
   bottom: 10px;
   left: 150px;
+}
+
+#seeChanges, #continue {
+	display: none;
 }
