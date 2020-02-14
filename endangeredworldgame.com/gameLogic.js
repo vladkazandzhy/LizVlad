@@ -415,6 +415,29 @@ $("#continue").click(function() {
 	endHumanTurn();
 });
 
+// when the user clicks this, the tokens are destroyed and the user can continue playing
+$("#seeChanges").click(function() {
+	destroy();
+	$("#seeChanges").hide();
+	if (playerNum == 0) {
+		$("#continue").show();
+	} else {
+		$("#pickNumber").show();
+	}
+});
+	 
+// do the destroying where needed
+function destroy() {
+	for (let i = 0; i < highlighted.length; i++) {
+		let nearbyTile = $("#" + highlighted[i]);
+		if (nearbyTile.hasClass("player0") && !(nearbyTile.hasClass("defendedbyplayer0"))) {
+			players[0].destroyToken(highlighted[i], 0);
+		} else if (nearbyTile.hasClass("player1") && !(nearbyTile.hasClass("defendedbyplayer1"))) {
+			players[1].destroyToken(highlighted[i], 1);
+		}
+	}
+}
+
 /******************************************* ROBOT TURN *******************************************/
 
 let isFirstMove = true;
@@ -1246,8 +1269,6 @@ function q1(tileNum) {
 	highlighted.push(tileNum - 1);
 	highlighted.push(tileNum + 1);
 	highlighted.push(tileNum + 2);
-	console.log(highlighted);
-	console.log(Math.floor(11 / 10));
 	
 	// only count the tiles if they are in the same row as the question tile, then highlight them
 	let row = Math.floor(tileNum / 10);
@@ -1338,6 +1359,31 @@ function q1(tileNum) {
 function q2(tileNum) {
 	let qText = "B. The animal population is growing! You may increase the value of any one of your tokens on the gameboard by replacing it with a higher-valued coin if you have one. If you already had a bronze or silver coin in that space, return it to your possession.";
 	console.log(qText);
+	
+	// FOR USER
+		// create array of all user tokens that are single, bronze, or silver and highlight them
+		
+		// prompt the user to click on one of these highlighted spaces, or to continue without doing anything
+	
+		// ask the user what they want to do on this space, or invite them to choose a different space
+		
+		// find what token was originally on the space and return it to the user's possession (need to add addBronze)
+		
+		// destroy that token, call the appropriate method (bronze, silver, gold)
+		
+	// FOR COMP
+		// create array of all comp tokens that are single, bronze, or silver
+		
+		// select one at random, take note of what token it is
+		
+		// destroy the token and call calculateRobotChoice for that space
+		
+		// take note of what token it is
+		
+		// if it didn't change, say the robot decided to pass
+		
+		// if it did change, inform user what the robot did and also return original coin back to posession if needed
+		
 }
 
 function q3(tileNum) {
@@ -1409,31 +1455,144 @@ function q5(tileNum) {
 function q6(tileNum) {
 	let qText = "F. Congratulations! You've won a free round-trip flight. Travel to any space on the gameboard that isn't occupied and place any token (except a bomb).";
 	console.log(qText);
+	
+	// FOR USER
+		// loop through all spaces, create array of all unoccupied spaces and highlight them
+	
+		// prompt the user to click on one of these highlighted spaces
+	
+		// ask the user what they want to do on this space, or invite them to choose a different space
+	
+		// do the appropriate action
+	
+	
+	// FOR COMP
+		// loop through all spaces, create an array of all defended spots that have animals on them
+	
+		// if there are defended spots, find the best animal and call calculateRobotChoice
+	
+		// if there aren't defended spots and the comp has a defender, play it in the place with the most animal spaces around
+	
+			// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
+	
+			// wherever there are the greatest points, place the defender
+	
 }
 
 function q7(tileNum) {
 	let qText = "G. A government leader has issued your opponent a private jet and has asked you to assist them. Place one of the next player's single tokens (worth 1 point) on any animal figure on the board that isn't occupied.";
 	console.log(qText);
+	
+	// create an array of unoccupied animal figures
+	
+	// FOR USER
+		// highlight the array
+		
+		// prompt the user to click on one of these highlighted spaces
+	
+		// ask the user to confirm that space, or invite them to choose a different space
+	
+		// do the appropriate action
+	
+	// FOR COMP
+		
+		// for each animal in the array, determine the player's score, comp's score
+		
+		// if the player is winning by a lot, place it there
+		
+		// else if the comp is winning by a lot, place it there
+		
+		// else choose randomly
+		
 }
 
 function q8(tileNum) {
 	let qText = "H. A one-month expedition of your organization was successful. You may place any valued token on any animal in this row if the space is not occupied.";
 	console.log(qText);
+	
+	// create an array of unoccupied animal figures in the current row
+	
+	// FOR USER
+		// if there is an array, highlight them and prompt the user to pick one or do nothing
+		
+		// if not, inform the user and prompt them to continue with the robot's turn
+		
+	// FOR COMP		
+		// if there is an array, pick one at random and call calculateRobotChoice
+		
+		// if not, inform the user and prompt them to continue with their turn
+		
 }
 
 function q9(tileNum) {
 	let qText = "I. This space can't be occupied because of hazardous waste. Move two spaces up or down. You may place any token (including a bomb) in one of these spaces. If another player's token is already there and not protected by a defender, you may replace it with your own token of any value.";
 	console.log(qText);
+	
+	// (see questions 10 and 16 for similar logic)
+	
+	// create an array of all 3 spaces
+	
+	// FOR USER
+		// highlight the relevant spaces
+		
+		// prompt the user to click on one of these highlighted spaces or do nothing
+	
+		// ask the user to confirm that space, or invite them to choose a different space
+	
+		// do the appropriate action, destroying the comp token in the process if needed
+	
+	// FOR COMP
+		// find the biggest animal in the possible spaces
+		
+		// if there's no animal, decide what to do in the current space
+		
+		// if there's an animal, call calculateRobotChoice on the best space, destroying the user token in the process if needed
+		
 }
 
 function q10(tileNum) {
 	let qText = "J. You're feeling adventurous! Move three spaces up or down. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
 	console.log(qText);
+	
+	// (see question 16 for similar logic)
+	
+	// create an array of the 3 possible spaces
+	
+	// FOR USER
+		// highlight the relevant spaces
+		
+		// prompt the user to click on one of these highlighted spaces or do nothing
+	
+		// ask the user to confirm that space, or invite them to choose a different space
+	
+		// do the appropriate action
+	
+	// FOR COMP
+		// find the biggest animal in the possible spaces
+		
+		// if there's no animal, decide what to do in the current space
+		
+		// if there's an animal, call calculateRobotChoice on the best space
+		
 }
 
 function q11(tileNum) {
 	let qText = "K. You have been granted unlimited authority in this area. You may place any token (except a bomb) on any space in the current column. If another person's token is occupying the space you'd like (and it isn't protected by a defender) you may discard that token and place your own instead.";
 	console.log(qText);
+	
+	// create an array of unoccupied animal figures in the current column
+	
+	// FOR USER		
+		// if there is an array, highlight them and prompt the user to pick one or do nothing
+		
+		// if not, inform the user and prompt them to continue with the robot's turn
+		
+	// FOR COMP
+		
+		// if there is an array, pick one at random and call calculateRobotChoice
+		
+		// if not, inform the user and prompt them to continue with their turn
+		
 }
 
 let extraTurn = false;
@@ -1472,11 +1631,39 @@ function q12(tileNum) {
 function q13(tileNum) {
 	let qText = "M. Poachers have attacked! All tokens (both yours and others players') are destroyed in the two spaces above and the two spaces below the question tile if not protected by defenders.";
 	console.log(qText);
+	
+	// (see question 1 for similar logic)
+	
+	// determine which tiles are relevant
+	
+	// only count the tiles if they are in the same column as the question tile, then highlight them
+	
+	// check if there will be tiles destroyed (any token not defended by its player)
+	
+	// FOR USER
+		// show the user what is happening, prompt them to view the changes if there are any
+
+	// FOR COMP
+		// if it's the robot turn, still explain what is happening, prompt user to view changes	 
+	 
 }
 
 function q14(tileNum) {
 	let qText = "N. Your team has discovered valuable information about how to help the animals in this area. You may place any token (except a bomb) in any space surrounding the current question tile.";
 	console.log(qText);
+	
+	// create array of surrounding spaces that are not occupied
+	
+	// FOR USER
+		// if there are spaces, highlight them and prompt the user to pick one or do nothing, then do the action
+		
+		// if not, tell the user and prompt them to move on
+		
+	// FOR COMP
+		// if there are spaces, find largest animal and call calculateRobotChoice
+		
+		// if not, tell the user and prompt them to move on
+		
 }
 
 function q15(tileNum) {
@@ -1505,26 +1692,111 @@ function q15(tileNum) {
 function q16(tileNum) {
 	let qText = "P. Volunteers have arrived to help you further your mission. Move three spaces to the right or to the left. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
 	console.log(qText);
+	
+	// (see question 10 for similar logic)
+	
+	// create an array of the 3 possible spaces
+	
+	// FOR USER
+		// highlight the relevant spaces
+		
+		// prompt the user to click on one of these highlighted spaces or do nothing
+	
+		// ask the user to confirm that space, or invite them to choose a different space
+	
+		// do the appropriate action
+	
+	// FOR COMP
+		// find the biggest animal in the possible spaces
+		
+		// if there's no animal, decide what to do in the current space
+		
+		// if there's an animal, call calculateRobotChoice on the best space
+		
 }
 
 function q17(tileNum) {
 	let qText = "Q. A pack of wolves has attacked some of the bison. You must remove a valued token from the bison figure if you have one placed there that isn't protected by a defender.";
 	console.log(qText);
+	
+	// FOR USER
+		// create an array of all user's bison tokens that aren't defended
+		
+		// if there are some, highlight them
+		
+			// prompt the user to pick one
+		
+			// confirm the user's choice and call destroyToken
+			
+		// if there aren't, inform user and prompt them to move on
+		
+	// FOR COMP
+		// create an array of all comp's bison tokens that aren't defended
+		
+		// if there are, find the lowest value and call destroyToken, prompt user to move on
+		
+		// if there aren't, inform user and prompt them to move on
+		
 }
 
 function q18(tileNum) {
 	let qText = "R. Hunters seeking ivory have entered the elephants' territory. You must remove a valued token from the elephant figure if you have one placed there that isn't protected by a defender.";
 	console.log(qText);
+	
+	// FOR USER
+		// create an array of all user's elephant tokens that aren't defended
+		
+		// if there are some, highlight them
+		
+			// prompt the user to pick one
+		
+			// confirm the user's choice and call destroyToken
+			
+		// if there aren't, inform user and prompt them to move on
+		
+	// FOR COMP
+		// create an array of all comp's elephant tokens that aren't defended
+		
+		// if there are, find the lowest value and call destroyToken, prompt user to move on
+		
+		// if there aren't, inform user and prompt them to move on
+		
 }
 
 function q19(tileNum) {
 	let qText = "S. Your opponent keeps getting one step ahead of you! The next player may place any token (except a bomb) in any space surrounding the current question tile.";
 	console.log(qText);
+	
+	// (see question 14 for similar logic, just opposite)
+	
+	// create array of surrounding spaces that are not occupied
+	
+	// FOR USER
+		// if there are spaces, find largest animal and call calculateRobotChoice
+		
+		// if not, tell the user and prompt them to move on
+		
+	// FOR COMP
+		// if there are spaces, highlight them and prompt the user to pick one or do nothing, then do the action
+		
+		// if not, tell the user and prompt them to move on
+	
 }
 
 function q20(tileNum) {
 	let qText = "T. Your opponent has made the decision to cooperate more with other wildlife organizations. The next player discards one of their bombs if they have one. ";
 	console.log(qText);
+	
+	// FOR USER
+		// if comp has a bomb, discard it
+		
+		// inform user and prompt them to move on
+		
+	// FOR COMP
+		// if user has a bomb, discard it
+		
+		// inform user and prompt them to move on
+		
 }
 
 
