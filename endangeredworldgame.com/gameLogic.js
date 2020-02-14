@@ -304,16 +304,7 @@ function takeTurn(rand) {
 		// determine if it's the user or computer playing
 	  if (playerNum == 0) {
 		$("#turnDisplay").text("You drew " + rand + ". What would you like to do?");
-		
-		// This takes into account whether the turn is extra for the human or not.
-		// If it's extra, the extra buttons are shown.
-		if (!extraTurn) {
-			displayTurnChoices();
-		} else {
-			displayTurnChoicesPlayAgain();
-			extraTurn = false;
-		}
-		
+		displayTurnChoices();
 	  } else {
 		$("#turnChoices").hide();
 		$("#turnDisplay").text("Robot drew " + rand + ".");
@@ -330,77 +321,75 @@ function displayTurnChoices() {
   $("#turnChoices").show();
 
   if (players[playerNum].gold == 0) {
-    $("#turnChoices #playGold").hide();
+    $("#playGold").hide();
   }
   if (players[playerNum].silver == 0) {
-    $("#turnChoices #playSilver").hide();
+    $("#playSilver").hide();
   }
   if (players[playerNum].bronze == 0) {
-    $("#turnChoices #playBronze").hide();
+    $("#playBronze").hide();
   }
   if (players[playerNum].plain == 0) {
-    $("#turnChoices #playPlain").hide();
+    $("#playPlain").hide();
   }
   if (players[playerNum].defender == 0) {
-    $("#turnChoices #playDefender").hide();
+    $("#playDefender").hide();
   }
   if (players[playerNum].bomb == 0) {
-    $("#turnChoices #playBomb").hide();
-  }
-}
-
-// display the appropriate choices based on token inventory FOR EXTRA TURN
-function displayTurnChoicesPlayAgain() {
-  $("#turnChoicesPlayAgain").show();
-
-  if (players[playerNum].gold == 0) {
-    $("#turnChoicesPlayAgain #playGold").hide();
-  }
-  if (players[playerNum].silver == 0) {
-    $("#turnChoicesPlayAgain #playSilver").hide();
-  }
-  if (players[playerNum].bronze == 0) {
-    $("#turnChoicesPlayAgain #playBronze").hide();
-  }
-  if (players[playerNum].plain == 0) {
-    $("#turnChoicesPlayAgain #playPlain").hide();
-  }
-  if (players[playerNum].defender == 0) {
-    $("#turnChoicesPlayAgain #playDefender").hide();
-  }
-  if (players[playerNum].bomb == 0) {
-    $("#turnChoicesPlayAgain #playBomb").hide();
+    $("#playBomb").hide();
   }
 }
 
 // user choices (for usual turns)
-$("#turnChoices #doNothing").click(function() {
-  endHumanTurn();
+$("#doNothing").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}
 });
-$("#turnChoices #playGold").click(function() {
+$("#playGold").click(function() {
   players[playerNum].playGold();
-  endHumanTurn();
-});
-$("#turnChoices #playSilver").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
+$("#playSilver").click(function() {
   players[playerNum].playSilver();
-  endHumanTurn();
-});
-$("#turnChoices #playBronze").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
+$("#playBronze").click(function() {
   players[playerNum].playBronze();
-  endHumanTurn();
-});
-$("#turnChoices #playPlain").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
+$("#playPlain").click(function() {
   players[playerNum].playPlain();
-  endHumanTurn();
-});
-$("#turnChoices #playDefender").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
+$("#playDefender").click(function() {
   players[playerNum].playDefender(tileNum); 
-  endHumanTurn();
-});
-$("#turnChoices #playBomb").click(function() {
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
+$("#playBomb").click(function() {
   players[playerNum].playBomb(tileNum);
-  endHumanTurn();
-});
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
+	}});
 
 // special case for question 3
 $("#playDefenderRule3").click(function() {
@@ -409,46 +398,14 @@ $("#playDefenderRule3").click(function() {
   $("#turnDisplay").text("You played a Defender. Click below to continue with your next turn.");
 });
 
-// user choices (for extra turn)
-// For Question 12, the user needs to select options without it
-// ending their turn. Therefore, this set of buttons appears
-// with slightly different logic and then disappears once something
-// is selected.
-$("#turnChoicesPlayAgain #doNothing").click(function() {
-	takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playGold").click(function() {
-  players[playerNum].playGold();
-  takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playSilver").click(function() {
-  players[playerNum].playSilver();
-  takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playBronze").click(function() {
-  players[playerNum].playBronze();
-  takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playPlain").click(function() {
-  players[playerNum].playPlain();
-  takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playDefender").click(function() {
-  players[playerNum].playDefender(tileNum);
-  takeExtraTurn();
-});
-$("#turnChoicesPlayAgain #playBomb").click(function() {
-  players[playerNum].playBomb(tileNum);
-  takeExtraTurn();
-});
-
-// this function hides the extra turn buttons, prompts the user to draw
-// another number, ensures the player is still the user, and then starts
-// the user turn
+// this function prompts the user to draw another number,
+// ensures the player is still the user, and then starts
+// the user's second turn
 function takeExtraTurn() {
-	$("#turnChoicesPlayAgain").hide();
     $('#turnDisplay').text("Click below to take your second turn.");
+	$("#turnChoices").hide();
     playerNum++;
+	extraTurn = false;
 	endCompTurn();
 }
 
@@ -1153,7 +1110,7 @@ function placeQuestions(id) {
       tile.removeClass("free");
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + i);
+      tile.addClass("q" + 12);
 
       // remove number and add image
       tile.text("");
@@ -1490,7 +1447,8 @@ function q12(tileNum) {
 	} else {
 		extraTurn = true;
 		$("#turnChoices").hide();
-		$("#turnDisplay").html("Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p><button type='button' id='humanFirstTurn'>Draw Number</button>");
+		$("#turnDisplay").html("Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p>");
+		$("#pickNumber").show();
 	}
 	
 	// when the user clicks continue, the computer takes its turn, then the user is prompted to have the comp take its second turn
@@ -1509,16 +1467,6 @@ function q12(tileNum) {
 		endHumanTurn();
 	});
 
-	// this button appears as "draw a number", but the logic is to give the user an extra turn,
-	// so this function lets the player take their first turn as normal, then shows special
-	// buttons to have the user continue with a second turn
-	$("body").on("click", "#humanFirstTurn", function() {
-		console.log("humanFirstTurn");
-		tileNum = drawNumber();
-		takeTurn(tileNum);
-		$("#turnChoices").hide();
-		$("#turnChoicesPlayAgain").show();
-	});
 }
 
 function q13(tileNum) {
