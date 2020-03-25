@@ -140,8 +140,18 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
 	  this.display();
   }
   
+  this.addBronze = function() {
+	  this.bronze++;
+	  this.display();
+  }
+  
   this.addDefender = function() {
 	  this.defender++;
+	  this.display();
+  }
+  
+  this.loseBomb = function() {
+	  this.bomb--;
 	  this.display();
   }
 }
@@ -154,7 +164,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -340,6 +350,42 @@ function displayTurnChoices() {
   }
 }
 
+// display the appropriate choices based on token inventory
+function displayTurnChoicesRule2() {
+  // originally show everything
+  $("#turnChoices").show();
+  $("#playGold").show();
+  $("#playSilver").show();
+  $("#playBronze").show();
+
+  // hide unnecessary buttons
+  $("#turnText").hide();
+  $("#doNothing").hide();
+  $("#playDefender").hide();
+  $("#playBomb").hide();
+  $("#playPlain").hide();
+  
+  // only display coin if user has it
+  if (players[playerNum].gold == 0) {
+    $("#playGold").hide();
+  }
+  if (players[playerNum].silver == 0) {
+    $("#playSilver").hide();
+  }
+  if (players[playerNum].bronze == 0) {
+    $("#playBronze").hide();
+  }
+  
+  // only display the relevant higher coin
+  if ($("#" + rule2Choice).hasClass("silver")) {
+	$("#playSilver").hide();
+	$("#playBronze").hide();
+  } else if ($("#" + rule2Choice).hasClass("bronze")) {
+	$("#playBronze").hide();
+  }
+  
+}
+
 // user choices (for usual turns)
 $("#doNothing").click(function() {
 	if (!extraTurn) {
@@ -354,42 +400,104 @@ $("#playGold").click(function() {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}});
+	}
+	
+	if (rule2Choice > 0) {
+		handleRule2("gold");
+	}
+});
 $("#playSilver").click(function() {
   players[playerNum].playSilver();
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}});
+	}
+	
+	if (rule2Choice > 0) {
+		handleRule2("silver");
+	}
+});
 $("#playBronze").click(function() {
   players[playerNum].playBronze();
 	if (!extraTurn) {
-		endHumanTurn();
+		endHumanTurn("bronze");
 	} else {
 		takeExtraTurn();
-	}});
+	}
+	
+	if (rule2Choice > 0) {
+		handleRule2();
+	}
+});
 $("#playPlain").click(function() {
   players[playerNum].playPlain();
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}});
+	}
+});
 $("#playDefender").click(function() {
   players[playerNum].playDefender(tileNum); 
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}});
+	}
+});
 $("#playBomb").click(function() {
   players[playerNum].playBomb(tileNum);
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}});
+	}
+});
+
+// special case for question 2
+function handleRule2(type) {
+	// find what token was originally on the space and return it to the user's possession (need to add addBronze)
+		
+		
+	console.log("rule2Choice is " + rule2Choice);
+	if ($("#" + rule2Choice).hasClass("silver")) {
+		players[0].addSilver();
+	} else if ($("#" + rule2Choice).hasClass("bronze")) {
+		players[0].addBronze();
+	}
+	
+	// destroy that token
+	players[0].destroyToken(rule2Choice, 0);
+	
+	// remove from inventory like usual
+	if (type == "gold") {
+		players[0].gold--;
+	} else if (type == "silver") {
+		players[0].silver--;
+	} else if (type == "bronze") {
+		players[0].bronze--;
+	}
+	
+	// add the new tile (adapted from addTokenClass)
+	// note what token it is and what player played it
+    let tile = $("#" + rule2Choice);
+      tile.addClass(type);
+      tile.addClass("player0");
+
+    // add the relevant picture to the board
+    tile.text("");
+    tile.append(
+      "<img src='images/tokens/" +
+        type +
+        "0.png' alt='token' style='width:20px;height:20px;'>"
+    );
+	
+	players[0].display();
+	
+	// reset so that program doesn't think we're still handling rule 2
+	rule2Choice = -1;
+}
 
 // special case for question 3
 $("#playDefenderRule3").click(function() {
@@ -901,7 +1009,9 @@ function countFinalScore() {
 		}
 	}
 	
-	
+	// implement the rule that unused bombs count as 10 points each
+	playerFinalScore += (players[0].bomb * 10);
+	compFinalScore += (players[1].bomb * 10);
 	
 	console.log("Player's final score is " + playerFinalScore);
 	console.log("Comp's final score is " + compFinalScore);
@@ -1133,7 +1243,7 @@ function placeQuestions(id) {
       tile.removeClass("free");
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + 12);
+      tile.addClass("q" + 2);
 
       // remove number and add image
       tile.text("");
@@ -1167,8 +1277,8 @@ $("#startGame").click(function() {
 // set up the number of tokens for the players
 let players = [];
 function fillTokens() {
-  let player = new Player(0, "Liz", 2, 5, 8, 40, 5, 5);
-  let comp = new Player(1, "Robot", 2, 5, 8, 40, 5, 5);
+  let player = new Player(0, "Liz", 2, 5, 8, 50, 5, 5);
+  let comp = new Player(1, "Robot", 2, 5, 8, 50, 5, 5);
   players.push(player);
   players.push(comp);
 
@@ -1182,8 +1292,9 @@ function fillTokens() {
 }
 
 /******************************************* TWENTY QUESTIONS *******************************************/
-/*********************************** COMPLETED: 1, 3, 4, 5, 12, 15 **************************************/
-/************** change line 1156 to make all cards a single question (good for testing) *****************/
+/*************************** COMPLETED: 1, 3, 4, 5, 12, 13, 15, 17, 18, 20 ******************************/
+/******************************* TO DO: 2, 6, 7, 8, 9, 10, 11, 14, 16, 19 ******************************/
+/************** change line 1143 to make all cards a single question (good for testing) *****************/
 
 // return question number if question, or 0 if not
 function getQuestionId(tileNum) {
@@ -1259,6 +1370,7 @@ function handleQuestion(tileNum, id) {
 
 // important variable for highlighting and then removing highlights later
 let highlighted = [];
+let ruleForClicking = 0;
 
 function q1(tileNum) {
 	let qText = "An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
@@ -1304,75 +1416,103 @@ function q1(tileNum) {
 		}
 	}
 	
+	let msg;
 	// show the user what is happening, prompt them to view the changes if there are any
 	 if (playerNum == 0) {
-		$("#turnDisplay").html("<p>You drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>");
+		msg = "<p>You drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		if (boardChanged) {
-			$("#turnDisplay").append("<p>Click below to view the changes.</p>");
+			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			$("#turnDisplay").append("<p>No tokens were destroyed. Click to continue.</p>");
+			msg += "<p>No tokens were destroyed. Click to continue.</p>";
 			$("#continue").show();
 		}
 	 }
 	 // if it's the robot turn, still explain what is happening, prompt user to view changes
 	 else {
 		$("#turnChoices").hide();
-		$("#pickNumber").hide();
-		$("#turnDisplay").html("Robot drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>");
+		
+		msg = "<p>Robot drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		if (boardChanged) {
-			$("#turnDisplay").append("<p>Click below to view the changes.</p>");
+			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			$("#turnDisplay").append("<p>No tokens were destroyed. Click to continue.</p>");
+			msg += "<p>No tokens were destroyed. Click to continue.</p>";
 			$("#continue").hide();
 			$("#pickNumber").show();
 		}
 	 }
 	 
-	 // when the user clicks this, the tokens are destroyed and the user can continue playing
-	$("#seeChanges").click(function() {
-		destroy();
-		$("#seeChanges").hide();
-		if (playerNum == 0) {
-			$("#continue").show();
-		} else {
-			$("#pickNumber").show();
-		}
-	});
-	 
-	 // do the destroying where needed
-	 function destroy() {
-		for (let i = 0; i < highlighted.length; i++) {
-			let nearbyTile = $("#" + highlighted[i]);
-			if (nearbyTile.hasClass("player0") && !(nearbyTile.hasClass("defendedbyplayer0"))) {
-				players[0].destroyToken(highlighted[i], 0);
-			} else if (nearbyTile.hasClass("player1") && !(nearbyTile.hasClass("defendedbyplayer1"))) {
-				players[1].destroyToken(highlighted[i], 1);
-			}
-		}
-	 }
-	
+	 $("#turnDisplay").html(msg);
 }
 
 function q2(tileNum) {
 	let qText = "B. The animal population is growing! You may increase the value of any one of your tokens on the gameboard by replacing it with a higher-valued coin if you have one. If you already had a bronze or silver coin in that space, return it to your possession.";
 	console.log(qText);
 	
+	let msg;
 	// FOR USER
+	if (playerNum == 0) {
+		msg = "<p>You drew Question B at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		
 		// create array of all user tokens that are single, bronze, or silver and highlight them
-		
-		// prompt the user to click on one of these highlighted spaces, or to continue without doing anything
+		// determine what tokens the player has
+		let hasGold = false;
+		let hasSilver = false;
+		let hasBronze = false;
+		if (players[0].gold > 0) {
+			hasGold = true;
+		}
+		if (players[0].silver > 0) {
+			hasSilver = true
+		}
+		if (players[0].bronze > 0) {
+			hasBronze = true;
+		}
 	
-		// ask the user what they want to do on this space, or invite them to choose a different space
+		for (var i = 0; i < 100; i++) {
+			if ($("#" + i).hasClass("player0")) {
+				// don't count gold ones
+				if (!$("#" + i).hasClass("gold")) {
+					// only count if you have a higher coin to replace it with
+					if (($("#" + i).hasClass("silver") && hasGold)
+						|| ($("#" + i).hasClass("bronze") && (hasGold || hasSilver))
+						|| ($("#" + i).hasClass("plain") && (hasGold || hasSilver || hasBronze))) {
+						highlighted.push(i);
+						$("#" + i).addClass("highlight");
+					}
+				}
+			}
+		}
 		
-		// find what token was originally on the space and return it to the user's possession (need to add addBronze)
-		
-		// destroy that token, call the appropriate method (bronze, silver, gold)
-		
+		// if there are no valid tiles
+		if (highlighted.length === 0) {
+			msg += "<p>You have no valued tokens that can be increased in value. Click below to continue with Robot's turn.</p>"
+			$("#turnDisplay").html(msg);
+		}
+		// if there is at least one valid tile option
+		else {
+			// prompt the user to click on one of these highlighted spaces, or to continue without doing anything
+			msg += "<p>Please select which token you want to increase the value of, or click continue if you don't want to select anything.</p>";
+			ruleForClicking = 2;
+			
+			// this then jumps to the end of the code, search for: if (ruleForClicking == 2)
+		}
+		$("#continue").show();
+	}
 	// FOR COMP
+	else {
+		$("#turnChoices").hide();
+		msg = "<p>Robot drew Question B at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		// create array of all comp tokens that are single, bronze, or silver
+		for (var i = 0; i < 100; i++) {
+			if ($("#" + i).hasClass("player1")) {
+				if (!$("#" + i).hasClass("gold")) {
+					highlighted.push(i);
+				}
+			}
+		}
 		
 		// select one at random, take note of what token it is
 		
@@ -1383,16 +1523,20 @@ function q2(tileNum) {
 		// if it didn't change, say the robot decided to pass
 		
 		// if it did change, inform user what the robot did and also return original coin back to posession if needed
-		
+		$("#pickNumber").show();
+	}
+	
+	$("#turnDisplay").html(msg);
 }
 
 function q3(tileNum) {
 	let qText = "The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
 	console.log(qText);
 	
+	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		$("#turnDisplay").html("You drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p>");
+		msg = "<p>You drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		players[1].addDefender();
 		
 		// decide if comp wants to use defender
@@ -1401,14 +1545,14 @@ function q3(tileNum) {
 		
 		if (players[1].defender > 0 && animalTiles >= 13) {
 			players[1].playDefender(tileNum);
-			$("#turnDisplay").append("<p>It played a Defender token. Click below to continue.</p>");
+			msg += "<p>It played a Defender token. Click below to continue.</p>";
 		} else {
-			$("#turnDisplay").append("<p>It decided not to play the Defender here. Click below to continue.</p>");
+			msg += "<p>It decided not to play the Defender here. Click below to continue.</p>";
 		}
 		
 		$("#continue").show();
 	} else {
-		$("#turnDisplay").html("Robot drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p><p>What would you like to do?</p>");
+		msg = "<p>Robot drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p><p>What would you like to do?</p>";
 		players[0].addDefender();
 		$("#turnChoices").hide();
 		
@@ -1416,40 +1560,48 @@ function q3(tileNum) {
 		$("#playDefenderRule3").show();
 		$("#pickNumber").show();
 	}
+	
+	$("#turnDisplay").html(msg);
 }
 
 function q4(tileNum) {
 	let qText = "Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
 	console.log(qText);
 	
+	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		$("#turnDisplay").html("You drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>");
+		msg = "<p>You drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[0].addGold();
 		$("#continue").show();
 	} else {
-		$("#turnDisplay").html("Robot drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>");
+		msg = "<p>Robot drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[1].addGold();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
+	
+	$("#turnDisplay").html(msg);
 }
 
 function q5(tileNum) {
 	let qText = "A wealthy family has transferred money to your opponent's endangered animal fund. The next player has won a silver coin!";
 	console.log(qText);
 	
+	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		$("#turnDisplay").html("You drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>");
+		msg = "<p>You drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[1].addSilver();
 		$("#continue").show();
 	} else {
-		$("#turnDisplay").html("Robot drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>");
+		msg = "<p>Robot drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[0].addSilver();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
+	
+	$("#turnDisplay").html(msg);
 }
 
 function q6(tileNum) {
@@ -1600,15 +1752,18 @@ function q12(tileNum) {
 	let qText = "All the members of your team have suddenly become ill, so you've lost your next turn.";
 	console.log(qText);
 	
+	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		$("#turnDisplay").html("You drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p id='robotTurnMsg'>Click below to have the robot take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button>");
+		msg = "<p>You drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p id='robotTurnMsg'>Click below to have the robot take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button>";
 	} else {
 		extraTurn = true;
 		$("#turnChoices").hide();
-		$("#turnDisplay").html("Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p>");
+		msg = "<p>Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p>";
 		$("#pickNumber").show();
 	}
+	
+	$("#turnDisplay").html(msg);
 	
 	// when the user clicks continue, the computer takes its turn, then the user is prompted to have the comp take its second turn
 	$("body").on("click", "#compFirstTurn", function() {
@@ -1631,21 +1786,68 @@ function q12(tileNum) {
 function q13(tileNum) {
 	let qText = "M. Poachers have attacked! All tokens (both yours and others players') are destroyed in the two spaces above and the two spaces below the question tile if not protected by defenders.";
 	console.log(qText);
-	
+
 	// (see question 1 for similar logic)
-	
+
 	// determine which tiles are relevant
+	highlighted.push(tileNum - 20);
+	highlighted.push(tileNum - 10);
+	highlighted.push(tileNum + 10);
+	highlighted.push(tileNum + 20);
 	
-	// only count the tiles if they are in the same column as the question tile, then highlight them
+	// only count the tiles if they exist, then highlight them
+	for (let i = 0; i < highlighted.length; i++) {		
+		// if it's not in the same column as the current tile, remove it from the array
+		if (highlighted[i] < 0 || highlighted[i] > 99) {
+			highlighted.splice(i, 1);
+			i--;
+		} else {
+			let nearbyTile = $("#" + highlighted[i]);
+			nearbyTile.addClass("highlight");
+		}
+		
+	}
 	
 	// check if there will be tiles destroyed (any token not defended by its player)
+	let boardChanged = false;
+	for (let i = 0; i < highlighted.length; i++) {
+		let nearbyTile = $("#" + highlighted[i]);
+		if (nearbyTile.hasClass("player0") && !(nearbyTile.hasClass("defendedbyplayer0"))) {
+			boardChanged = true;
+		} else if (nearbyTile.hasClass("player1") && !(nearbyTile.hasClass("defendedbyplayer1"))) {
+			boardChanged = true;
+		}
+	}
 	
-	// FOR USER
-		// show the user what is happening, prompt them to view the changes if there are any
-
-	// FOR COMP
-		// if it's the robot turn, still explain what is happening, prompt user to view changes	 
+	let msg;
+	// show the user what is happening, prompt them to view the changes if there are any
+	 if (playerNum == 0) {
+		msg = "<p>You drew Question M at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		if (boardChanged) {
+			msg += "<p>Click below to view the changes.</p>";
+			$("#seeChanges").show();
+		} else {
+			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			$("#continue").show();
+		}
+	 }
+	 // if it's the robot turn, still explain what is happening, prompt user to view changes
+	 else {
+		$("#turnChoices").hide();
+		
+		msg = "<p>Robot drew Question M at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		
+		if (boardChanged) {
+			msg += "<p>Click below to view the changes.</p>";
+			$("#seeChanges").show();
+		} else {
+			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			$("#continue").hide();
+			$("#pickNumber").show();
+		}
+	 }
 	 
+	 $("#turnDisplay").html(msg);	 
 }
 
 function q14(tileNum) {
@@ -1670,15 +1872,18 @@ function q15(tileNum) {
 	let qText = "Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
 	console.log(qText);
 	
+	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		$("#turnDisplay").html("You drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to take another turn.</p>");
+		msg = "You drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to take another turn.</p>";
 		$("#pickNumber").show();
 	} else {
 		$("#turnChoices").hide();
 		$("#pickNumber").hide();
-		$("#turnDisplay").html("Robot drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to have the Robot take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>");
+		msg = "Robot drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to have the Robot take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>";
 	}
+	
+	$("#turnDisplay").html(msg);
 	
 	// this will alternate the player
 	playerNum++;
@@ -1719,48 +1924,106 @@ function q17(tileNum) {
 	let qText = "Q. A pack of wolves has attacked some of the bison. You must remove a valued token from the bison figure if you have one placed there that isn't protected by a defender.";
 	console.log(qText);
 	
-	// FOR USER
-		// create an array of all user's bison tokens that aren't defended
-		
-		// if there are some, highlight them
-		
-			// prompt the user to pick one
-		
-			// confirm the user's choice and call destroyToken
-			
-		// if there aren't, inform user and prompt them to move on
-		
-	// FOR COMP
-		// create an array of all comp's bison tokens that aren't defended
-		
-		// if there are, find the lowest value and call destroyToken, prompt user to move on
-		
-		// if there aren't, inform user and prompt them to move on
-		
+	destroyTokenOnAnimal("a2", "bison", "Q", tileNum, qText);
 }
 
 function q18(tileNum) {
 	let qText = "R. Hunters seeking ivory have entered the elephants' territory. You must remove a valued token from the elephant figure if you have one placed there that isn't protected by a defender.";
 	console.log(qText);
 	
+	destroyTokenOnAnimal("a1", "elephant", "R", tileNum, qText);
+}
+
+// this applies to questions 17 and 18
+function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qText) {
+	let undefendedPlayer = [];
+	let undefendedComp = [];
+	
+	// create two arrays of all elephant tokens that aren't defended
+	for (var i = 0; i < 100; i++) {
+		if ($("#" + i).hasClass(animalId)) {
+			// for the player
+			if ($("#" + i).hasClass("player0") && !($("#" + i).hasClass("defendedbyplayer0"))) {
+				undefendedPlayer.push(i);
+			} 
+			// for the comp
+			else if ($("#" + i).hasClass("player1") && !$("#" + i).hasClass("defendedbyplayer1")) {
+				undefendedComp.push(i);
+			}
+		}
+	}	
+	
+	let msg;
 	// FOR USER
-		// create an array of all user's elephant tokens that aren't defended
+	if (playerNum === 0) {		
+		msg = "You drew Question " + questionLetter + " at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if there are some, highlight them
-		
-			// prompt the user to pick one
-		
-			// confirm the user's choice and call destroyToken
+		// if there are undefended tokens, highlight them
+		if (undefendedPlayer.length > 0) {
+			highlighted = undefendedPlayer.slice();
+			for (let i = 0; i < highlighted.length; i++) {
+				$("#" + highlighted[i]).addClass("highlight");
+			}
 			
+			// prompt the user to pick one, the rest of the logic is at the end of this file
+			msg += "<p>Please select which token you want to remove.</p>";
+			ruleForClicking = 18;
+		}			
 		// if there aren't, inform user and prompt them to move on
-		
+		else {
+			msg += "<p>You have no undefended tokens on the " + animalName + ". Click to continue.</p>";
+			
+			$("#continue").show();
+		}
+	}
 	// FOR COMP
-		// create an array of all comp's elephant tokens that aren't defended
+	else {
+		msg = "Robot drew Question " + questionLetter + " at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if there are, find the lowest value and call destroyToken, prompt user to move on
+		// if there are undefended tokens, find the lowest value and call destroyToken, prompt user to move on
+		let choice;
+		let numPlain = [];
+		let numBronze = [];
+		let numSilver = [];
+		let numGold = [];
 		
-		// if there aren't, inform user and prompt them to move on
+		if (undefendedComp.length > 0) {			
+			for (let i = 0; i < undefendedComp.length; i++) {
+				let tileWithToken = $("#" + undefendedComp[i]);
+				if (tileWithToken.hasClass("plain")) {
+					numPlain.push(undefendedComp[i]);
+				} else if (tileWithToken.hasClass("bronze")) {
+					numBronze.push(undefendedComp[i]);
+				} else if (tileWithToken.hasClass("silver")) {
+					numSilver.push(undefendedComp[i]);
+				} else if (tileWithToken.hasClass("gold")) {
+					numGold.push(undefendedComp[i]);
+				}
+			}
+			
+			if (numPlain.length > 0) {
+				choice = numPlain[0];
+			} else if (numBronze.length > 0) {
+				choice = numBronze[0];
+			} else if (numSilver.length > 0) {
+				choice = numSilver[0];
+			} else {
+				choice = numGold[0];
+			}
 		
+			msg += "<p>Robot has removed a token from tile " + choice + ". Click below to continue with your turn.</p>";
+			players[1].destroyToken(choice, 1);
+			
+		}
+		else {
+			// if there aren't, inform user and prompt them to move on
+			msg += "<p>Robot has no undefended tokens on the " + animalName + ". Click below to continue with your turn.</p>";
+		}
+		$("#turnChoices").hide();
+		$("#pickNumber").show();
+	}
+	
+	$("#turnDisplay").html(msg);
 }
 
 function q19(tileNum) {
@@ -1787,20 +2050,58 @@ function q20(tileNum) {
 	let qText = "T. Your opponent has made the decision to cooperate more with other wildlife organizations. The next player discards one of their bombs if they have one. ";
 	console.log(qText);
 	
+	let msg;
 	// FOR USER
+	if (playerNum === 0) {
+		msg = "You drew Question T at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		// if comp has a bomb, discard it
-		
-		// inform user and prompt them to move on
-		
+		if (players[1].bomb > 0) {
+			msg += "<p>The Robot has discarded a bomb.</p><p>Click to continue.</p>";
+			players[1].loseBomb();
+		} else {
+			msg += "<p>The Robot didn't have any bombs, so nothing was discarded.</p><p>Click to continue.</p>";	
+		}
+		$("#continue").show();
+	}
 	// FOR COMP
-		// if user has a bomb, discard it
-		
-		// inform user and prompt them to move on
-		
+	else {
+		msg = "The Robot drew Question T at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		if (players[0].bomb > 0) {
+			msg += "<p>One of your bombs has been discarded.</p><p>Click to continue with your turn.</p>";
+			players[0].loseBomb();
+		} else {
+			msg += "<p>You didn't have any bombs, so nothing was discarded.</p><p>Click to continue with your turn.</p>";	
+		}
+		$("#turnChoices").hide();
+		$("#pickNumber").show();
+	}
+	
+	$("#turnDisplay").html(msg);
 }
 
+let rule2Choice = -1;
+// handle the user's choice for when something needs to be selected
+$("body").on("click", ".highlight", function() {
+	let msg;
+	if (ruleForClicking == 2) {
+		rule2Choice = this.id;
+		// ask the user what they want to do on this space, or invite them to choose a different space
+		msg = "<p>You have chosen tile number " + this.id + ". Select which coin you'd like on this tile instead, or select a different one. Or click continue to not select anything.</p>";
+		$("#turnDisplay").html(msg);
+		displayTurnChoicesRule2();
+		// after the user selects a button, it goes to the function handleRule2()
+	}
+	else if (ruleForClicking == 18) {
+		msg = "<p>You have chosen tile number " + this.id + ". Click below to remove this token, or select a different one.</p><button id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
+		$("#turnDisplay").html(msg);
+	}
+});
 
-
-
-
-
+function removeToken(tileNum) {
+	console.log("destroying token on tile " + tileNum);
+	players[0].destroyToken(tileNum, 0);
+	
+	$("#removeToken").hide();
+	$("#continue").show();
+	$("#turnDisplay").append("<p>Your token has been removed. Click below to continue.</p>");
+}
