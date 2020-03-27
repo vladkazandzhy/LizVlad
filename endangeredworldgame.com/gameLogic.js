@@ -13,24 +13,28 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
     this.gold--;
     this.addTokenClass("gold");
     this.display();
+	console.log("Player " + num + " played gold.");
   };
 
   this.playSilver = function() {
     this.silver--;
     this.addTokenClass("silver");
     this.display();
+	console.log("Player " + num + " played silver.");
   };
 
   this.playBronze = function() {
     this.bronze--;
     this.addTokenClass("bronze");
     this.display();
+	console.log("Player " + num + " played bronze.");
   };
 
   this.playPlain = function() {
     this.plain--;
     this.addTokenClass("plain");
     this.display();
+	console.log("Player " + num + " played plain.");
   };
 
   this.playDefender = function(tileNum) {
@@ -44,6 +48,7 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
     }
 
     this.display();
+	console.log("Player " + num + " played defender.");
   };
 
   this.playBomb = function(tileNum) {
@@ -65,6 +70,7 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
     }
 
     this.display();
+	console.log("Player " + num + " played bomb.");
   };
   
   // making this a separate function because it will be used by question tiles
@@ -180,6 +186,17 @@ function NumberBag() {
 	if (highlighted.length > 0) {
 		this.removeHighlights();
 	}
+	
+	// remove question tile if needed
+	if ($("#" + previousNumber).hasClass("question")) {
+		let questionId = getQuestionId(previousNumber);
+		$("#" + previousNumber).removeAttr("style");
+		$("#" + previousNumber).removeClass("filled");
+		$("#" + previousNumber).removeClass("question");
+		$("#" + previousNumber).removeClass("q" + questionId);
+		$("#" + previousNumber).addClass("free");
+		$("#" + previousNumber).text(previousNumber.toString());
+	}	
 
     // choose a random number from what's left in the number bag
     let randInt = Math.floor(Math.random() * numberBag.length);
@@ -288,10 +305,12 @@ $("#pickNumber").click(function() {
 function drawNumber() {	
 	// IMPORTANT: keeps the players alernating (IF NOT DOUBLE TURN)
 	playerNum = (playerNum + 1) % 2;
-	console.log("Player " + playerNum + " just drew a tile.");
+	
 
   // return a random number
   let rand = bag.randomize();
+  
+  console.log("Player " + playerNum + " just drew tile " + rand +".");
 
   // just console.log
   //let whoseTurn;
@@ -395,39 +414,46 @@ $("#doNothing").click(function() {
 	}
 });
 $("#playGold").click(function() {
-  players[playerNum].playGold();
+	// take into account question 2
+	if (rule2Choice < 0) {
+		players[playerNum].playGold();
+	} else {
+		handleRule2("gold", 0);
+	}
+	
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
 	}
-	
-	if (rule2Choice > 0) {
-		handleRule2("gold");
-	}
+
 });
 $("#playSilver").click(function() {
-  players[playerNum].playSilver();
+	// take into account question 2
+	if (rule2Choice < 0) {
+		players[playerNum].playSilver();
+	} else {
+		handleRule2("silver", 0);
+	}
+  
 	if (!extraTurn) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
-	}
-	
-	if (rule2Choice > 0) {
-		handleRule2("silver");
-	}
+	}	
 });
 $("#playBronze").click(function() {
-  players[playerNum].playBronze();
-	if (!extraTurn) {
-		endHumanTurn("bronze");
+	// take into account question 2
+	if (rule2Choice < 0) {
+		players[playerNum].playBronze();
 	} else {
-		takeExtraTurn();
+		handleRule2("bronze", 0);
 	}
 	
-	if (rule2Choice > 0) {
-		handleRule2();
+	if (!extraTurn) {
+		endHumanTurn();
+	} else {
+		takeExtraTurn();
 	}
 });
 $("#playPlain").click(function() {
@@ -456,47 +482,42 @@ $("#playBomb").click(function() {
 });
 
 // special case for question 2
-function handleRule2(type) {
+function handleRule2(type, playerNum) {
 	// find what token was originally on the space and return it to the user's possession (need to add addBronze)
-		
-		
 	console.log("rule2Choice is " + rule2Choice);
 	if ($("#" + rule2Choice).hasClass("silver")) {
-		players[0].addSilver();
+		players[playerNum].addSilver();
 	} else if ($("#" + rule2Choice).hasClass("bronze")) {
-		players[0].addBronze();
+		players[playerNum].addBronze();
 	}
-	
-	// destroy that token
-	players[0].destroyToken(rule2Choice, 0);
 	
 	// remove from inventory like usual
 	if (type == "gold") {
-		players[0].gold--;
+		players[playerNum].gold--;
 	} else if (type == "silver") {
-		players[0].silver--;
+		players[playerNum].silver--;
 	} else if (type == "bronze") {
-		players[0].bronze--;
+		players[playerNum].bronze--;
 	}
 	
-	// add the new tile (adapted from addTokenClass)
+	// add the new tile (adapted from addTokenClass) by removing previous image and adding new
 	// note what token it is and what player played it
     let tile = $("#" + rule2Choice);
+      tile.empty();
       tile.addClass(type);
-      tile.addClass("player0");
 
     // add the relevant picture to the board
-    tile.text("");
     tile.append(
       "<img src='images/tokens/" +
         type +
         "0.png' alt='token' style='width:20px;height:20px;'>"
     );
 	
-	players[0].display();
+	players[playerNum].display();
 	
 	// reset so that program doesn't think we're still handling rule 2
 	rule2Choice = -1;
+	$("#continue").hide();
 }
 
 // special case for question 3
@@ -594,23 +615,63 @@ function calculateRobotChoice(tileNum) {
   }
   // if it's an unclaimed animal space, find the best token to place
   else if ($("#" + tileNum).hasClass("animal")) {
+		let tokenPlayed = findBestToken(tileNum);
+		switch(tokenPlayed) {
+		case "gold coin":
+			players[1].playGold();
+			break;
+		case "silver coin":
+			players[1].playSilver();
+			break;
+		case "bronze coin":
+			players[1].playBronze();
+			break;
+		case "plain token":
+			players[1].playPlain();
+			break;
+	}
+	  
+	  $("#turnDisplay").append(" It played a " + tokenPlayed + ".");
+  } else {
+	  $("#turnDisplay").append(" It chose to do nothing.");
+  }
 
-    // find the animal size
+  /*
+  if (bagOfQuestions.includes(tileNum)) {
+    showModal();
+    showBackdrop();
+
+    $("#back").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
+
+    $("#backdrop").click(function() {
+      closeModal();
+      closeBackdrop();
+    });
+  }
+  */
+}
+
+// turning this into a separate function so questions can use it
+function findBestToken(tile) {
+	// find the animal size
 	let animalSize = "";
-	if ($("#" + tileNum).hasClass("xs")) {
+	if ($("#" + tile).hasClass("xs")) {
 		animalSize = "xs";
-	} else if ($("#" + tileNum).hasClass("sm")) {
+	} else if ($("#" + tile).hasClass("sm")) {
 		animalSize = "sm";
-	} else if ($("#" + tileNum).hasClass("m")) {
+	} else if ($("#" + tile).hasClass("m")) {
 		animalSize = "m";
-	} else if ($("#" + tileNum).hasClass("l")) {
+	} else if ($("#" + tile).hasClass("l")) {
 		animalSize = "l";
-	} else if ($("#" + tileNum).hasClass("xl")) {
+	} else if ($("#" + tile).hasClass("xl")) {
 		animalSize = "xl";
 	}
 	
 	// find how many points are on the animal figure
-	let animalId = getAnimalId(tileNum);
+	let animalId = getAnimalId(tile);
 	let compPoints = checkAnimalPoints(animalId, 0);
 	let playerPoints = checkAnimalPoints(animalId, 1);
 	
@@ -643,65 +704,47 @@ function calculateRobotChoice(tileNum) {
 	*/
 	
 	let defended = false;
-	if ($("#" + tileNum).hasClass("defendedbyplayer1")) {
+	if ($("#" + tile).hasClass("defendedbyplayer1")) {
 		defended = true;
 	}
 	// logic for maximum token to play
 	// TO DO: maybe add defendedbyplayer1 to logic?
+	let choice;
 	switch(animalSize) {
 		case "xs":
-			playMax("plain");
+			choice = playMax("plain");
 			break;
 		case "sm":
 			if (defended) {
-				playMax("bronze");
+				choice = playMax("bronze");
 			} else {
-				playMax("plain");
+				choice = playMax("plain");
 			}
 			break;
 		case "m":
 			if (defended) {
-				playMax("silver");
+				choice = playMax("silver");
 			} else {
-				playMax("bronze");
+				choice = playMax("bronze");
 			}
 			break;
 		case "l":
 		case "xl":
 			if (defended) {
-				playMax("gold");
+				choice = playMax("gold");
 			} else {
 				if (closeScore && !compWinning) {
-					playMax("silver");
+					choice = playMax("silver");
 				} else if (closeScore && compWinning) {
-					playMax("bronze");
+					choice = playMax("bronze");
 				} else {
-					playMax("plain");
+					choice = playMax("plain");
 				}
 			}
 			break;
 	}
 	
-  } else {
-	  $("#turnDisplay").append(" It chose to do nothing.");
-  }
-
-  /*
-  if (bagOfQuestions.includes(tileNum)) {
-    showModal();
-    showBackdrop();
-
-    $("#back").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
-
-    $("#backdrop").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
-  }
-  */
+	return choice;
 }
 
 function countPotentialNearbyAnimals(surSpaces) {
@@ -768,6 +811,8 @@ function getAnimalId(tileNum) {
 		return 14;
 	} else if ($("#" + tileNum).hasClass("a15")) {
 		return 15;
+	} else {
+		return 0;
 	}
 }
 
@@ -852,22 +897,7 @@ function playMax(tokenName) {
 			break;
 	}
 	
-	switch(choice) {
-		case "gold coin":
-			players[1].playGold();
-			break;
-		case "silver coin":
-			players[1].playSilver();
-			break;
-		case "bronze coin":
-			players[1].playBronze();
-			break;
-		case "plain token":
-			players[1].playPlain();
-			break;
-	}
-	
-	$("#turnDisplay").append(" It played a " + choice +".");
+	return choice;
 }
 
 // this returns an array with all the numbers of the surrounding spaces for each drawn number
@@ -956,7 +986,7 @@ function endHumanTurn() {
 	}
 }
 
-function endCompTurn() {
+function endCompTurn() {	
 	// if there are still numbers, human takes turn
 	if (!bag.checkIfEnd()) {
 		$("#pickNumber").show();
@@ -1103,26 +1133,20 @@ function setUpBoard() {
 function clearBoard() {
   for (let i = 0; i < 100; i++) {
     let tile = $("#" + i);
+	
+	// find the tg style class to return it after removing other classes
+	var classList = $(tile).attr('class').split(/\s+/);
+	
     if (tile.hasClass("filled")) {
-      tile.removeClass("filled");
-      tile.addClass("free");
-      tile.css("background-image", "none");
-
-      // remove individual ids if there are any
-      for (let j = 1; j < 16; j++) {
-        if (tile.hasClass(j.toString())) {
-          tile.removeClass(j.toString());
-        }
-      }
-    }
-    if (tile.hasClass("question")) {
-      for (let j = 1; j < 21; j++) {
-        if (tile.hasClass("q" + j.toString())) {
-          tile.removeClass("q" + j.toString());
-        }
-      }
-    }
-    tile.text(i);
+		// remove all classes and styles
+		tile.removeClass();
+		tile.removeAttr("style");
+		
+		// add the classes and text that were originally there
+		tile.addClass("free");
+		tile.addClass(classList[0]);
+		tile.text(i);
+	}
   }
 }
 
@@ -1292,8 +1316,8 @@ function fillTokens() {
 }
 
 /******************************************* TWENTY QUESTIONS *******************************************/
-/*************************** COMPLETED: 1, 3, 4, 5, 12, 13, 15, 17, 18, 20 ******************************/
-/******************************* TO DO: 2, 6, 7, 8, 9, 10, 11, 14, 16, 19 ******************************/
+/************************* COMPLETED: 1, 2, 3, 4, 5, 12, 13, 15, 17, 18, 20 *****************************/
+/*********************************** TO DO: 6, 7, 8, 9, 10, 11, 14, 16, 19 ******************************/
 /************** change line 1143 to make all cards a single question (good for testing) *****************/
 
 // return question number if question, or 0 if not
@@ -1505,25 +1529,106 @@ function q2(tileNum) {
 	else {
 		$("#turnChoices").hide();
 		msg = "<p>Robot drew Question B at tile " + tileNum + ":</p><p>" + qText + "</p>";
-		// create array of all comp tokens that are single, bronze, or silver
-		for (var i = 0; i < 100; i++) {
+		
+		// create array of all user tokens that are single, bronze, or silver and highlight them
+		// determine what tokens the player has
+		let hasGold = false;
+		let hasSilver = false;
+		let hasBronze = false;
+		if (players[1].gold > 0) {
+			hasGold = true;
+		}
+		if (players[1].silver > 0) {
+			hasSilver = true
+		}
+		if (players[1].bronze > 0) {
+			hasBronze = true;
+		}
+	
+		for (let i = 0; i < 100; i++) {
 			if ($("#" + i).hasClass("player1")) {
+				// don't count gold ones
 				if (!$("#" + i).hasClass("gold")) {
-					highlighted.push(i);
+					// only count if you have a higher coin to replace it with
+					if (($("#" + i).hasClass("silver") && hasGold)
+						|| ($("#" + i).hasClass("bronze") && (hasGold || hasSilver))
+						|| ($("#" + i).hasClass("plain") && (hasGold || hasSilver || hasBronze))) {
+						highlighted.push(i);
+					}
 				}
 			}
 		}
+		console.log(highlighted);
 		
-		// select one at random, take note of what token it is
-		
-		// destroy the token and call calculateRobotChoice for that space
-		
-		// take note of what token it is
-		
-		// if it didn't change, say the robot decided to pass
-		
-		// if it did change, inform user what the robot did and also return original coin back to posession if needed
-		$("#pickNumber").show();
+		// if there are no valid tiles
+		if (highlighted.length === 0) {
+			msg += "<p>The Robot has no valued tokens that can be increased in value. Click below to continue with your turn.</p>"
+			$("#pickNumber").show();
+		}
+		// if there is at least one valid tile option
+		else {
+			let idList = [];
+			// find largest animal (smallest ID)
+			for (let i = 0; i < highlighted.length; i++) {
+				let animalId = getAnimalId(highlighted[i]);
+				idList.push(animalId);
+			}
+			
+			var lowestIdIndex = 0;
+			for (var i = 1; i < idList.length; i++) {
+				if (idList[i] < idList[lowestIdIndex]) lowestIdIndex = i;
+			}
+			console.log("lowest ID index is " + lowestIdIndex);
+			
+			// select token on highest animal, take note of what token it is
+			let chosenTile = highlighted[lowestIdIndex]
+			
+			let originalPoints;
+			if ($("#" + chosenTile).hasClass("silver")) {
+				originalPoints = 4;
+			} else if ($("#" + chosenTile).hasClass("bronze")) {
+				originalPoints = 2;
+			} else if ($("#" + chosenTile).hasClass("plain")) {
+				originalPoints = 1;
+			}
+			
+			// determine what the ideal choice would be for this space
+			let newCoin = findBestToken(chosenTile);
+			let newCoinPoints;
+			let coinName;
+			switch(newCoin) {
+				case "gold coin":
+					newCoinPoints = 6;
+					coinName = "gold";
+					break;
+				case "silver coin":
+					newCoinPoints = 4;
+					coinName = "silver";
+					break;
+				case "bronze coin":
+					newCoinPoints = 2;
+					coinName = "bronze";
+					break;
+				case "plain token":
+					newCoinPoints = 1;
+					coinName = "plain";
+					break;
+			}
+			
+			// if it's worth changing, change it
+			if (newCoinPoints > originalPoints) {
+				console.log("need to replace");
+				rule2Choice = chosenTile;
+				handleRule2(coinName, 1);
+			}
+			
+			// otherwise, move on without doing anything
+			else {
+				msg += "<p>The Robot chose to do nothing. Click below to continue with your turn.</p>"
+			}
+						
+			$("#pickNumber").show();
+		}
 	}
 	
 	$("#turnDisplay").html(msg);
