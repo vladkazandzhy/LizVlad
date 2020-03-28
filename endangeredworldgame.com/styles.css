@@ -113,7 +113,7 @@
 }
 
 .highlight {
-  border: 3px solid yellow !important;
+  border: 2px solid yellow !important;
 }
 
 .special {
@@ -129,6 +129,10 @@
 }
 
 #playDefenderRule3 {
+	display: none;
+}
+
+#tokenExists {
 	display: none;
 }
 
