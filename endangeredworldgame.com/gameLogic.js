@@ -469,7 +469,7 @@ $("#playSilver").click(function() {
 		}
 		players[0].playSilver(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10
+		// this applies to 6, 7, 10, 11, 14
 		players[0].playSilver(questionTileChoice);
 	}
 	clearQuestion();
@@ -492,7 +492,7 @@ $("#playBronze").click(function() {
 		}
 		players[0].playBronze(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10
+		// this applies to 6, 7, 10, 11, 14
 		players[0].playBronze(questionTileChoice);
 	}
 	clearQuestion();
@@ -513,7 +513,7 @@ $("#playPlain").click(function() {
 		}
 		players[0].playPlain(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10
+		// this applies to 6, 7, 10, 11, 14
 		players[0].playPlain(questionTileChoice);
 	}
 	clearQuestion();
@@ -529,7 +529,7 @@ $("#playDefender").click(function() {
 	if (currentQuestion == 0) {
 		players[0].playDefender(tileNum); 
 	} else {
-		// this applies to 6, 7, 9, and 10
+		// this applies to 6, 7, 9, 10, 11, 14
 		players[0].playDefender(questionTileChoice); 
 	}
 	clearQuestion();
@@ -544,7 +544,7 @@ $("#playBomb").click(function() {
 	if (currentQuestion == 0) {
 		players[playerNum].playBomb(tileNum);
 	} else {
-		// this applies to 7, 9, 10
+		// this applies to 7, 9, 10, 11, 14
 		players[playerNum].playBomb(questionTileChoice);
 	}
 	
@@ -870,9 +870,12 @@ function countPotentialNearbyAnimals(surSpaces) {
 	// find out how many animal figures and player points are around
   let animalTiles = 0;
 
+  let tile;
   for (i = 0; i < surSpaces.length; i++) {
+	  tile = $("#" + surSpaces[i]);
     // only count animal figures if empty there and it isn't already defended
-    if ( $("#" + surSpaces[i]).hasClass("animal") && !$("#" + surSpaces[i]).hasClass("occupied")) {
+    if ( tile.hasClass("animal") && !tile.hasClass("occupied")
+		&& !tile.hasClass("defendedbyplayer1")) {
       // this if/else gives the animals different weights based on the animal size
       if ($("#" + surSpaces[i]).hasClass("xs")) {
         animalTiles++;
@@ -925,7 +928,7 @@ function getAnimalId(tileNum) {
 	} else if ($("#" + tileNum).hasClass("a15")) {
 		return 15;
 	} else {
-		return 0;
+		return 20;
 	}
 }
 
@@ -1377,7 +1380,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + 11);
+      tile.addClass("q" + 14);
 
       // remove number and add image
       tile.text("");
@@ -2431,7 +2434,6 @@ function q11(tileNum) {
 			// if there's an animal vs. if not
 			if (lowestIdIndex >= 0) {
 				compChoiceNum = compChoices[lowestIdIndex];
-				console.log("lowestIdIndex is " + lowestIdIndex);
 			}
 			// if there's no animal, pick a random space
 			else {
@@ -2586,19 +2588,92 @@ function q13(tileNum) {
 function q14(tileNum) {
 	let qText = "N. Your team has discovered valuable information about how to help the animals in this area. You may place any token (except a bomb) in any space surrounding the current question tile.";
 	console.log(qText);
+	currentQuestion = 14;
 	
 	// create array of surrounding spaces that are not occupied
+	let surSpaces = getSurroundingSpaces(tileNum);
 	
+    for (i = 0; i < surSpaces.length; i++) {
+		if (!$("#" + surSpaces[i]).hasClass("occupied") && !$("#" + surSpaces[i]).hasClass("question")) {
+			highlighted.push(surSpaces[i]);
+		}
+    }
+	console.log(highlighted);
+	
+	let msg;
 	// FOR USER
-		// if there are spaces, highlight them and prompt the user to pick one or do nothing, then do the action
+	if (playerNum == 0) {
+		msg = "<p>You drew Question N at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if not, tell the user and prompt them to move on
+		if (highlighted.length > 0) {
+			// highlight the tiles
+			let tile;
+			for (let i = 0; i < highlighted.length; i++) {
+				$("#" + highlighted[i]).addClass("highlight");
+			}
+			
+			// prompt the user to click on one of these highlighted spaces
+			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			ruleForClicking = 14;
+				
+			// this then jumps to the end of the code, search for: if (ruleForClicking == 14)
+		} else {
+			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+		}
 		
+		$("#continue").show();
+	}
 	// FOR COMP
-		// if there are spaces, find largest animal and call calculateRobotChoice
+	else {
+		msg = "<p>Robot drew Question N at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if not, tell the user and prompt them to move on
+		let compChoices = highlighted;
+		if (compChoices.length > 0) {
+			// find the biggest animal in the possible spaces
+			let lowestIdIndex = findLargestAnimalInArray(compChoices);
+			
+			console.log(compChoices);
+			let compChoiceNum;
+			// if there's an animal vs. if not
+			if (lowestIdIndex >= 0) {
+				compChoiceNum = compChoices[lowestIdIndex];
+			}
+			// if there's no animal, pick a random space
+			else {
+				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
+			}
+			console.log("compChoiceNum is " + compChoiceNum);
+			
+			let toPlay = findBestToken(compChoiceNum);
+			switch(toPlay) {
+				case "gold coin":
+					players[1].playGold(compChoiceNum);
+					break;
+				case "silver coin":
+					players[1].playSilver(compChoiceNum);
+					break;
+				case "bronze coin":
+					players[1].playBronze(compChoiceNum);
+					break;
+				case "plain token":
+					players[1].playPlain(compChoiceNum);
+					break;
+			}
+			
+			if (toPlay != null) {
+				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+			} else {
+				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+			}
+		} else {
+			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+		}
 		
+		$("#turnChoices").hide();
+		$("#pickNumber").show();
+	}
+	
+	 $("#turnDisplay").html(msg);	
 }
 
 function q15(tileNum) {
@@ -2865,7 +2940,7 @@ $("body").on("click", ".highlight", function() {
 		// hide unnecessary buttons
 		$("#turnText").hide();
 		$("#doNothing").hide();
-	} else if (ruleForClicking == 11) {
+	} else if (ruleForClicking == 11 || ruleForClicking == 14) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
 		displayTurnChoices();
 		
@@ -2907,24 +2982,16 @@ function findLargestAnimalInArray(arr) {
 		let animalId = getAnimalId(arr[i]);
 		idList.push(animalId);
 	}
+	console.log(idList);
 	
-	// find the smallest ID
-	let lowestIdIndex = 0;
-	let animalFound = false;
-	for (var i = 1; i < idList.length; i++) {
-		// getAnimalId returns 0 if not an animal tile, so limit this to above 0
-		if (idList[i] > 0) {
-			animalFound = true;
-			if (idList[i] < idList[lowestIdIndex]) {
-				lowestIdIndex = i;
-			}
-		}
-	}
+	let min = Math.min.apply(null, idList);
+	console.log("min is " + min);
 	
-	// there's a chance that this array won't have any animals in it,
-	// in which case we return -1
-	if (animalFound) {
-		return lowestIdIndex;
+	let minIndex = idList.indexOf(min);
+	console.log("index is " + minIndex);
+	
+	if (min < 16) {
+		return minIndex;
 	} else {
 		return -1;
 	}
