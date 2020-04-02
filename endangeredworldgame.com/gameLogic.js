@@ -1731,7 +1731,8 @@ function q2(tileNum) {
 			else {
 				msg += "<p>The Robot chose to do nothing. Click below to continue with your turn.</p>"
 			}
-						
+			
+			clearQuestion();
 			$("#pickNumber").show();
 		}
 	}
@@ -1933,6 +1934,7 @@ function q6(tileNum) {
 		}
 		msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
@@ -2085,6 +2087,7 @@ function q8(tileNum) {
 			msg += "<p>There are no unnoccupied animal figures in the current row, so the Robot did nothing. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
@@ -2206,6 +2209,7 @@ function q9(tileNum) {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
@@ -2357,6 +2361,7 @@ function q10(tileNum) {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();	
 	}
@@ -2479,6 +2484,7 @@ function q11(tileNum) {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();	
 	}
@@ -2671,6 +2677,7 @@ function q14(tileNum) {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
@@ -2867,6 +2874,7 @@ function q16(tileNum) {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();	
 	}
@@ -3018,6 +3026,7 @@ function q19(tileNum) {
 			msg += "<p>There are no valid places to play a token. Click below to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").show();
 	}
