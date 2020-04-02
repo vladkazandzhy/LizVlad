@@ -362,6 +362,8 @@ function displayTurnChoices() {
 	   
 	  $("#turnText").show();
 	  $("#doNothing").show();
+	  $("#playBomb").show();
+	  $("#playDefender").show();
 
 	  if (players[playerNum].gold == 0) {
 		$("#playGold").hide();
