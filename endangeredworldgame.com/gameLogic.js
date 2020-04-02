@@ -445,7 +445,7 @@ $("#playGold").click(function() {
 		}
 		players[0].playGold(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10
+		// this applies to 6, 7, 10, 11, 14 ...
 		players[0].playGold(questionTileChoice);
 	}
 	clearQuestion();
@@ -469,7 +469,7 @@ $("#playSilver").click(function() {
 		}
 		players[0].playSilver(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10, 11, 14
+		// this applies to 6, 7, 10, 11, 14 ...
 		players[0].playSilver(questionTileChoice);
 	}
 	clearQuestion();
@@ -492,7 +492,7 @@ $("#playBronze").click(function() {
 		}
 		players[0].playBronze(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10, 11, 14
+		// this applies to 6, 7, 10, 11, 14 ...
 		players[0].playBronze(questionTileChoice);
 	}
 	clearQuestion();
@@ -513,7 +513,7 @@ $("#playPlain").click(function() {
 		}
 		players[0].playPlain(questionTileChoice);
 	} else {
-		// this applies to 6, 7, 10, 11, 14
+		// this applies to 6, 7, 10, 11, 14 ...
 		players[0].playPlain(questionTileChoice);
 	}
 	clearQuestion();
@@ -529,7 +529,7 @@ $("#playDefender").click(function() {
 	if (currentQuestion == 0) {
 		players[0].playDefender(tileNum); 
 	} else {
-		// this applies to 6, 7, 9, 10, 11, 14
+		// this applies to 6, 7, 9, 10, 11, 14 ...
 		players[0].playDefender(questionTileChoice); 
 	}
 	clearQuestion();
@@ -544,7 +544,7 @@ $("#playBomb").click(function() {
 	if (currentQuestion == 0) {
 		players[playerNum].playBomb(tileNum);
 	} else {
-		// this applies to 7, 9, 10, 11, 14
+		// this applies to 7, 9, 10, 11, 14 ...
 		players[playerNum].playBomb(questionTileChoice);
 	}
 	
@@ -562,6 +562,7 @@ function clearQuestion() {
 	currentQuestion = 0;
 	questionTileChoice = -1;
 	$("#continue").hide();
+	$("#pickNumber").hide();
 }
 
 // special case for question 9
@@ -1102,7 +1103,9 @@ function endHumanTurn() {
 	}
 }
 
-function endCompTurn() {	
+function endCompTurn() {
+	console.log("endCompTurn");
+	
 	// if there are still numbers, human takes turn
 	if (!bag.checkIfEnd()) {
 		$("#pickNumber").show();
@@ -1380,7 +1383,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + 16);
+      tile.addClass("q" + id);
 
       // remove number and add image
       tile.text("");
@@ -1429,9 +1432,8 @@ function fillTokens() {
 }
 
 /******************************************* TWENTY QUESTIONS *******************************************/
-/*************** COMPLETED: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20 ************************/
-/*********************************************** TO DO: 14, 16, 19 ******************************************/
-/************** change line 1143 to make all cards a single question (good for testing) *****************/
+/***** COMPLETED: ALL! 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ************/
+/************** change line   tile.addClass("q"  to make all cards a single question (good for testing) *****************/
 
 // return question number if question, or 0 if not
 function getQuestionId(tileNum) {
@@ -1512,7 +1514,7 @@ let currentQuestion = 0;
 let questionTileChoice = -1;
 
 function q1(tileNum) {
-	let qText = "An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
+	let qText = "A. An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
 	console.log(qText);
 	
 	// determine which tiles are relevant
@@ -1738,7 +1740,7 @@ function q2(tileNum) {
 }
 
 function q3(tileNum) {
-	let qText = "The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
+	let qText = "C. The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
 	console.log(qText);
 	
 	let msg;
@@ -1773,7 +1775,7 @@ function q3(tileNum) {
 }
 
 function q4(tileNum) {
-	let qText = "Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
+	let qText = "D. Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
 	console.log(qText);
 	
 	let msg;
@@ -2229,7 +2231,7 @@ function q10(tileNum) {
 	let msg;
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question H at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		msg = "<p>You drew Question J at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2259,7 +2261,7 @@ function q10(tileNum) {
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question H at tile " + tileNum + ":</p><p>" + qText + "</p>";
+		msg = "<p>Robot drew Question J at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// weed out the spaces that aren't valid
 		let compChoices = [];
@@ -2486,7 +2488,7 @@ function q11(tileNum) {
 
 let extraTurn = false;
 function q12(tileNum) {
-	let qText = "All the members of your team have suddenly become ill, so you've lost your next turn.";
+	let qText = "L. All the members of your team have suddenly become ill, so you've lost your next turn.";
 	console.log(qText);
 	
 	let msg;
@@ -2677,7 +2679,7 @@ function q14(tileNum) {
 }
 
 function q15(tileNum) {
-	let qText = "Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
+	let qText = "O. Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
 	console.log(qText);
 	
 	let msg;
@@ -2982,21 +2984,93 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 function q19(tileNum) {
 	let qText = "S. Your opponent keeps getting one step ahead of you! The next player may place any token (except a bomb) in any space surrounding the current question tile.";
 	console.log(qText);
+	currentQuestion = 19;
 	
-	// (see question 14 for similar logic, just opposite)
+	// like question 14
 	
 	// create array of surrounding spaces that are not occupied
+	let surSpaces = getSurroundingSpaces(tileNum);
 	
+    for (i = 0; i < surSpaces.length; i++) {
+		if (!$("#" + surSpaces[i]).hasClass("occupied") && !$("#" + surSpaces[i]).hasClass("question")) {
+			highlighted.push(surSpaces[i]);
+		}
+    }
+	
+	let msg;
 	// FOR USER
-		// if there are spaces, find largest animal and call calculateRobotChoice
+	if (playerNum == 1) {
+		msg = "<p>Robot drew Question S at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if not, tell the user and prompt them to move on
+		if (highlighted.length > 0) {
+			// highlight the tiles
+			let tile;
+			for (let i = 0; i < highlighted.length; i++) {
+				$("#" + highlighted[i]).addClass("highlight");
+			}
+			
+			// prompt the user to click on one of these highlighted spaces
+			msg += "<p>Please select the space where you would like to place a token, or click Draw Number to not place anything and move to your turn.</p>";
+			ruleForClicking = 14;
+				
+			// this then jumps to the end of the code, search for: if (ruleForClicking == 19)
+		} else {
+			msg += "<p>There are no valid places to play a token. Click below to continue with your turn.</p>";
+		}
 		
+		$("#turnChoices").hide();
+		$("#pickNumber").show();
+	}
 	// FOR COMP
-		// if there are spaces, highlight them and prompt the user to pick one or do nothing, then do the action
+	else {
+		msg = "<p>You drew Question S at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
-		// if not, tell the user and prompt them to move on
+		let compChoices = highlighted;
+		if (compChoices.length > 0) {
+			// find the biggest animal in the possible spaces
+			let lowestIdIndex = findLargestAnimalInArray(compChoices);
+			
+			console.log(compChoices);
+			let compChoiceNum;
+			// if there's an animal vs. if not
+			if (lowestIdIndex >= 0) {
+				compChoiceNum = compChoices[lowestIdIndex];
+			}
+			// if there's no animal, pick a random space
+			else {
+				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
+			}
+			console.log("compChoiceNum is " + compChoiceNum);
+			
+			let toPlay = findBestToken(compChoiceNum);
+			switch(toPlay) {
+				case "gold coin":
+					players[1].playGold(compChoiceNum);
+					break;
+				case "silver coin":
+					players[1].playSilver(compChoiceNum);
+					break;
+				case "bronze coin":
+					players[1].playBronze(compChoiceNum);
+					break;
+				case "plain token":
+					players[1].playPlain(compChoiceNum);
+					break;
+			}
+			
+			if (toPlay != null) {
+				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to move on to Robot's turn.</p>";
+			} else {
+				msg += "<p>The Robot chose not to play anything. Click below to move on to Robot's turn.</p>";
+			}
+		} else {
+			msg += "<p>The Robot wasn't able to play anything. Click below to move on to Robot's turn.</p>";
+		}
+		
+		$("#continue").show();
+	}
 	
+	 $("#turnDisplay").html(msg);	
 }
 
 function q20(tileNum) {
@@ -3087,6 +3161,20 @@ $("body").on("click", ".highlight", function() {
 		$("#doNothing").hide();
 	} else if (ruleForClicking == 11 || ruleForClicking == 14) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
+		if (ruleForClicking == 19) {
+			msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
+		}
+		
+		displayTurnChoices();
+		
+		// hide unnecessary buttons
+		$("#turnText").hide();
+		$("#doNothing").hide();
+		$("#playBomb").hide();
+	} else if (ruleForClicking == 19) {
+		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click Draw Number to not select anything.</p>";
+		msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
+		
 		displayTurnChoices();
 		
 		// hide unnecessary buttons
