@@ -694,17 +694,19 @@ function calculateRobotChoice(tileNum) {
 			console.log("robot space is already occupied");
 	}
 	
-	
-  // determine which spaces are around the drawn tile
-  let surSpaces = getSurroundingSpaces(tileNum);
-  //console.log(surSpaces);
+	let tokenPlayed = findBestToken(tileNum, true, true);
+	$("#turnDisplay").append(" It played a " + tokenPlayed + ".");
 
-  // find out how many animal figure points are around
-  // (I made this a separate function because it's used in question 3)
-  let animalTiles = countPotentialNearbyAnimals(surSpaces);
-  
-  // find out how many animal figures and player points are around
-  let playerPoints = 0;
+}
+
+// if there are at least 5 opponent points around, then play a bomb if you have one
+function shouldPlayBomb(surSpaces) {
+	if (players[1].bomb <= 0) {
+		return false;
+	}
+	
+	// find out how many animal figures and player points are around
+	let playerPoints = 0;
 
   for (i = 0; i < surSpaces.length; i++) {
     // only count player's points if they are undefended
@@ -723,61 +725,54 @@ function calculateRobotChoice(tileNum) {
       }
     }
   }
-
-  // if there are a significant number of animal tiles around that aren't the opponent's,
-  // then place a defender if you have one
-  if (players[1].defender > 0 && animalTiles >= 13) {
-    players[1].playDefender(tileNum);
-	$("#turnDisplay").append(" It played a Defender token.");
-  }
-  // if there are at least 5 opponent points around, then play a bomb if you have one
-  else if (players[1].bomb > 0 && playerPoints >= 5) {
-    players[1].playBomb(tileNum);
-	$("#turnDisplay").append(" It played a Bomb token and destroyed your surrounding tiles!");
-  }
-  // if it's an unclaimed animal space, find the best token to place
-  else if ($("#" + tileNum).hasClass("animal")) {
-		let tokenPlayed = findBestToken(tileNum);
-		switch(tokenPlayed) {
-		case "gold coin":
-			players[1].playGold(tileNum);
-			break;
-		case "silver coin":
-			players[1].playSilver(tileNum);
-			break;
-		case "bronze coin":
-			players[1].playBronze(tileNum);
-			break;
-		case "plain token":
-			players[1].playPlain(tileNum);
-			break;
-	}
-	  
-	  $("#turnDisplay").append(" It played a " + tokenPlayed + ".");
+  
+  if (playerPoints >= 5) {
+	  return true;
   } else {
-	  $("#turnDisplay").append(" It chose to do nothing.");
+	  return false;
   }
+}
 
-  /*
-  if (bagOfQuestions.includes(tileNum)) {
-    showModal();
-    showBackdrop();
+// if there are a significant number of animal tiles around that aren't the opponent's,
+// then place a defender if you have one
+function shouldPlayDefender(surSpaces) {
+	if (players[1].defender <= 0) {
+		return false;
+	}
 
-    $("#back").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
-
-    $("#backdrop").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
+  // find out how many animal figure points are around
+  let animalTiles = countPotentialNearbyAnimals(surSpaces);
+  
+  if (animalTiles >= 13) {
+	  return true;
+  } else {
+	  return false;
   }
-  */
 }
 
 // turning this into a separate function so questions can use it
-function findBestToken(tile) {
+function findBestToken(tile, defenderAllowed, bombAllowed) {
+	let surSpaces = getSurroundingSpaces(tile);
+	
+	// consider defenders and bombs first
+	if (defenderAllowed) {
+		let shouldPlayDefenderVar = shouldPlayDefender(surSpaces);
+		if (shouldPlayDefenderVar) {
+			players[1].playDefender(tile);
+			return "defender";
+		}
+	} else if (bombAllowed) {
+		let shouldPlayBombVar = shouldPlayBomb(surSpaces);
+		if (shouldPlayBombVar) {
+			players[1].playBomb(tile);
+			return "bomb";
+		}
+	}
+	
+	if (!$("#" + tile).hasClass("animal")) {
+		return "nothing";
+	}
+	
 	// find the animal size
 	let animalSize = "";
 	if ($("#" + tile).hasClass("xs")) {
@@ -863,6 +858,21 @@ function findBestToken(tile) {
 					choice = playMax("plain");
 				}
 			}
+			break;
+	}
+	
+	switch(choice) {
+		case "gold coin":
+			players[1].playGold(tile);
+			break;
+		case "silver coin":
+			players[1].playSilver(tile);
+			break;
+		case "bronze coin":
+			players[1].playBronze(tile);
+			break;
+		case "plain token":
+			players[1].playPlain(tile);
 			break;
 	}
 	
@@ -1196,6 +1206,28 @@ function calculateAnimalScore(animalId) {
 			return 20;
 			break;
 	}
+}
+
+function robotSelectBestSpace(arr) {
+	
+	// find the space of the biggest animal
+	let min = 16;
+	let minIndex = -1;
+	for (let i = 0; i < arr.length; i++) {
+		if (getAnimalId(arr[i]) < min) {
+			minIndex = i;
+		}
+	}
+	let compChoiceNum;
+	
+	// if there are no animals, return a random space
+	if (min < 16) {
+		compChoiceNum = arr[minIndex];
+	} else {
+		compChoiceNum = arr[Math.floor(Math.random() * arr.length)];
+	}
+	
+	return compChoiceNum;
 }
 
 /******************************************* BOARD SETUP *******************************************/
@@ -1701,21 +1733,25 @@ function q2(tileNum) {
 			}
 			
 			// determine what the ideal choice would be for this space
-			let newCoin = findBestToken(chosenTile);
+			// the player[1].add_____ is to replenish from when findBestToken plays that coin accidentally
+			let newCoin = findBestToken(chosenTile, false, false);
 			let newCoinPoints;
 			let coinName;
 			switch(newCoin) {
 				case "gold coin":
 					newCoinPoints = 6;
 					coinName = "gold";
+					players[1].addGold();
 					break;
 				case "silver coin":
 					newCoinPoints = 4;
 					coinName = "silver";
+					players[1].addSilver();
 					break;
 				case "bronze coin":
 					newCoinPoints = 2;
 					coinName = "bronze";
+					players[1].addBronze();
 					break;
 				case "plain token":
 					newCoinPoints = 1;
@@ -1754,9 +1790,9 @@ function q3(tileNum) {
 		
 		// decide if comp wants to use defender
 		let surSpaces = getSurroundingSpaces(tileNum);
-		let animalTiles = countPotentialNearbyAnimals(surSpaces);
+		let shouldPlayDefenderVar = shouldPlayDefender(surSpaces);
 		
-		if (players[1].defender > 0 && animalTiles >= 13) {
+		if (shouldPlayDefenderVar) {
 			players[1].playDefender(tileNum);
 			msg += "<p>It played a Defender token. Click below to continue.</p>";
 		} else {
@@ -1858,32 +1894,8 @@ function q6(tileNum) {
 	
 		// if there are defended spots
 		if (highlighted.length > 0) {
-			// find the best animal and call calculateRobotChoice
-			let min = 16;
-			let minIndex = -1;
-			for (let i = 0; i < highlighted.length; i++) {
-				if (getAnimalId(highlighted[i]) < min) {
-					minIndex = i;
-				}
-			}
-			compChoiceNum = highlighted[minIndex];		
-			
-			// determine what the ideal choice would be for this space
-			toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
+			compChoiceNum = robotSelectBestSpace(highlighted);
+			toPlay = findBestToken(compChoiceNum, true, false);
 		}
 		// if there aren't defended spots
 		else {
@@ -1903,7 +1915,7 @@ function q6(tileNum) {
 				toPlay = "defender";
 				players[1].playDefender(compChoiceNum);
 			}
-			// if the comp has no defenders and no defended spots, pick an animal spot randomly
+			// if the comp has no defenders and no defended spots, pick the biggest animal spot
 			else {
 				let arr;
 				for (let i = 0; i < 100; i++) {
@@ -1912,26 +1924,10 @@ function q6(tileNum) {
 						arr.push(i);
 					}
 				}
-				console.log(arr);
-				console.log(compChoiceNum);
-				compChoiceNum = arr[Math.floor(Math.random() * arr.length)];
+				compChoiceNum = robotSelectBestSpace(arr);
 				
 				// determine what the ideal choice would be for this space
-				toPlay = findBestToken(compChoiceNum);
-				switch(toPlay) {
-					case "gold coin":
-						players[1].playGold(compChoiceNum);
-						break;
-					case "silver coin":
-						players[1].playSilver(compChoiceNum);
-						break;
-					case "bronze coin":
-						players[1].playBronze(compChoiceNum);
-						break;
-					case "plain token":
-						players[1].playPlain(compChoiceNum);
-						break;
-				}
+				toPlay = findBestToken(compChoiceNum, true, false);
 			}
 		}
 		msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
@@ -1998,7 +1994,6 @@ function q7(tileNum) {
 				}
 			}
 		}
-		console.log("best place is " + highlighted[maxIndex]);
 		
 		// if someones is already winning by a lot, place it there
 		if (difference > 3) {
@@ -2060,27 +2055,11 @@ function q8(tileNum) {
 	// FOR COMP		
 	else {
 		msg = "<p>Robot drew Question H at tile " + tileNum + ":</p><p>" + qText + "</p>";
-		// if there is an array, pick one at random and call calculateRobotChoice
+		// if there is an array, find the best and call calculateRobotChoice
 		if (highlighted.length > 0) {
-			let toPlay;
-			let compChoiceNum = highlighted[Math.floor(Math.random() * highlighted.length)];
 			
-			// determine what the ideal choice would be for this space
-			toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
+			let compChoiceNum = robotSelectBestSpace(highlighted);
+			let toPlay = findBestToken(compChoiceNum, false, false);
 			
 			msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
 		}
@@ -2162,18 +2141,7 @@ function q9(tileNum) {
 		}
 		
 		if (compChoices.length > 0) {
-			// find the biggest animal in the possible spaces
-			let lowestIdIndex = findLargestAnimalInArray(compChoices);
-			
-			let compChoiceNum;
-			// if there's an animal vs. if not
-			if (lowestIdIndex >= 0) {
-				compChoiceNum = compChoices[lowestIdIndex];
-			}
-			// if there's no animal, pick a random space
-			else {
-				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-			}
+			let compChoiceNum = robotSelectBestSpace(compChoices);
 			
 			let tileDestroyed = false;
 			// destroy the user's tile if needed
@@ -2182,23 +2150,9 @@ function q9(tileNum) {
 				tileDestroyed = true;
 			}
 			
-			let toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
+			let toPlay = findBestToken(compChoiceNum, true, true);
 			
-			if (toPlay != null) {
+			if (toPlay != "nothing") {
 				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum;
 				if (tileDestroyed) {
 					msg += ", destroying your tile in the process";
@@ -2284,80 +2238,13 @@ function q10(tileNum) {
 		compChoices.push(tileNum);
 		
 		if (compChoices.length > 0) {
-			let compChoiceNum;
-			let playBomb = false;
+			let compChoiceNum = robotSelectBestSpace(compChoices);
+			let toPlay = findBestToken(compChoices, true, true);
 			
-			// decide if it's worth playing a bomb somewhere (if you have one)
-			if (players[1].bomb > 0) {
-				let surSpaces, playerPoints;
-				for (let j = 0; i < compChoices.length; j++) {
-					playerPoints = 0;
-					surSpaces = getSurroundingSpaces(compChoices[i]);
-					
-					for (i = 0; i < surSpaces.length; i++) {
-						// only count player's points if they are undefended
-						if (
-						  $("#" + surSpaces[i]).hasClass("player0") &&
-						  !$("#" + surSpaces[i]).hasClass("defendedbyplayer0")
-						) {
-						  if ($("#" + surSpaces[i]).hasClass("gold")) {
-							playerPoints += 6;
-						  } else if ($("#" + surSpaces[i]).hasClass("silver")) {
-							playerPoints += 4;
-						  } else if ($("#" + surSpaces[i]).hasClass("bronze")) {
-							playerPoints += 2;
-						  } else {
-							playerPoints++;
-						  }
-						}
-					}
-					
-					if (playerPoints >= 5) {
-						playBomb = true;
-						compChoiceNum = compChoices[j];
-						break;
-					}
-				}
-			}
-			
-			if (playBomb) {
-				players[1].playBomb(compChoiceNum);
-				msg += "<p>Robot played a bomb on tile number " + compChoiceNum + ", destroying your surrounding tokens. Click below to continue with your turn.</p>";
+			if (toPlay != "nothing") {
+				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
 			} else {
-				// find the biggest animal in the possible spaces
-				let lowestIdIndex = findLargestAnimalInArray(compChoices);
-				
-				let compChoiceNum;
-				// if there's an animal vs. if not
-				if (lowestIdIndex >= 0) {
-					compChoiceNum = compChoices[lowestIdIndex];
-				}
-				// if there's no animal, pick a random space
-				else {
-					compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-				}
-				
-				let toPlay = findBestToken(compChoiceNum);
-				switch(toPlay) {
-					case "gold coin":
-						players[1].playGold(compChoiceNum);
-						break;
-					case "silver coin":
-						players[1].playSilver(compChoiceNum);
-						break;
-					case "bronze coin":
-						players[1].playBronze(compChoiceNum);
-						break;
-					case "plain token":
-						players[1].playPlain(compChoiceNum);
-						break;
-				}
-				
-				if (toPlay != null) {
-					msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
-				} else {
-					msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
-				}
+				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
 			}
 		} else {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
@@ -2435,47 +2322,12 @@ function q11(tileNum) {
 		}
 		
 		if (compChoices.length > 0) {
-			// find the biggest animal in the possible spaces
-			let lowestIdIndex = findLargestAnimalInArray(compChoices);
+			let compChoiceNum = robotSelectBestSpace(compChoices);			
+			let toPlay = findBestToken(compChoiceNum, true, false);
 			
-			console.log(compChoices);
-			let compChoiceNum;
-			// if there's an animal vs. if not
-			if (lowestIdIndex >= 0) {
-				compChoiceNum = compChoices[lowestIdIndex];
-			}
-			// if there's no animal, pick a random space
-			else {
-				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-			}
-			console.log("compChoiceNum is " + compChoiceNum);
-			
-			let tileDestroyed = false;
-			// destroy the user's tile if needed
-			if ($("#" + compChoiceNum).hasClass("player0")) {
-				handleRule9(0);
-				tileDestroyed = true;
-			}
-			
-			let toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
-			
-			if (toPlay != null) {
+			if (toPlay != "nothing") {
 				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum;
-				if (tileDestroyed) {
+				if (toPlay == "bomb") {
 					msg += ", destroying your tile in the process";
 				}
 				msg += ". Click below to continue with your turn.</p>";
@@ -2502,7 +2354,7 @@ function q12(tileNum) {
 	let msg;
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>You drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p id='robotTurnMsg'>Click below to have the robot take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button>";
+		msg = "<p>You drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><div id='robotTurnMsg'><p>Click below to have the robot take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button></div>";
 	} else {
 		extraTurn = true;
 		$("#turnChoices").hide();
@@ -2514,14 +2366,18 @@ function q12(tileNum) {
 	
 	// when the user clicks continue, the computer takes its turn, then the user is prompted to have the comp take its second turn
 	$("body").on("click", "#compFirstTurn", function() {
+		console.log("compFirstTurn");
+		$("#robotTurnMsg").hide();
 		endHumanTurn();
 		$("#pickNumber").hide();
-		$('#turnDisplay').append("<p>Click below to have the robot take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button>");
+		$("#turnDisplay").append("<div id='robotTurnMsg2'><p>Click below to have the robot take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
 	});
 
 	// when the user clicks to have comp take second turn, this makes sure the player
 	// stays as comp and then comp takes its turn
 	$("body").on("click", "#compSecondTurn", function() {
+		console.log("compSecondTurn");
+		$("#robotTurnMsg2").hide();
 		playerNum++;
 		endHumanTurn();
 	});
@@ -2639,38 +2495,10 @@ function q14(tileNum) {
 		
 		let compChoices = highlighted;
 		if (compChoices.length > 0) {
-			// find the biggest animal in the possible spaces
-			let lowestIdIndex = findLargestAnimalInArray(compChoices);
+			let compChoiceNum = robotSelectBestSpace(compChoices);
+			let toPlay = findBestToken(compChoiceNum, true, false);
 			
-			console.log(compChoices);
-			let compChoiceNum;
-			// if there's an animal vs. if not
-			if (lowestIdIndex >= 0) {
-				compChoiceNum = compChoices[lowestIdIndex];
-			}
-			// if there's no animal, pick a random space
-			else {
-				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-			}
-			console.log("compChoiceNum is " + compChoiceNum);
-			
-			let toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
-			
-			if (toPlay != null) {
+			if (toPlay != "nothing") {
 				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
 			} else {
 				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
@@ -2797,80 +2625,13 @@ function q16(tileNum) {
 		compChoices.push(tileNum);
 		
 		if (compChoices.length > 0) {
-			let compChoiceNum;
-			let playBomb = false;
-			
-			// decide if it's worth playing a bomb somewhere (if you have one)
-			if (players[1].bomb > 0) {
-				let surSpaces, playerPoints;
-				for (let j = 0; i < compChoices.length; j++) {
-					playerPoints = 0;
-					surSpaces = getSurroundingSpaces(compChoices[i]);
-					
-					for (i = 0; i < surSpaces.length; i++) {
-						// only count player's points if they are undefended
-						if (
-						  $("#" + surSpaces[i]).hasClass("player0") &&
-						  !$("#" + surSpaces[i]).hasClass("defendedbyplayer0")
-						) {
-						  if ($("#" + surSpaces[i]).hasClass("gold")) {
-							playerPoints += 6;
-						  } else if ($("#" + surSpaces[i]).hasClass("silver")) {
-							playerPoints += 4;
-						  } else if ($("#" + surSpaces[i]).hasClass("bronze")) {
-							playerPoints += 2;
-						  } else {
-							playerPoints++;
-						  }
-						}
-					}
-					
-					if (playerPoints >= 5) {
-						playBomb = true;
-						compChoiceNum = compChoices[j];
-						break;
-					}
-				}
-			}
-			
-			if (playBomb) {
-				players[1].playBomb(compChoiceNum);
-				msg += "<p>Robot played a bomb on tile number " + compChoiceNum + ", destroying your surrounding tokens. Click below to continue with your turn.</p>";
+			let compChoiceNum = robotSelectBestSpace(compChoices);
+			let toPlay = findBestToken(compChoiceNum, true, true);
+				
+			if (toPlay != "nothing") {
+				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
 			} else {
-				// find the biggest animal in the possible spaces
-				let lowestIdIndex = findLargestAnimalInArray(compChoices);
-				
-				let compChoiceNum;
-				// if there's an animal vs. if not
-				if (lowestIdIndex >= 0) {
-					compChoiceNum = compChoices[lowestIdIndex];
-				}
-				// if there's no animal, pick a random space
-				else {
-					compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-				}
-				
-				let toPlay = findBestToken(compChoiceNum);
-				switch(toPlay) {
-					case "gold coin":
-						players[1].playGold(compChoiceNum);
-						break;
-					case "silver coin":
-						players[1].playSilver(compChoiceNum);
-						break;
-					case "bronze coin":
-						players[1].playBronze(compChoiceNum);
-						break;
-					case "plain token":
-						players[1].playPlain(compChoiceNum);
-						break;
-				}
-				
-				if (toPlay != null) {
-					msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
-				} else {
-					msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
-				}
+				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
 			}
 		} else {
 			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
@@ -2904,7 +2665,7 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 	let undefendedPlayer = [];
 	let undefendedComp = [];
 	
-	// create two arrays of all elephant tokens that aren't defended
+	// create two arrays of all elephant/bison tokens that aren't defended
 	for (var i = 0; i < 100; i++) {
 		if ($("#" + i).hasClass(animalId)) {
 			// for the player
@@ -3038,38 +2799,10 @@ function q19(tileNum) {
 		
 		let compChoices = highlighted;
 		if (compChoices.length > 0) {
-			// find the biggest animal in the possible spaces
-			let lowestIdIndex = findLargestAnimalInArray(compChoices);
-			
-			console.log(compChoices);
-			let compChoiceNum;
-			// if there's an animal vs. if not
-			if (lowestIdIndex >= 0) {
-				compChoiceNum = compChoices[lowestIdIndex];
-			}
-			// if there's no animal, pick a random space
-			else {
-				compChoiceNum = compChoices[Math.floor(Math.random() * compChoices.length)];
-			}
-			console.log("compChoiceNum is " + compChoiceNum);
-			
-			let toPlay = findBestToken(compChoiceNum);
-			switch(toPlay) {
-				case "gold coin":
-					players[1].playGold(compChoiceNum);
-					break;
-				case "silver coin":
-					players[1].playSilver(compChoiceNum);
-					break;
-				case "bronze coin":
-					players[1].playBronze(compChoiceNum);
-					break;
-				case "plain token":
-					players[1].playPlain(compChoiceNum);
-					break;
-			}
-			
-			if (toPlay != null) {
+			let compChoiceNum = robotSelectBestSpace(compChoices);
+			let toPlay = findBestToken(compChoiceNum, true, false);
+
+			if (toPlay != "nothing") {
 				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to move on to Robot's turn.</p>";
 			} else {
 				msg += "<p>The Robot chose not to play anything. Click below to move on to Robot's turn.</p>";
@@ -3131,30 +2864,17 @@ $("body").on("click", ".highlight", function() {
 		// ask the user what they want to do on this space, or invite them to choose a different space
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one.</p>";
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#playBomb").hide();
-		$("#turnText").hide();
-		$("#doNothing").hide();
+		hideButtons(true, false);
 	} else if (ruleForClicking == 7) {
 		msg = "<p>You have chosen tile number " + this.id + ". Click below to place a single token from Robot and continue to his turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place Robot's token</button>";
 	} else if (ruleForClicking == 8) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#playBomb").hide();
-		$("#playDefender").hide();
-		$("#turnText").hide();
-		$("#doNothing").hide();
-		
+		hideButtons(true, true);
 	} else if (ruleForClicking == 9) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#turnText").hide();
-		$("#doNothing").hide();
+		hideButtons(false, false);
 		
 		if ($("#" + questionTileChoice).hasClass("occupied")) {
 			$("#playBomb").hide();
@@ -3166,38 +2886,35 @@ $("body").on("click", ".highlight", function() {
 	} else if (ruleForClicking == 10 || ruleForClicking == 16) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#turnText").hide();
-		$("#doNothing").hide();
+		hideButtons(false, false);
 	} else if (ruleForClicking == 11 || ruleForClicking == 14) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
-		if (ruleForClicking == 19) {
-			msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
-		}
-		
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#turnText").hide();
-		$("#doNothing").hide();
-		$("#playBomb").hide();
+		hideButtons(true, false);
 	} else if (ruleForClicking == 19) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click Draw Number to not select anything.</p>";
 		msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
 		
 		displayTurnChoices();
-		
-		// hide unnecessary buttons
-		$("#turnText").hide();
-		$("#doNothing").hide();
-		$("#playBomb").hide();
+		hideButtons(true, false);
 	} else if (ruleForClicking == 18) {
 		msg = "<p>You have chosen tile number " + this.id + ". Click below to remove this token, or select a different one.</p><button id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
 	}
 	
 	$("#turnDisplay").html(msg);
 });
+
+function hideButtons(hideBomb, hideDefender) {
+	$("#turnText").hide();
+	$("#doNothing").hide();
+	
+	if (hideBomb) {
+		$("#playBomb").hide();
+	}
+	if (hideDefender) {
+		$("#playDefender").hide();
+	}
+}
 
 function removeToken(tileNum) {
 	console.log("destroying token on tile " + tileNum);
@@ -3210,11 +2927,12 @@ function removeToken(tileNum) {
 }
 
 function playRobotToken() {
+	clearQuestion();
 	$("#playRobotToken").hide();
+	$("#pickNumber").show();
 	
 	players[1].playPlain(questionTileChoice);
 	endHumanTurn();
-	clearQuestion();
 }
 
 function findLargestAnimalInArray(arr) {
