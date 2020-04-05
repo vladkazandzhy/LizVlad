@@ -103,15 +103,22 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
 
   // display current statistics
   this.display = function() {
-    let string = "<b><u>" + this.name + "</u></b><br>";
-    string += "Gold x " + this.gold + "<br>";
-    string += "Silver x " + this.silver + "<br>";
-    string += "Bronze x " + this.bronze + "<br>";
-    string += "Plain x " + this.plain + "<br>";
-    string += "Defender x " + this.defender + "<br>";
-    string += "Bomb x " + this.bomb + "<br><br>";
+	  if (num == 0) {
+		  $("#userGold").text(this.gold);
+		  $("#userSilver").text(this.silver);
+		  $("#userBronze").text(this.bronze);
+		  $("#userPlain").text(this.plain);
+		  $("#userDefender").text(this.defender);
+		  $("#userBomb").text(this.bomb);
+	  } else {
+		  $("#compGold").text(this.gold);
+		  $("#compSilver").text(this.silver);
+		  $("#compBronze").text(this.bronze);
+		  $("#compPlain").text(this.plain);
+		  $("#compDefender").text(this.defender);
+		  $("#compBomb").text(this.bomb);
+	  }
 
-    $("#tokenDisplay" + this.num).html(string);
   };
 
   this.addTokenClass = function(type, space) {
@@ -275,37 +282,21 @@ let playerNum = 1;
 let tileNum;
 
 // start the user's turn when "Draw a Number" is clicked
-$("#pickNumber").click(function() {
-  $("#pickNumber").hide();
+$('body').on('click', "#pickNumber", function() {
+	// only count the click if it's highlighted (able to be drawn);
+	if ($("#pickNumber").hasClass("cardHighlight")) {
+		$("#pickNumber").removeClass("cardHighlight");
   
-  // hide the extra defender button if needed
-  if (!$("#playDefenderRule3").css("display", "none")) {
-	  $("#playDefenderRule3").hide();
-  }
+		  // hide the extra defender button if needed
+		  if (!$("#playDefenderRule3").css("display", "none")) {
+			  $("#playDefenderRule3").hide();
+		  }
   
-  // draw a random number
-  tileNum = drawNumber();
-  takeTurn(tileNum);
+	  // draw a random number
+	  tileNum = drawNumber();
+	  takeTurn(tileNum);
+	}
 
-  /*
-  if (bagOfQuestions.includes(tileNum)) {
-    showModal();
-    showBackdrop();
-
-    $("#back").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
-
-    $("#backdrop").click(function() {
-      closeModal();
-      closeBackdrop();
-    });
-  } else {
-    // take a turn with that number
-    takeTurn(tileNum);
-  }
-  */
 });
 
 // this function will be the same for both the user and computer
@@ -339,7 +330,7 @@ function takeTurn(rand) {
 	else {
 		// determine if it's the user or computer playing
 	  if (playerNum == 0) {
-		$("#turnDisplay").text("You drew " + rand + ". What would you like to do?");
+		$("#turnDisplay").html("<p>What would you like to play on tile <b>" + rand + "</b>?");
 		displayTurnChoices();
 	  } else {
 		$("#turnChoices").hide();
@@ -564,7 +555,7 @@ function clearQuestion() {
 	currentQuestion = 0;
 	questionTileChoice = -1;
 	$("#continue").hide();
-	$("#pickNumber").hide();
+	$("#pickNumber").removeClass("cardHighlight");
 }
 
 // special case for question 9
@@ -664,7 +655,7 @@ $("#seeChanges").click(function() {
 	if (playerNum == 0) {
 		$("#continue").show();
 	} else {
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 });
 	 
@@ -1120,7 +1111,7 @@ function endCompTurn() {
 	
 	// if there are still numbers, human takes turn
 	if (!bag.checkIfEnd()) {
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	} else {
 		alert("Game over!");
 		countFinalScore();
@@ -1384,7 +1375,7 @@ function placeAnimal(w, h, id, animalType) {
 
       let imageUrl = "images/" + id + "/" + (i + 1) + ".jpg";
       tile.css("background-image", "url(" + imageUrl + ")");
-      tile.css("background-size", "32px 32px");
+      tile.css("background-size", "100% 100%");
 
       // remove number
       tile.text("");
@@ -1422,7 +1413,7 @@ function placeQuestions(id) {
       // remove number and add image
       tile.text("");
       tile.css("background-image", "url(images/questionTile.jpg)");
-      tile.css("background-size", "32px 32px");
+      tile.css("background-size", "100% 100%");
 
       // break the loop because we placed the question
       placed = true;
@@ -1437,7 +1428,7 @@ let bag;
 $("#startGame").click(function() {
   $("#setBoard").hide();
   $("#startGame").hide();
-  $("#pickNumber").show();
+  $("#pickNumber").addClass("cardHighlight");
 
   bag = new NumberBag();
   bag.fillBag();
@@ -1615,7 +1606,7 @@ function q1(tileNum) {
 		} else {
 			msg += "<p>No tokens were destroyed. Click to continue.</p>";
 			$("#continue").hide();
-			$("#pickNumber").show();
+			$("#pickNumber").addClass("cardHighlight");
 		}
 	 }
 	 
@@ -1714,11 +1705,11 @@ function q2(tileNum) {
 		// if there are no valid tiles
 		if (highlighted.length === 0) {
 			msg += "<p>The Robot has no valued tokens that can be increased in value. Click below to continue with your turn.</p>"
-			$("#pickNumber").show();
+			$("#pickNumber").addClass("cardHighlight");
 		}
 		// if there is at least one valid tile option
 		else {
-			let lowestIdIndex = findLargestAnimalInArray(highlighted);
+			let lowestIdIndex = robotSelectBestSpace(highlighted);
 			
 			// select token on highest animal, take note of what token it is
 			let chosenTile = highlighted[lowestIdIndex]
@@ -1771,7 +1762,7 @@ function q2(tileNum) {
 			}
 			
 			clearQuestion();
-			$("#pickNumber").show();
+			$("#pickNumber").addClass("cardHighlight");
 		}
 	}
 	
@@ -1807,7 +1798,7 @@ function q3(tileNum) {
 		
 		// give the user the choice to play a defender or continue with their turn
 		$("#playDefenderRule3").show();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -1827,7 +1818,7 @@ function q4(tileNum) {
 		msg = "<p>Robot drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[1].addGold();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -1847,7 +1838,7 @@ function q5(tileNum) {
 		msg = "<p>Robot drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
 		players[0].addSilver();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -1934,7 +1925,7 @@ function q6(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2008,7 +1999,7 @@ function q7(tileNum) {
 		msg += "<p>The Robot has placed one of your plain tokens on tile " + compChoiceNum + ". Click below to continue with your turn.</p>";
 		
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2070,7 +2061,7 @@ function q8(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2167,7 +2158,7 @@ function q9(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2252,7 +2243,7 @@ function q10(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();	
+		$("#pickNumber").addClass("cardHighlight");	
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2340,7 +2331,7 @@ function q11(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();	
+		$("#pickNumber").addClass("cardHighlight");	
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2359,7 +2350,7 @@ function q12(tileNum) {
 		extraTurn = true;
 		$("#turnChoices").hide();
 		msg = "<p>Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p>";
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2369,7 +2360,7 @@ function q12(tileNum) {
 		console.log("compFirstTurn");
 		$("#robotTurnMsg").hide();
 		endHumanTurn();
-		$("#pickNumber").hide();
+		$("#pickNumber").removeClass("cardHighlight");
 		$("#turnDisplay").append("<div id='robotTurnMsg2'><p>Click below to have the robot take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
 	});
 
@@ -2444,7 +2435,7 @@ function q13(tileNum) {
 		} else {
 			msg += "<p>No tokens were destroyed. Click to continue.</p>";
 			$("#continue").hide();
-			$("#pickNumber").show();
+			$("#pickNumber").addClass("cardHighlight");
 		}
 	 }
 	 
@@ -2509,7 +2500,7 @@ function q14(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	 $("#turnDisplay").html(msg);	
@@ -2523,10 +2514,10 @@ function q15(tileNum) {
 	// inform the user what's happening
 	if (playerNum === 0) {
 		msg = "You drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to take another turn.</p>";
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	} else {
 		$("#turnChoices").hide();
-		$("#pickNumber").hide();
+		$("#pickNumber").removeClass("cardHighlight");
 		msg = "Robot drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to have the Robot take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>";
 	}
 	
@@ -2639,7 +2630,7 @@ function q16(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();	
+		$("#pickNumber").addClass("cardHighlight");	
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2746,7 +2737,7 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 			msg += "<p>Robot has no undefended tokens on the " + animalName + ". Click below to continue with your turn.</p>";
 		}
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2791,7 +2782,7 @@ function q19(tileNum) {
 		
 		clearQuestion();
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	// FOR COMP
 	else {
@@ -2844,7 +2835,7 @@ function q20(tileNum) {
 			msg += "<p>You didn't have any bombs, so nothing was discarded.</p><p>Click to continue with your turn.</p>";	
 		}
 		$("#turnChoices").hide();
-		$("#pickNumber").show();
+		$("#pickNumber").addClass("cardHighlight");
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2929,32 +2920,8 @@ function removeToken(tileNum) {
 function playRobotToken() {
 	clearQuestion();
 	$("#playRobotToken").hide();
-	$("#pickNumber").show();
+	$("#pickNumber").addClass("cardHighlight");
 	
 	players[1].playPlain(questionTileChoice);
 	endHumanTurn();
-}
-
-function findLargestAnimalInArray(arr) {
-	let idList = [];
-	// find largest animal (smallest ID)
-	
-	// convert all spaces into IDs
-	for (let i = 0; i < arr.length; i++) {
-		let animalId = getAnimalId(arr[i]);
-		idList.push(animalId);
-	}
-	console.log(idList);
-	
-	let min = Math.min.apply(null, idList);
-	console.log("min is " + min);
-	
-	let minIndex = idList.indexOf(min);
-	console.log("index is " + minIndex);
-	
-	if (min < 16) {
-		return minIndex;
-	} else {
-		return -1;
-	}
 }
