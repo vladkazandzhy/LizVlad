@@ -141,7 +141,7 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
       "<img src='images/tokens/" +
         type +
         this.num.toString() +
-        ".png' alt='token' style='width:20px;height:20px;'>"
+        ".png' alt='token' style='width:70%;height:auto;'>"
     );
   };
   
@@ -283,6 +283,14 @@ let tileNum;
 
 // start the user's turn when "Draw a Number" is clicked
 $('body').on('click', "#pickNumber", function() {
+	$("#turnChoicesComp").hide();
+	$(".robotTurnHighlight").removeClass("robotTurnHighlight");
+	
+	// start showing the card after the first draw
+	if ($("#cardFront").css("display") == "none") {
+		$("#cardFront").css("display", "block"); 
+	}
+	
 	// only count the click if it's highlighted (able to be drawn);
 	if ($("#pickNumber").hasClass("cardHighlight")) {
 		$("#pickNumber").removeClass("cardHighlight");
@@ -295,12 +303,16 @@ $('body').on('click', "#pickNumber", function() {
 	  // draw a random number
 	  tileNum = drawNumber();
 	  takeTurn(tileNum);
+	  
 	}
 
 });
 
 // this function will be the same for both the user and computer
 function drawNumber() {	
+
+	$("#questionCard").hide();
+
 	// IMPORTANT: keeps the players alernating (IF NOT DOUBLE TURN)
 	playerNum = (playerNum + 1) % 2;
 	
@@ -320,6 +332,8 @@ function drawNumber() {
 
 
 function takeTurn(rand) {
+	$("#cardFront").attr("src", "images/cards/" + rand + ".jpg");
+	
 	let questionId = getQuestionId(rand);
 	
 	// if it's a question, handle specially
@@ -334,7 +348,7 @@ function takeTurn(rand) {
 		displayTurnChoices();
 	  } else {
 		$("#turnChoices").hide();
-		$("#turnDisplay").text("Robot drew " + rand + ".");
+		$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.");
 		calculateRobotChoice(rand);
 		endCompTurn();
 	  }
@@ -627,14 +641,14 @@ function handleRule2(type, playerNum) {
 $("#playDefenderRule3").click(function() {
   players[0].playDefender(tileNum);
   $("#playDefenderRule3").hide();
-  $("#turnDisplay").text("You played a Defender. Click below to continue with your next turn.");
+  $("#turnDisplay").text("You played a Defender. Click the deck to continue with your next turn.");
 });
 
 // this function prompts the user to draw another number,
 // ensures the player is still the user, and then starts
 // the user's second turn
 function takeExtraTurn() {
-    $('#turnDisplay').text("Click below to take your second turn.");
+    $('#turnDisplay').html("<p>Click the deck to take your second turn.</p>");
 	$("#turnChoices").hide();
     playerNum++;
 	extraTurn = false;
@@ -677,17 +691,39 @@ let isFirstMove = true;
 let robotChoices = [];
 
 function calculateRobotChoice(tileNum) {
+	showCompChoices();
+	
 	// if there's already a token, do nothing
 	let tile = $("#" + tileNum);
 	if (tile.hasClass("occupied")) {
-			$("#turnDisplay").append(" It did nothing.");
+			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing. Click the deck to continue with your turn.</p>");
 			return;
-			console.log("robot space is already occupied");
 	}
 	
 	let tokenPlayed = findBestToken(tileNum, true, true);
-	$("#turnDisplay").append(" It played a " + tokenPlayed + ".");
+}
 
+function showCompChoices() {
+	$("#turnChoicesComp").show();
+
+	  if (players[playerNum].gold == 0) {
+		$("#playGoldComp").hide();
+	  }
+	  if (players[playerNum].silver == 0) {
+		$("#playSilverComp").hide();
+	  }
+	  if (players[playerNum].bronze == 0) {
+		$("#playBronzeComp").hide();
+	  }
+	  if (players[playerNum].plain == 0) {
+		$("#playPlainComp").hide();
+	  }
+	  if (players[playerNum].defender == 0) {
+		$("#playDefenderComp").hide();
+	  }
+	  if (players[playerNum].bomb == 0) {
+		$("#playBombComp").hide();
+	  }
 }
 
 // if there are at least 5 opponent points around, then play a bomb if you have one
@@ -734,7 +770,7 @@ function shouldPlayDefender(surSpaces) {
   // find out how many animal figure points are around
   let animalTiles = countPotentialNearbyAnimals(surSpaces);
   
-  if (animalTiles >= 13) {
+  if (animalTiles >= 15) {
 	  return true;
   } else {
 	  return false;
@@ -750,17 +786,21 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 		let shouldPlayDefenderVar = shouldPlayDefender(surSpaces);
 		if (shouldPlayDefenderVar) {
 			players[1].playDefender(tile);
+			$("#playDefenderComp").addClass("robotTurnHighlight");
 			return "defender";
 		}
 	} else if (bombAllowed) {
 		let shouldPlayBombVar = shouldPlayBomb(surSpaces);
 		if (shouldPlayBombVar) {
 			players[1].playBomb(tile);
+			$("#playBombComp").addClass("robotTurnHighlight");
 			return "bomb";
 		}
 	}
 	
 	if (!$("#" + tile).hasClass("animal")) {
+		$("#turnDisplay").html("<p>" + robotName + " chose to do nothing on tile " + tile + ". Click the deck to continue with your turn.</p>");
+		$("#turnChoicesComp").hide();
 		return "nothing";
 	}
 	
@@ -855,15 +895,19 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	switch(choice) {
 		case "gold coin":
 			players[1].playGold(tile);
+			$("#playGoldComp").addClass("robotTurnHighlight");
 			break;
 		case "silver coin":
 			players[1].playSilver(tile);
+			$("#playSilverComp").addClass("robotTurnHighlight");
 			break;
 		case "bronze coin":
 			players[1].playBronze(tile);
+			$("#playBronzeComp").addClass("robotTurnHighlight");
 			break;
 		case "plain token":
 			players[1].playPlain(tile);
+			$("#playPlainComp").addClass("robotTurnHighlight");
 			break;
 	}
 	
@@ -1106,9 +1150,7 @@ function endHumanTurn() {
 	}
 }
 
-function endCompTurn() {
-	console.log("endCompTurn");
-	
+function endCompTurn() {	
 	// if there are still numbers, human takes turn
 	if (!bag.checkIfEnd()) {
 		$("#pickNumber").addClass("cardHighlight");
@@ -1227,7 +1269,8 @@ function robotSelectBestSpace(arr) {
 let boardSetUp = false;
 let placementError = false;
 $("#setBoard").click(function() {
-  $("#startGame").prop("disabled", false);
+  $("#setBoard").html("Set Board Differently");
+  $("#startGame").show();
   clearBoard();
   boardSetUp = false;
   placementError = false;
@@ -1426,8 +1469,10 @@ function placeQuestions(id) {
 let bag;
 // start the game by filling the numbers and tokens and displaying them
 $("#startGame").click(function() {
-  $("#setBoard").hide();
-  $("#startGame").hide();
+	randomizeRobotName();
+  $("#setupBoard").hide();
+  $("#cards").show();
+  $("#turnDisplay").html('<p>Click the deck to begin the game!</p>');
   $("#pickNumber").addClass("cardHighlight");
 
   bag = new NumberBag();
@@ -1438,6 +1483,13 @@ $("#startGame").click(function() {
   players[0].display();
   players[1].display();
 });
+
+robotName = "Robot";
+function randomizeRobotName() {
+	let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
+	robotName = items[Math.floor(Math.random() * items.length)];
+	$("#robotName").text(robotName);
+}
 
 // set up the number of tokens for the players
 let players = [];
@@ -1507,8 +1559,28 @@ function getQuestionId(tileNum) {
 	}
 }
 
+let questionId = 0;
 function handleQuestion(tileNum, id) {
-	switch (id) {
+	$("#turnChoices").hide();
+	$("#turnChoicesComp").hide();
+	
+	if (playerNum == 0) {
+		$("#turnDisplay").html("<p>You drew a Twists & Turns card at tile <b>" + tileNum + "</b>.</p><p>Click below to read the card.</p>");
+	} else {
+		$("#turnDisplay").html("<p>" + robotName + " drew a Twists & Turns card at tile <b>" + tileNum + "</b>.</p><p>Click below to read the card.</p>");
+	}
+	
+	$("#questionTile").attr("src", "images/questions/" + id + ".png");
+	$("#questionTile").css("display", "block");
+	questionId = id;	
+}
+
+$("#questionTile").click(function() {
+	$("#turnDisplay").html("");
+	$("#questionTile").css("display", "none");
+	$("#questionCard").show();
+	
+	switch (questionId) {
 		case 1: q1(tileNum); break;
 		case 2: q2(tileNum); break;
 		case 3: q3(tileNum); break;
@@ -1530,7 +1602,7 @@ function handleQuestion(tileNum, id) {
 		case 19: q19(tileNum); break;
 		case 20: q20(tileNum); break;
 	}
-}
+});
 
 // important global variables for handling questions
 let highlighted = [];
@@ -1540,7 +1612,7 @@ let questionTileChoice = -1;
 
 function q1(tileNum) {
 	let qText = "A. An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
 	// determine which tiles are relevant
 	highlighted.push(tileNum - 2);
@@ -1582,15 +1654,14 @@ function q1(tileNum) {
 		}
 	}
 	
-	let msg;
+	let msg = "";
 	// show the user what is happening, prompt them to view the changes if there are any
 	 if (playerNum == 0) {
-		msg = "<p>You drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		if (boardChanged) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click below to continue with " + robotName + "'s turn.</p>";
 			$("#continue").show();
 		}
 	 }
@@ -1598,13 +1669,12 @@ function q1(tileNum) {
 	 else {
 		$("#turnChoices").hide();
 		
-		msg = "<p>Robot drew Question A at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		if (boardChanged) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click the deck to continue with your turn.</p>";
 			$("#continue").hide();
 			$("#pickNumber").addClass("cardHighlight");
 		}
@@ -1615,13 +1685,12 @@ function q1(tileNum) {
 
 function q2(tileNum) {
 	let qText = "B. The animal population is growing! You may increase the value of any one of your tokens on the gameboard by replacing it with a higher-valued coin if you have one. If you already had a bronze or silver coin in that space, return it to your possession.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 2;
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question B at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// create array of all user tokens that are single, bronze, or silver and highlight them
 		// determine what tokens the player has
@@ -1655,7 +1724,7 @@ function q2(tileNum) {
 		
 		// if there are no valid tiles
 		if (highlighted.length === 0) {
-			msg += "<p>You have no valued tokens that can be increased in value. Click below to continue with Robot's turn.</p>"
+			msg += "<p>You have no valued tokens that can be increased in value. Click below to continue with " + robotName + "'s turn.</p>"
 			$("#turnDisplay").html(msg);
 		}
 		// if there is at least one valid tile option
@@ -1671,7 +1740,6 @@ function q2(tileNum) {
 	// FOR COMP
 	else {
 		$("#turnChoices").hide();
-		msg = "<p>Robot drew Question B at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// create array of all user tokens that are single, bronze, or silver and highlight them
 		// determine what tokens the player has
@@ -1704,7 +1772,7 @@ function q2(tileNum) {
 		
 		// if there are no valid tiles
 		if (highlighted.length === 0) {
-			msg += "<p>The Robot has no valued tokens that can be increased in value. Click below to continue with your turn.</p>"
+			msg += "<p>" + robotName + " has no valued tokens that can be increased in value. Click the deck to continue with your turn.</p>"
 			$("#pickNumber").addClass("cardHighlight");
 		}
 		// if there is at least one valid tile option
@@ -1758,7 +1826,7 @@ function q2(tileNum) {
 			
 			// otherwise, move on without doing anything
 			else {
-				msg += "<p>The Robot chose to do nothing. Click below to continue with your turn.</p>"
+				msg += "<p>" + robotName + " chose to do nothing. Click the deck to continue with your turn.</p>"
 			}
 			
 			clearQuestion();
@@ -1771,12 +1839,11 @@ function q2(tileNum) {
 
 function q3(tileNum) {
 	let qText = "C. The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>You drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		players[1].addDefender();
 		
 		// decide if comp wants to use defender
@@ -1785,14 +1852,14 @@ function q3(tileNum) {
 		
 		if (shouldPlayDefenderVar) {
 			players[1].playDefender(tileNum);
-			msg += "<p>It played a Defender token. Click below to continue.</p>";
+			msg += "<p>It played a Defender token. Click below to continue with " + robotName + "'s turn.</p>";
 		} else {
-			msg += "<p>It decided not to play the Defender here. Click below to continue.</p>";
+			msg += "<p>It decided not to play the Defender here. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	} else {
-		msg = "<p>Robot drew Question C at tile " + tileNum + ":</p><p>" + qText + "</p><p>What would you like to do?</p>";
+		msg = "<p>Click below to play the defender on tile " + tileNum + ". Otherwise, click the deck to continue with your turn and keep it for later.</p>";
 		players[0].addDefender();
 		$("#turnChoices").hide();
 		
@@ -1806,16 +1873,16 @@ function q3(tileNum) {
 
 function q4(tileNum) {
 	let qText = "D. Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>You drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
+		msg = "<p>Click below to continue.</p>";
 		players[0].addGold();
 		$("#continue").show();
 	} else {
-		msg = "<p>Robot drew Question D at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
+		msg = "<p>Click the deck to continue.</p>";
 		players[1].addGold();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -1826,16 +1893,16 @@ function q4(tileNum) {
 
 function q5(tileNum) {
 	let qText = "E. A wealthy family has transferred money to your opponent's endangered animal fund. The next player has won a silver coin!";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>You drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
+		msg = "<p>Click below to continue.</p>";
 		players[1].addSilver();
 		$("#continue").show();
 	} else {
-		msg = "<p>Robot drew Question E at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click to continue.</p>";
+		msg = "<p>Click the deck to continue.</p>";
 		players[0].addSilver();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -1846,13 +1913,12 @@ function q5(tileNum) {
 
 function q6(tileNum) {
 	let qText = "F. Congratulations! You've won a free round-trip flight. Travel to any space on the gameboard that isn't occupied and place any token (except a bomb).";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 6;
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum === 0) {
-		msg = "<p>You drew Question F at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		// loop through all spaces, create array of all unoccupied spaces and highlight them
 		for (let i = 0; i < 100; i++) {
 			let tile = $("#" + i);
@@ -1870,7 +1936,6 @@ function q6(tileNum) {
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question F at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		let compChoiceNum;
 		let toPlay;
 
@@ -1882,11 +1947,12 @@ function q6(tileNum) {
 			}
 		}
 		console.log(highlighted);
+		highlighted = [];
 	
 		// if there are defended spots
 		if (highlighted.length > 0) {
 			compChoiceNum = robotSelectBestSpace(highlighted);
-			toPlay = findBestToken(compChoiceNum, true, false);
+			toPlay = findBestToken(compChoiceNum, false, false);
 		}
 		// if there aren't defended spots
 		else {
@@ -1896,8 +1962,11 @@ function q6(tileNum) {
 				let max = 0;
 				let maxIndex = -1;
 				for (let i = 0; i < 100; i++) {
-					let nearbyAnimalPoints = countPotentialNearbyAnimals(i);
+					let surSpaces = getSurroundingSpaces(i);
+					let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
+					console.log(nearbyAnimalPoints);
 					if (nearbyAnimalPoints > max) {
+						max = nearbyAnimalPoints;
 						maxIndex = i;
 					}
 				}
@@ -1921,7 +1990,7 @@ function q6(tileNum) {
 				toPlay = findBestToken(compChoiceNum, true, false);
 			}
 		}
-		msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+		msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 		
 		clearQuestion();
 		$("#turnChoices").hide();
@@ -1933,7 +2002,7 @@ function q6(tileNum) {
 
 function q7(tileNum) {
 	let qText = "G. A government leader has issued your opponent a private jet and has asked you to assist them. Place one of the next player's single tokens (worth 1 point) on any animal figure on the board that isn't occupied.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
 	// create an array of unoccupied animal figures
 	let tile;
@@ -1944,10 +2013,9 @@ function q7(tileNum) {
 		}
 	}
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question G at tile " + tileNum + ":</p><p>" + qText + "</p>";
 
 		// highlight the array
 		for (let i = 0; i < highlighted.length; i++) {
@@ -1962,7 +2030,6 @@ function q7(tileNum) {
 	}	
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question G at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// for each animal in the array, determine the player's score, comp's score
 		let animalId, compPoints, playerPoints, difference, compWinning, compChoiceNum;
@@ -1996,7 +2063,7 @@ function q7(tileNum) {
 		}
 		
 		players[0].playPlain(compChoiceNum);
-		msg += "<p>The Robot has placed one of your plain tokens on tile " + compChoiceNum + ". Click below to continue with your turn.</p>";
+		msg += "<p>" + robotName + " has placed one of your plain tokens on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 		
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -2007,7 +2074,7 @@ function q7(tileNum) {
 
 function q8(tileNum) {
 	let qText = "H. A one-month expedition of your organization was successful. You may place any valued token on any animal in this row if the space is not occupied.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 8;
 	
 	// create an array of unoccupied animal figures in the current row
@@ -2023,7 +2090,6 @@ function q8(tileNum) {
 	
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question H at tile " + tileNum + ":</p><p>" + qText + "</p>";
 	
 		// if there is an array, highlight them and prompt the user to pick one or do nothing
 		if (highlighted.length > 0) {
@@ -2039,24 +2105,23 @@ function q8(tileNum) {
 		}
 		// if not, inform the user and prompt them to continue with the robot's turn
 		else {
-			msg += "<p>There are no unnoccupied animal figures in the current row. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no unnoccupied animal figures in the current row. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		$("#continue").show();
 	}
 	// FOR COMP		
 	else {
-		msg = "<p>Robot drew Question H at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		// if there is an array, find the best and call calculateRobotChoice
 		if (highlighted.length > 0) {
 			
 			let compChoiceNum = robotSelectBestSpace(highlighted);
 			let toPlay = findBestToken(compChoiceNum, false, false);
 			
-			msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 		}
 		// if not, inform the user and prompt them to continue with their turn
 		else {
-			msg += "<p>There are no unnoccupied animal figures in the current row, so the Robot did nothing. Click below to continue with your turn.</p>";
+			msg += "<p>There are no unnoccupied animal figures in the current row, so the " + robotName + " did nothing. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2069,7 +2134,7 @@ function q8(tileNum) {
 
 function q9(tileNum) {
 	let qText = "I. This space can't be occupied because of hazardous waste. Move two spaces up or down. You may place any token (including a bomb) in one of these spaces if not a question tile. If another player's token is already there and not protected by a defender, you may replace it with your own token of any value.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 9;
 	
 	// (see questions 10 and 16 for similar logic)
@@ -2082,9 +2147,9 @@ function q9(tileNum) {
 		highlighted.push(tileNum + 20);
 	}
 	
+	let msg = "";
 	// FOR USER
 	if (playerNum ==0) {
-		msg = "<p>You drew Question I at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2106,14 +2171,13 @@ function q9(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 9)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question I at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// weed out the spaces that aren't valid
 		let compChoices = [];
@@ -2144,16 +2208,16 @@ function q9(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum;
 				if (tileDestroyed) {
 					msg += ", destroying your tile in the process";
 				}
-				msg += ". Click below to continue with your turn.</p>";
+				msg += ". Click the deck to continue with your turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2166,7 +2230,7 @@ function q9(tileNum) {
 
 function q10(tileNum) {
 	let qText = "J. You're feeling adventurous! Move three spaces up or down. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 10;
 	
 	// (see question 16 for similar logic)
@@ -2179,10 +2243,9 @@ function q10(tileNum) {
 		highlighted.push(tileNum + 30);
 	}
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question J at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2205,14 +2268,13 @@ function q10(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 10)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question J at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// weed out the spaces that aren't valid
 		let compChoices = [];
@@ -2233,12 +2295,12 @@ function q10(tileNum) {
 			let toPlay = findBestToken(compChoices, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2251,7 +2313,7 @@ function q10(tileNum) {
 
 function q11(tileNum) {
 	let qText = "K. You have been granted unlimited authority in this area. You may place any token (except a bomb) on any space in the current column. If another person's token is occupying the space you'd like (and it isn't protected by a defender) you may discard that token and place your own instead.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 11;
 
 	// create an array of unoccupied animal figures in the current column
@@ -2262,10 +2324,9 @@ function q11(tileNum) {
 		}
 	}
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question K at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2287,14 +2348,13 @@ function q11(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 11)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question K at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// weed out the spaces that aren't valid
 		let compChoices = [];
@@ -2317,16 +2377,16 @@ function q11(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum;
 				if (toPlay == "bomb") {
 					msg += ", destroying your tile in the process";
 				}
-				msg += ". Click below to continue with your turn.</p>";
+				msg += ". Click the deck to continue with your turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2340,16 +2400,16 @@ function q11(tileNum) {
 let extraTurn = false;
 function q12(tileNum) {
 	let qText = "L. All the members of your team have suddenly become ill, so you've lost your next turn.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>You drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><div id='robotTurnMsg'><p>Click below to have the robot take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button></div>";
+		msg = "<div id='robotTurnMsg'><p>Click below to have " + robotName + " take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button></div>";
 	} else {
 		extraTurn = true;
 		$("#turnChoices").hide();
-		msg = "<p>Robot drew Question L at tile " + tileNum + ":</p><p>" + qText + "</p><p>You will now have two turns in a row.</p>";
+		msg = "<p>You will now have two turns in a row.</p>";
 		$("#pickNumber").addClass("cardHighlight");
 	}
 	
@@ -2361,7 +2421,7 @@ function q12(tileNum) {
 		$("#robotTurnMsg").hide();
 		endHumanTurn();
 		$("#pickNumber").removeClass("cardHighlight");
-		$("#turnDisplay").append("<div id='robotTurnMsg2'><p>Click below to have the robot take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
+		$("#turnDisplay").append("<div id='robotTurnMsg2'><p>Click below to have " + robotName + " take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
 	});
 
 	// when the user clicks to have comp take second turn, this makes sure the player
@@ -2377,7 +2437,7 @@ function q12(tileNum) {
 
 function q13(tileNum) {
 	let qText = "M. Poachers have attacked! All tokens (both yours and others players') are destroyed in the two spaces above and the two spaces below the question tile if not protected by defenders.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 
 	// (see question 1 for similar logic)
 
@@ -2411,15 +2471,14 @@ function q13(tileNum) {
 		}
 	}
 	
-	let msg;
+	let msg = "";
 	// show the user what is happening, prompt them to view the changes if there are any
 	 if (playerNum == 0) {
-		msg = "<p>You drew Question M at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		if (boardChanged) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click below to continue.</p>";
 			$("#continue").show();
 		}
 	 }
@@ -2427,13 +2486,11 @@ function q13(tileNum) {
 	 else {
 		$("#turnChoices").hide();
 		
-		msg = "<p>Robot drew Question M at tile " + tileNum + ":</p><p>" + qText + "</p>";
-		
 		if (boardChanged) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click the deck to continue.</p>";
 			$("#continue").hide();
 			$("#pickNumber").addClass("cardHighlight");
 		}
@@ -2444,7 +2501,7 @@ function q13(tileNum) {
 
 function q14(tileNum) {
 	let qText = "N. Your team has discovered valuable information about how to help the animals in this area. You may place any token (except a bomb) in any space surrounding the current question tile.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 14;
 	
 	// create array of surrounding spaces that are not occupied
@@ -2457,10 +2514,9 @@ function q14(tileNum) {
     }
 	console.log(highlighted);
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question N at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		if (highlighted.length > 0) {
 			// highlight the tiles
@@ -2475,14 +2531,13 @@ function q14(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 14)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question N at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		let compChoices = highlighted;
 		if (compChoices.length > 0) {
@@ -2490,12 +2545,12 @@ function q14(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2508,17 +2563,17 @@ function q14(tileNum) {
 
 function q15(tileNum) {
 	let qText = "O. Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "You drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to take another turn.</p>";
+		msg = "<p>Click the deck to take another turn.</p>";
 		$("#pickNumber").addClass("cardHighlight");
 	} else {
 		$("#turnChoices").hide();
 		$("#pickNumber").removeClass("cardHighlight");
-		msg = "Robot drew Question O at tile " + tileNum + ":</p><p>" + qText + "</p><p>Click below to have the Robot take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>";
+		msg = "<p>Click below to have " + robotName + " take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>";
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2534,7 +2589,7 @@ function q15(tileNum) {
 
 function q16(tileNum) {
 	let qText = "P. Volunteers have arrived to help you further your mission. Move three spaces to the right or to the left. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 16;
 	
 	// (see question 10 for similar logic)
@@ -2566,10 +2621,9 @@ function q16(tileNum) {
 		
 	}
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
-		msg = "<p>You drew Question P at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2592,14 +2646,13 @@ function q16(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 16)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with the Robot's turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "<p>Robot drew Question P at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// weed out the spaces that aren't valid
 		let compChoices = [];
@@ -2620,12 +2673,12 @@ function q16(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 				
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to continue with your turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2639,14 +2692,14 @@ function q16(tileNum) {
 
 function q17(tileNum) {
 	let qText = "Q. A pack of wolves has attacked some of the bison. You must remove a valued token from the bison figure if you have one placed there that isn't protected by a defender.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
 	destroyTokenOnAnimal("a2", "bison", "Q", tileNum, qText);
 }
 
 function q18(tileNum) {
 	let qText = "R. Hunters seeking ivory have entered the elephants' territory. You must remove a valued token from the elephant figure if you have one placed there that isn't protected by a defender.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
 	destroyTokenOnAnimal("a1", "elephant", "R", tileNum, qText);
 }
@@ -2670,10 +2723,9 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 		}
 	}	
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum === 0) {		
-		msg = "You drew Question " + questionLetter + " at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// if there are undefended tokens, highlight them
 		if (undefendedPlayer.length > 0) {
@@ -2688,14 +2740,13 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 		}			
 		// if there aren't, inform user and prompt them to move on
 		else {
-			msg += "<p>You have no undefended tokens on the " + animalName + ". Click to continue.</p>";
+			msg += "<p>You have no undefended tokens on the " + animalName + ". Click below to continue.</p>";
 			
 			$("#continue").show();
 		}
 	}
 	// FOR COMP
 	else {
-		msg = "Robot drew Question " + questionLetter + " at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		// if there are undefended tokens, find the lowest value and call destroyToken, prompt user to move on
 		let choice;
@@ -2728,13 +2779,13 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 				choice = numGold[0];
 			}
 		
-			msg += "<p>Robot has removed a token from tile " + choice + ". Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " has removed a token from tile " + choice + ". Click the deck to continue with your turn.</p>";
 			players[1].destroyToken(choice, 1);
 			
 		}
 		else {
 			// if there aren't, inform user and prompt them to move on
-			msg += "<p>Robot has no undefended tokens on the " + animalName + ". Click below to continue with your turn.</p>";
+			msg += "<p>" + robotName + " has no undefended tokens on the " + animalName + ". Click the deck to continue with your turn.</p>";
 		}
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -2745,7 +2796,7 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 
 function q19(tileNum) {
 	let qText = "S. Your opponent keeps getting one step ahead of you! The next player may place any token (except a bomb) in any space surrounding the current question tile.";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	currentQuestion = 19;
 	
 	// like question 14
@@ -2759,10 +2810,9 @@ function q19(tileNum) {
 		}
     }
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum == 1) {
-		msg = "<p>Robot drew Question S at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		if (highlighted.length > 0) {
 			// highlight the tiles
@@ -2777,7 +2827,7 @@ function q19(tileNum) {
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 19)
 		} else {
-			msg += "<p>There are no valid places to play a token. Click below to continue with your turn.</p>";
+			msg += "<p>There are no valid places to play a token. Click the deck to continue with your turn.</p>";
 		}
 		
 		clearQuestion();
@@ -2786,7 +2836,6 @@ function q19(tileNum) {
 	}
 	// FOR COMP
 	else {
-		msg = "<p>You drew Question S at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		
 		let compChoices = highlighted;
 		if (compChoices.length > 0) {
@@ -2794,12 +2843,12 @@ function q19(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 
 			if (toPlay != "nothing") {
-				msg += "<p>Robot played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to move on to Robot's turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to move on to " + robotName + "'s turn.</p>";
 			} else {
-				msg += "<p>The Robot chose not to play anything. Click below to move on to Robot's turn.</p>";
+				msg += "<p>" + robotName + " chose not to play anything. Click below to move on to " + robotName + "'s turn.</p>";
 			}
 		} else {
-			msg += "<p>The Robot wasn't able to play anything. Click below to move on to Robot's turn.</p>";
+			msg += "<p>" + robotName + " wasn't able to play anything. Click below to move on to " + robotName + "'s turn.</p>";
 		}
 		
 		$("#continue").show();
@@ -2810,29 +2859,27 @@ function q19(tileNum) {
 
 function q20(tileNum) {
 	let qText = "T. Your opponent has made the decision to cooperate more with other wildlife organizations. The next player discards one of their bombs if they have one. ";
-	console.log(qText);
+	$("#questionCard").text(qText);
 	
-	let msg;
+	let msg = "";
 	// FOR USER
 	if (playerNum === 0) {
-		msg = "You drew Question T at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		// if comp has a bomb, discard it
 		if (players[1].bomb > 0) {
-			msg += "<p>The Robot has discarded a bomb.</p><p>Click to continue.</p>";
+			msg += "<p>" + robotName + " has discarded a bomb.</p><p>Click below to continue.</p>";
 			players[1].loseBomb();
 		} else {
-			msg += "<p>The Robot didn't have any bombs, so nothing was discarded.</p><p>Click to continue.</p>";	
+			msg += "<p>" + robotName + " didn't have any bombs, so nothing was discarded.</p><p>Click below to continue.</p>";	
 		}
 		$("#continue").show();
 	}
 	// FOR COMP
 	else {
-		msg = "The Robot drew Question T at tile " + tileNum + ":</p><p>" + qText + "</p>";
 		if (players[0].bomb > 0) {
-			msg += "<p>One of your bombs has been discarded.</p><p>Click to continue with your turn.</p>";
+			msg += "<p>One of your bombs has been discarded.</p><p>Click the deck to continue with your turn.</p>";
 			players[0].loseBomb();
 		} else {
-			msg += "<p>You didn't have any bombs, so nothing was discarded.</p><p>Click to continue with your turn.</p>";	
+			msg += "<p>You didn't have any bombs, so nothing was discarded.</p><p>Click the deck to continue with your turn.</p>";	
 		}
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -2844,7 +2891,7 @@ function q20(tileNum) {
 // handle the user's choice for when something needs to be selected
 $("body").on("click", ".highlight", function() {
 	questionTileChoice = this.id;
-	let msg;
+	let msg = "";
 	if (ruleForClicking == 2) {
 		// ask the user what they want to do on this space, or invite them to choose a different space
 		msg = "<p>You have chosen tile number " + this.id + ". Select which coin you'd like on this tile instead, or select a different one. Or click continue to not select anything.</p>";
@@ -2857,7 +2904,7 @@ $("body").on("click", ".highlight", function() {
 		displayTurnChoices();
 		hideButtons(true, false);
 	} else if (ruleForClicking == 7) {
-		msg = "<p>You have chosen tile number " + this.id + ". Click below to place a single token from Robot and continue to his turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place Robot's token</button>";
+		msg = "<p>You have chosen tile number " + this.id + ". Click below to place a single token from " + robotName + " and continue to his turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place " + robotName + "'s token</button>";
 	} else if (ruleForClicking == 8) {
 		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
 		displayTurnChoices();

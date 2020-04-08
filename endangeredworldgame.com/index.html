@@ -5,257 +5,287 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-	<div id="main">
-		<div id="inventory">
-			<div id="userInventory">
-				<table>
-					<tr>
-						<td id="userName">You</td>
-						<td>
-							<img class="token" src="images/tokens/gold.png">
-							<span id="userGold">2</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/silver.png">
-							<span id="userSilver">5</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/bronze.png">
-							<span id="userBronze">8</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/plain0.png">
-							<span id="userPlain">50</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/defender.png">
-							<span id="userDefender">5</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/bomb.png">
-							<span id="userBomb">5</span>
-						</td>
-					</tr>
-				</table>
+	<div id="container">
+		<div id="main" class="element">
+			<div id="inventory">
+				<div id="userInventory">
+					<table>
+						<tr>
+							<td id="userName">You</td>
+							<td>
+								<img class="token" src="images/tokens/gold.png">
+								<span id="userGold">2</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/silver.png">
+								<span id="userSilver">5</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/bronze.png">
+								<span id="userBronze">8</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/plain0.png">
+								<span id="userPlain">50</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/defender.png">
+								<span id="userDefender">5</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/bomb.png">
+								<span id="userBomb">5</span>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="compInventory">
+					<table>
+						<tr>
+							<td id="robotName">Robot</td>
+							<td>
+								<img class="token" src="images/tokens/gold.png">
+								<span id="compGold">2</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/silver.png">
+								<span id="compSilver">5</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/bronze.png">
+								<span id="compBronze">8</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/plain1.png">
+								<span id="compPlain">50</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/defender.png">
+								<span id="compDefender">5</span>
+							</td>
+							<td>
+								<img class="token" src="images/tokens/bomb.png">
+								<span id="compBomb">5</span>
+							</td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div id="compInventory">
-				<table>
-					<tr>
-						<td id="robotName">Proto</td>
-						<td>
-							<img class="token" src="images/tokens/gold.png">
-							<span id="compGold">2</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/silver.png">
-							<span id="compSilver">5</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/bronze.png">
-							<span id="compBronze">8</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/plain1.png">
-							<span id="compPlain">50</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/defender.png">
-							<span id="compDefender">5</span>
-						</td>
-						<td>
-							<img class="token" src="images/tokens/bomb.png">
-							<span id="compBomb">5</span>
-						</td>
-					</tr>
-				</table>
+			<table class="tg" id="board">
+			  <tr>
+				<th class="tg-nk3j"></th>
+				<th class="tg-nk3j">0</th>
+				<th class="tg-nk3j">1</th>
+				<th class="tg-nk3j">2</th>
+				<th class="tg-nk3j">3</th>
+				<th class="tg-nk3j">4</th>
+				<th class="tg-nk3j">5</th>
+				<th class="tg-nk3j">6</th>
+				<th class="tg-nk3j">7</th>
+				<th class="tg-nk3j">8</th>
+				<th class="tg-nk3j">9</th>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">0</td>
+				<td id="0" class="tg-kbpn">0</td>
+				<td id="1" class="tg-m0sm">1</td>
+				<td id="2" class="tg-trb7">2</td>
+				<td id="3" class="tg-g3ez">3</td>
+				<td id="4" class="tg-ih6r">4</td>
+				<td id="5" class="tg-s8c7">5</td>
+				<td id="6" class="tg-966n">6</td>
+				<td id="7" class="tg-qhoq">7</td>
+				<td id="8" class="tg-0qvf">8</td>
+				<td id="9" class="tg-vwxq">9</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">1</td>
+				<td id="10" class="tg-m0sm">10</td>
+				<td id="11" class="tg-m0sm">11</td>
+				<td id="12" class="tg-trb7">12</td>
+				<td id="13" class="tg-g3ez">13</td>
+				<td id="14" class="tg-ih6r">14</td>
+				<td id="15" class="tg-s8c7">15</td>
+				<td id="16" class="tg-966n">16</td>
+				<td id="17" class="tg-qhoq">17</td>
+				<td id="18" class="tg-0qvf">18</td>
+				<td id="19" class="tg-vwxq">19</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">2</td>
+				<td id="20" class="tg-trb7">20</td>
+				<td id="21" class="tg-trb7">21</td>
+				<td id="22" class="tg-trb7">22</td>
+				<td id="23" class="tg-g3ez">23</td>
+				<td id="24" class="tg-ih6r">24</td>
+				<td id="25" class="tg-s8c7">25</td>
+				<td id="26" class="tg-966n">26</td>
+				<td id="27" class="tg-qhoq">27</td>
+				<td id="28" class="tg-0qvf">28</td>
+				<td id="29" class="tg-vwxq">29</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">3</td>
+				<td id="30" class="tg-g3ez">30</td>
+				<td id="31" class="tg-g3ez">31</td>
+				<td id="32" class="tg-g3ez">32</td>
+				<td id="33" class="tg-g3ez">33</td>
+				<td id="34" class="tg-ih6r">34</td>
+				<td id="35" class="tg-s8c7">35</td>
+				<td id="36" class="tg-966n">36</td>
+				<td id="37" class="tg-qhoq">37</td>
+				<td id="38" class="tg-0qvf">38</td>
+				<td id="39" class="tg-vwxq">39</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">4</td>
+				<td id="40" class="tg-ih6r">40</td>
+				<td id="41" class="tg-ih6r">41</td>
+				<td id="42" class="tg-ih6r">42</td>
+				<td id="43" class="tg-ih6r">43</td>
+				<td id="44" class="tg-ih6r">44</td>
+				<td id="45" class="tg-s8c7">45</td>
+				<td id="46" class="tg-966n">46</td>
+				<td id="47" class="tg-qhoq">47</td>
+				<td id="48" class="tg-0qvf">48</td>
+				<td id="49" class="tg-vwxq">49</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">5</td>
+				<td id="50" class="tg-s8c7">50</td>
+				<td id="51" class="tg-s8c7">51</td>
+				<td id="52" class="tg-s8c7">52</td>
+				<td id="53" class="tg-s8c7">53</td>
+				<td id="54" class="tg-s8c7">54</td>
+				<td id="55" class="tg-s8c7">55</td>
+				<td id="56" class="tg-966n">56</td>
+				<td id="57" class="tg-qhoq">57</td>
+				<td id="58" class="tg-0qvf">58</td>
+				<td id="59" class="tg-vwxq">59</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">6</td>
+				<td id="60" class="tg-966n">60</td>
+				<td id="61" class="tg-966n">61</td>
+				<td id="62" class="tg-966n">62</td>
+				<td id="63" class="tg-966n">63</td>
+				<td id="64" class="tg-966n">64</td>
+				<td id="65" class="tg-966n">65</td>
+				<td id="66" class="tg-966n">66</td>
+				<td id="67" class="tg-qhoq">67</td>
+				<td id="68" class="tg-0qvf">68</td>
+				<td id="69" class="tg-vwxq">69</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">7</td>
+				<td id="70" class="tg-qhoq">70</td>
+				<td id="71" class="tg-qhoq">71</td>
+				<td id="72" class="tg-qhoq">72</td>
+				<td id="73" class="tg-qhoq">73</td>
+				<td id="74" class="tg-qhoq">74</td>
+				<td id="75" class="tg-qhoq">75</td>
+				<td id="76" class="tg-qhoq">76</td>
+				<td id="77" class="tg-qhoq">77</td>
+				<td id="78" class="tg-0qvf">78</td>
+				<td id="79" class="tg-vwxq">79</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">8</td>
+				<td id="80" class="tg-0qvf">80</td>
+				<td id="81" class="tg-0qvf">81</td>
+				<td id="82" class="tg-0qvf">82</td>
+				<td id="83" class="tg-0qvf">83</td>
+				<td id="84" class="tg-0qvf">84</td>
+				<td id="85" class="tg-0qvf">85</td>
+				<td id="86" class="tg-0qvf">86</td>
+				<td id="87" class="tg-0qvf">87</td>
+				<td id="88" class="tg-0qvf">88</td>
+				<td id="89" class="tg-vwxq">89</td>
+			  </tr>
+			  <tr>
+				<td class="tg-nk3j">9</td>
+				<td id="90" class="tg-vwxq">90</td>
+				<td id="91" class="tg-vwxq">91</td>
+				<td id="92" class="tg-vwxq">92</td>
+				<td id="93" class="tg-vwxq">93</td>
+				<td id="94" class="tg-vwxq">94</td>
+				<td id="95" class="tg-vwxq">95</td>
+				<td id="96" class="tg-vwxq">96</td>
+				<td id="97" class="tg-vwxq">97</td>
+				<td id="98" class="tg-vwxq">98</td>
+				<td id="99" class="tg-vwxq">99</td>
+			  </tr>
+			</table>
+			<div id="setupBoard">
+				<button type="button" id="setBoard">Set Up the Board</button><br>
+				<button type="button" id="startGame">Start the Game!</button>
 			</div>
 		</div>
-		<table class="tg" id="board">
-		  <tr>
-			<th class="tg-nk3j"></th>
-			<th class="tg-nk3j">0</th>
-			<th class="tg-nk3j">1</th>
-			<th class="tg-nk3j">2</th>
-			<th class="tg-nk3j">3</th>
-			<th class="tg-nk3j">4</th>
-			<th class="tg-nk3j">5</th>
-			<th class="tg-nk3j">6</th>
-			<th class="tg-nk3j">7</th>
-			<th class="tg-nk3j">8</th>
-			<th class="tg-nk3j">9</th>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">0</td>
-			<td id="0" class="tg-kbpn">0</td>
-			<td id="1" class="tg-m0sm">1</td>
-			<td id="2" class="tg-trb7">2</td>
-			<td id="3" class="tg-g3ez">3</td>
-			<td id="4" class="tg-ih6r">4</td>
-			<td id="5" class="tg-s8c7">5</td>
-			<td id="6" class="tg-966n">6</td>
-			<td id="7" class="tg-qhoq">7</td>
-			<td id="8" class="tg-0qvf">8</td>
-			<td id="9" class="tg-vwxq">9</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">1</td>
-			<td id="10" class="tg-m0sm">10</td>
-			<td id="11" class="tg-m0sm">11</td>
-			<td id="12" class="tg-trb7">12</td>
-			<td id="13" class="tg-g3ez">13</td>
-			<td id="14" class="tg-ih6r">14</td>
-			<td id="15" class="tg-s8c7">15</td>
-			<td id="16" class="tg-966n">16</td>
-			<td id="17" class="tg-qhoq">17</td>
-			<td id="18" class="tg-0qvf">18</td>
-			<td id="19" class="tg-vwxq">19</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">2</td>
-			<td id="20" class="tg-trb7">20</td>
-			<td id="21" class="tg-trb7">21</td>
-			<td id="22" class="tg-trb7">22</td>
-			<td id="23" class="tg-g3ez">23</td>
-			<td id="24" class="tg-ih6r">24</td>
-			<td id="25" class="tg-s8c7">25</td>
-			<td id="26" class="tg-966n">26</td>
-			<td id="27" class="tg-qhoq">27</td>
-			<td id="28" class="tg-0qvf">28</td>
-			<td id="29" class="tg-vwxq">29</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">3</td>
-			<td id="30" class="tg-g3ez">30</td>
-			<td id="31" class="tg-g3ez">31</td>
-			<td id="32" class="tg-g3ez">32</td>
-			<td id="33" class="tg-g3ez">33</td>
-			<td id="34" class="tg-ih6r">34</td>
-			<td id="35" class="tg-s8c7">35</td>
-			<td id="36" class="tg-966n">36</td>
-			<td id="37" class="tg-qhoq">37</td>
-			<td id="38" class="tg-0qvf">38</td>
-			<td id="39" class="tg-vwxq">39</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">4</td>
-			<td id="40" class="tg-ih6r">40</td>
-			<td id="41" class="tg-ih6r">41</td>
-			<td id="42" class="tg-ih6r">42</td>
-			<td id="43" class="tg-ih6r">43</td>
-			<td id="44" class="tg-ih6r">44</td>
-			<td id="45" class="tg-s8c7">45</td>
-			<td id="46" class="tg-966n">46</td>
-			<td id="47" class="tg-qhoq">47</td>
-			<td id="48" class="tg-0qvf">48</td>
-			<td id="49" class="tg-vwxq">49</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">5</td>
-			<td id="50" class="tg-s8c7">50</td>
-			<td id="51" class="tg-s8c7">51</td>
-			<td id="52" class="tg-s8c7">52</td>
-			<td id="53" class="tg-s8c7">53</td>
-			<td id="54" class="tg-s8c7">54</td>
-			<td id="55" class="tg-s8c7">55</td>
-			<td id="56" class="tg-966n">56</td>
-			<td id="57" class="tg-qhoq">57</td>
-			<td id="58" class="tg-0qvf">58</td>
-			<td id="59" class="tg-vwxq">59</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">6</td>
-			<td id="60" class="tg-966n">60</td>
-			<td id="61" class="tg-966n">61</td>
-			<td id="62" class="tg-966n">62</td>
-			<td id="63" class="tg-966n">63</td>
-			<td id="64" class="tg-966n">64</td>
-			<td id="65" class="tg-966n">65</td>
-			<td id="66" class="tg-966n">66</td>
-			<td id="67" class="tg-qhoq">67</td>
-			<td id="68" class="tg-0qvf">68</td>
-			<td id="69" class="tg-vwxq">69</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">7</td>
-			<td id="70" class="tg-qhoq">70</td>
-			<td id="71" class="tg-qhoq">71</td>
-			<td id="72" class="tg-qhoq">72</td>
-			<td id="73" class="tg-qhoq">73</td>
-			<td id="74" class="tg-qhoq">74</td>
-			<td id="75" class="tg-qhoq">75</td>
-			<td id="76" class="tg-qhoq">76</td>
-			<td id="77" class="tg-qhoq">77</td>
-			<td id="78" class="tg-0qvf">78</td>
-			<td id="79" class="tg-vwxq">79</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">8</td>
-			<td id="80" class="tg-0qvf">80</td>
-			<td id="81" class="tg-0qvf">81</td>
-			<td id="82" class="tg-0qvf">82</td>
-			<td id="83" class="tg-0qvf">83</td>
-			<td id="84" class="tg-0qvf">84</td>
-			<td id="85" class="tg-0qvf">85</td>
-			<td id="86" class="tg-0qvf">86</td>
-			<td id="87" class="tg-0qvf">87</td>
-			<td id="88" class="tg-0qvf">88</td>
-			<td id="89" class="tg-vwxq">89</td>
-		  </tr>
-		  <tr>
-			<td class="tg-nk3j">9</td>
-			<td id="90" class="tg-vwxq">90</td>
-			<td id="91" class="tg-vwxq">91</td>
-			<td id="92" class="tg-vwxq">92</td>
-			<td id="93" class="tg-vwxq">93</td>
-			<td id="94" class="tg-vwxq">94</td>
-			<td id="95" class="tg-vwxq">95</td>
-			<td id="96" class="tg-vwxq">96</td>
-			<td id="97" class="tg-vwxq">97</td>
-			<td id="98" class="tg-vwxq">98</td>
-			<td id="99" class="tg-vwxq">99</td>
-		  </tr>
-		</table>
-		<div id="setupBoard">
-			<button type="button" id="setBoard">Set up the Board</button><br>
-			<button type="button" id="startGame" disabled>Start the game!</button>
-		</div>
-	</div>
 
-	<div id="main2">
-		<div id="cards">
-			<img id="pickNumber" class="cardHighlight" alt="back of card" src="images/cards/back.jpg">
-			<img id="cardFront" alt="front of card" src="images/cards/0.jpg">
-		</div>
-		
-		<div id="turnDiv">
-			<div id="turnDisplay"></div>
-			
-			<p id="tokenExists">There is already a token here, so you can't play anything. Click to continue with the Robot's turn.</p>
-			<div id="turnChoices">
-			  <img id="playGold" class="playToken" alt="gold coin" src="images/tokens/gold.png">
-			  <img id="playSilver" class="playToken" alt="gold coin" src="images/tokens/silver.png">
-			  <img id="playBronze" class="playToken" alt="gold coin" src="images/tokens/bronze.png">
-			  <img id="playPlain" class="playToken" alt="gold coin" src="images/tokens/plain0.png"><br>
-			  <img id="playDefender" class="playToken" alt="gold coin" src="images/tokens/defender.png">
-			  <img id="playBomb" class="playToken" alt="gold coin" src="images/tokens/bomb.png"><br>
-			  <button type="button" id="doNothing">Do Nothing</button>
-			  <!--
-			  <button type="button" id="playGold">Gold Coin</button>
-			  <button type="button" id="playSilver">Silver Coin</button>
-			  <button type="button" id="playBronze">Bronze Coin</button>
-			  <button type="button" id="playPlain">Plain Token</button>
-			  <button type="button" id="playDefender">Defender</button>
-			  <button type="button" id="playBomb">Bomb</button>
-			  <button type="button" id="doNothing">Do Nothing</button>
-			  -->
+		<div id="main2">
+			<div id="cards">
+				<img id="pickNumber" class="cardHighlight" alt="back of card" src="images/cards/back.jpg">
+				<img id="cardFront" alt="front of card" src="images/cards/0.jpg">
 			</div>
 			
-			<button type="button" id="playDefenderRule3">Play Defender</button>
-			
-			<button type="button" id="seeChanges">See Changes</button>
-			<button type="button" id="continue">Continue</button>
+			<div id="turnDiv">
+				<div id="questionCard"></div>
+				<div id="turnDisplay"></div>
+				<img id="questionTile" alt="question tile" src="images/questions/1.png">
+				
+				
+				<p id="tokenExists">There is already a token here, so you can't play anything. Click to continue with the Robot's turn.</p>
+				<div id="turnChoices">
+					<div class="tokenRow">
+					  <img id="playGold" class="playToken" alt="gold coin" src="images/tokens/gold.png">
+					  <img id="playSilver" class="playToken" alt="gold coin" src="images/tokens/silver.png">
+					  <img id="playBronze" class="playToken" alt="gold coin" src="images/tokens/bronze.png">
+					  <img id="playPlain" class="playToken" alt="gold coin" src="images/tokens/plain0.png">
+					</div>
+					<div class="tokenRow">
+					  <img id="playDefender" class="playToken" alt="gold coin" src="images/tokens/defender.png">
+					  <img id="playBomb" class="playToken" alt="gold coin" src="images/tokens/bomb.png">
+					</div>
+				  <button type="button" id="doNothing">Do Nothing</button>
+				  <!--
+				  <button type="button" id="playGold">Gold Coin</button>
+				  <button type="button" id="playSilver">Silver Coin</button>
+				  <button type="button" id="playBronze">Bronze Coin</button>
+				  <button type="button" id="playPlain">Plain Token</button>
+				  <button type="button" id="playDefender">Defender</button>
+				  <button type="button" id="playBomb">Bomb</button>
+				  <button type="button" id="doNothing">Do Nothing</button>
+				  -->
+				</div>
+				
+				<div id="turnChoicesComp">
+					<div class="tokenRow">
+					  <img id="playGoldComp" class="playToken" alt="gold coin" src="images/tokens/gold.png">
+					  <img id="playSilverComp" class="playToken" alt="gold coin" src="images/tokens/silver.png">
+					  <img id="playBronzeComp" class="playToken" alt="gold coin" src="images/tokens/bronze.png">
+					  <img id="playPlainComp" class="playToken" alt="gold coin" src="images/tokens/plain1.png">
+					</div>
+					<div class="tokenRow">
+					  <img id="playDefenderComp" class="playToken" alt="gold coin" src="images/tokens/defender.png">
+					  <img id="playBombComp" class="playToken" alt="gold coin" src="images/tokens/bomb.png">
+					</div>
+				  <!--
+				  <button type="button" id="playGold">Gold Coin</button>
+				  <button type="button" id="playSilver">Silver Coin</button>
+				  <button type="button" id="playBronze">Bronze Coin</button>
+				  <button type="button" id="playPlain">Plain Token</button>
+				  <button type="button" id="playDefender">Defender</button>
+				  <button type="button" id="playBomb">Bomb</button>
+				  <button type="button" id="doNothing">Do Nothing</button>
+				  -->
+				</div>
+				
+				<button type="button" id="playDefenderRule3">Play Defender</button>
+				
+				<button type="button" id="seeChanges">See Changes</button>
+				<button type="button" id="continue">Continue</button>
+			</div>
 		</div>
-	
 	</div>
 
     <script
