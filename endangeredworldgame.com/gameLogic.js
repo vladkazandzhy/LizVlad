@@ -179,7 +179,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 4; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -217,7 +217,7 @@ function NumberBag() {
 
     return currentNumber;
   };
-
+/*
   this.checkIfEnd = function() {
     if (numberBag.length == 0) {
       return true;
@@ -225,7 +225,7 @@ function NumberBag() {
       return false;
     }
   };
-
+*/
   this.getCurrent = function() {
     return currentNumber;
   };
@@ -324,6 +324,8 @@ function drawNumber() {
   // return a random number
   let rand = bag.randomize();
   
+  
+  
   console.log("Player " + playerNum + " just drew tile " + rand +".");
 
   // just console.log
@@ -336,34 +338,40 @@ function drawNumber() {
 
 
 function takeTurn(rand) {
-	$("#cardFront").attr("src", "images/cards/" + rand + ".jpg");
+	// when there are cards left
+	if (typeof rand != 'undefined') {
+		$("#cardFront").attr("src", "images/cards/" + rand + ".jpg");
 	
-	let questionId = getQuestionId(rand);
-	
-	// if it's a question, handle specially
-	if (questionId > 0) {
-		handleQuestion(rand, questionId);
-	}
-	// if it's anything else, resume gameplay as normal
-	else {
-		// determine if it's the user or computer playing
-	  if (playerNum == 0) {
-		$("#turnDisplay").html("<p>What would you like to play on tile <b>" + rand + "</b>?");
-		displayTurnChoices();
-	  } else {
-		$("#turnChoices").hide();
+		let questionId = getQuestionId(rand);
 		
-		if (!extraTurnComp) {
-			$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.</p>");
-		} else {
-			$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>.</p>");
-			extraTurnComp = false;
+		// if it's a question, handle specially
+		if (questionId > 0) {
+			handleQuestion(rand, questionId);
 		}
-		calculateRobotChoice(rand);
-		endCompTurn();
-	  }
+		// if it's anything else, resume gameplay as normal
+		else {
+			// determine if it's the user or computer playing
+		  if (playerNum == 0) {
+			$("#turnDisplay").html("<p>What would you like to play on tile <b>" + rand + "</b>?");
+			displayTurnChoices();
+		  } else {
+			$("#turnChoices").hide();
+			
+			if (!extraTurnComp) {
+				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.</p>");
+			} else {
+				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>.</p>");
+				extraTurnComp = false;
+			}
+			calculateRobotChoice(rand);
+			endCompTurn();
+		  }
+		}
 	}
-	
+	// when there are no cards left
+	else {
+	  endGame();
+	}
   
 }
 
@@ -817,7 +825,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	}
 	
 	if (!$("#" + tile).hasClass("animal")) {
-		$("#turnDisplay").html("<p>" + robotName + " chose to do nothing on tile " + tile + ". Click the deck to continue with your turn.</p>");
+		$("#turnDisplay").html("<p>" + robotName + " chose to do nothing on tile <b>" + tile + "</b>. Click the deck to continue with your turn.</p>");
 		$("#turnChoicesComp").hide();
 		return "nothing";
 	}
@@ -1159,31 +1167,47 @@ function getSurroundingSpaces(num) {
 // start the robot's turn
 function endHumanTurn() {
 	// if there are still numbers, comp takes turn
+	tileNum = drawNumber();
+	takeTurn(tileNum);
+	/*
 	if (!bag.checkIfEnd()) {
 		tileNum = drawNumber();
 		takeTurn(tileNum);
 	} else {
-		alert("Game over!");
-		countFinalScore();
+		endGame();
 	}
+	*/
 }
 
 function endCompTurn() {	
 	// if there are still numbers, human takes turn
+	$("#pickNumber").addClass("cardHighlight");
+	/*
 	if (!bag.checkIfEnd()) {
 		$("#pickNumber").addClass("cardHighlight");
 	} else {
-		alert("Game over!");
-		countFinalScore();
+		endGame();
 	}
+	*/
 }
 
+function endGame() {
+	$("#main2").hide();
+	$("#main3").show();
+}
+
+$("#showScore").click(function() {
+	$("#promptFinalScore").hide();
+	countFinalScore();
+});
+
 // calculate the final score
-function countFinalScore() {
+function countFinalScore() {	
 	let playerPoints = 0;
 	let compPoints = 0;
 	let animalsWonByPlayer = [];
 	let animalsWonByComp = [];
+	let lostAnimals = [];	
 	
 	// this loops through each animal and counts up who won each
 	for (var i = 1; i <= 15; i++) {
@@ -1194,6 +1218,8 @@ function countFinalScore() {
 			animalsWonByPlayer.push(i);
 		} else if (compPoints > playerPoints) {
 			animalsWonByComp.push(i);
+		} else {
+			lostAnimals.push(i);
 		}
 		
 		//reset the points because we're moving to the next animal
@@ -1201,32 +1227,54 @@ function countFinalScore() {
 		compPoints = 0;
 	}
 	
-	console.log("The player won the following animals:");
-	console.log(animalsWonByPlayer);
-	console.log("The computer won the following animals:");
-	console.log(animalsWonByComp);
+	$("#results").css("display", "grid");
+	$("#userWon").html("<h2><u>Animals saved by you</u></h2>");
+	$("#compWon").html("<h2><u>Animals saved by " + robotName + "</u></h2>");
+	$("#nobodyWon").html("<h2><u>Animals lost</u></h2>");
 
 	let playerFinalScore = 0;
 	let compFinalScore = 0;
 	// count the points for each animal won by player and comp
 	if (animalsWonByPlayer.length > 0) {
 		for (var i = 0; i < animalsWonByPlayer.length; i++) {
-			playerFinalScore += calculateAnimalScore(animalsWonByPlayer[i]);
+			let animalScore = calculateAnimalScore(animalsWonByPlayer[i]);
+			playerFinalScore += animalScore;
+			$("#userWon").append('<img class="animalResults" src="images/animals/' + animalsWonByPlayer[i] + '.jpg">');
+			$("#userWon").append('<p><b>' + animalScore + '</b> points</p>');
 		}
 	}
 	
 	if (animalsWonByComp.length > 0) {
 		for (var i = 0; i < animalsWonByComp.length; i++) {
-			compFinalScore += calculateAnimalScore(animalsWonByComp[i]);
+			let animalScore = calculateAnimalScore(animalsWonByComp[i]);
+			compFinalScore += animalScore;
+			$("#compWon").append('<img class="animalResults" src="images/animals/' + animalsWonByComp[i] + '.jpg">');
+			$("#compWon").append('<p><b>' + animalScore + '</b> points</p>');
+		}
+	}
+	
+	if (lostAnimals.length > 0) {
+		for (var i = 0; i < lostAnimals.length; i++) {
+			let animalScore = calculateAnimalScore(lostAnimals[i]);
+			$("#nobodyWon").append('<img class="animalResults" src="images/animals/' + lostAnimals[i] + '.jpg">');
+			$("#nobodyWon").append('<p><b>' + animalScore + '</b> points</p>');
 		}
 	}
 	
 	// implement the rule that unused bombs count as 10 points each
-	playerFinalScore += (players[0].bomb * 10);
-	compFinalScore += (players[1].bomb * 10);
+	playerBombScore = (players[0].bomb * 10);
+	compBombScore = (players[1].bomb * 10);
 	
-	console.log("Player's final score is " + playerFinalScore);
-	console.log("Comp's final score is " + compFinalScore);
+	$("#userWon").append('<p>+ <b>' + playerBombScore + '</b> points for unused bombs</p>');
+	$("#compWon").append('<p>+ <b>' + compBombScore + '</b> points for unused bombs</p>');
+	
+	playerFinalScore += playerBombScore;
+	compFinalScore += compBombScore;
+		
+	
+	
+	$("#resultsSummary").html("<h1>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h1>");
+	
 }
 
 function calculateAnimalScore(animalId) {

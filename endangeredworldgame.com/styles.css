@@ -98,10 +98,6 @@ button {
 	color: #ebebeb;
 }
 
-button:hover {
-	background-position: right center;
-}
-
 #startGame {
 	display: none;
 }
@@ -132,6 +128,7 @@ button:hover {
 	margin: 10px auto;
 	width: 50%;
 	max-width: 153px;
+	transition: transform 0.5s ease;
 }
 
 #questionCard {
@@ -165,25 +162,39 @@ button:hover {
 	#main2 {
 		grid-template-columns: 1fr 2fr;
 	}
+	#results {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media only screen and (min-width: 610px) {
 	#main2 {
-		grid-template-columns: 1fr 1fr);
+		grid-template-columns: 1fr;
 	}
-	
+	#results {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
 }
 
 .playToken {
 	width: 18%;
+	transition: transform 0.5s ease;
+}
+
+#turnChoices .tokenRow .playToken:hover, #doNothing:hover, #showScore:hover, #questionTile:hover
+{
+        -webkit-transform: scale(1.2);
+        -ms-transform: scale(1.2);
+        transform: scale(1.2);
 }
 
 .tokenRow {
 	margin-bottom: 10px;
 }
 
-#doNothing {
+#doNothing, #showScore {
 	font-size: 1.3em;
+	transition: transform 0.5s ease;
 }
 
 .tokenRow img {
@@ -353,11 +364,16 @@ button:hover {
 
 .cardHighlight {
 	border: 4px solid yellow;
+	transition: border 0.5s ease;
 }
 
+.cardHighlight:hover {
+	border: 4px solid #71d400;
+}
 .robotTurnHighlight {
 	border: 4px solid #06cf17;
 }
+
 
 .special {
 	border: 2px dashed #65EFD3 !important;
@@ -416,6 +432,26 @@ button:hover {
   left: 150px;
 }
 
-#seeChanges, #continue {
+#seeChanges, #continue, #main3 {
 	display: none;
+}
+
+#main3 {
+	text-align: center;
+}
+
+#results {
+	display: none;
+	grid-column-gap: 10px;
+}
+
+.animalResults {
+	display: block;
+	margin: 0px auto;
+	max-width: 200px;
+}
+
+#results p {
+	margin-top: 2px;
+	margin-bottom: 10px;
 }
