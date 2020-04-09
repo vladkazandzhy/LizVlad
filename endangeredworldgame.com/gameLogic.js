@@ -1631,7 +1631,7 @@ let currentQuestion = 0;
 let questionTileChoice = -1;
 
 function q1(tileNum) {
-	let qText = "A. An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
+	let qText = "An epidemic has struck! All tokens (both yours and others players') are destroyed in the two spaces to the left and the two spaces to the right of the question tile if not protected by defenders."; 
 	$("#questionCard").text(qText);
 	
 	// determine which tiles are relevant
@@ -1704,7 +1704,7 @@ function q1(tileNum) {
 }
 
 function q2(tileNum) {
-	let qText = "B. The animal population is growing! You may increase the value of any one of your tokens on the gameboard by replacing it with a higher-valued coin if you have one. If you already had a bronze or silver coin in that space, return it to your possession.";
+	let qText = "The animal population is growing! You may increase the value of any one of your tokens on the gameboard by replacing it with a higher-valued coin if you have one. If you already had a bronze or silver coin in that space, return it to your possession.";
 	$("#questionCard").text(qText);
 	currentQuestion = 2;
 	
@@ -1858,7 +1858,7 @@ function q2(tileNum) {
 }
 
 function q3(tileNum) {
-	let qText = "C. The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
+	let qText = "The government has funded another animal reserve for your opponent. The next player has won a defender token and may place it in the current space or keep it for later.";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -1892,7 +1892,7 @@ function q3(tileNum) {
 }
 
 function q4(tileNum) {
-	let qText = "D. Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
+	let qText = "Congratulations! You have won a gold coin from an anonymous donor. Now you can you can save more animals!";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -1912,7 +1912,7 @@ function q4(tileNum) {
 }
 
 function q5(tileNum) {
-	let qText = "E. A wealthy family has transferred money to your opponent's endangered animal fund. The next player has won a silver coin!";
+	let qText = "A wealthy family has transferred money to your opponent's endangered animal fund. The next player has won a silver coin!";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -1932,7 +1932,7 @@ function q5(tileNum) {
 }
 
 function q6(tileNum) {
-	let qText = "F. Congratulations! You've won a free round-trip flight. Travel to any space on the gameboard that isn't occupied and place any token (except a bomb).";
+	let qText = "Congratulations! You've won a free round-trip flight. Travel to any space on the gameboard that isn't occupied and place any token (except a bomb).";
 	$("#questionCard").text(qText);
 	currentQuestion = 6;
 	
@@ -2021,7 +2021,7 @@ function q6(tileNum) {
 }
 
 function q7(tileNum) {
-	let qText = "G. A government leader has issued your opponent a private jet and has asked you to assist them. Place one of the next player's single tokens (worth 1 point) on any animal figure on the board that isn't occupied.";
+	let qText = "A government leader has issued your opponent a private jet and has asked you to assist them. Place one of the next player's single tokens (worth 1 point) on any animal figure on the board that isn't occupied.";
 	$("#questionCard").text(qText);
 	
 	// create an array of unoccupied animal figures
@@ -2093,7 +2093,7 @@ function q7(tileNum) {
 }
 
 function q8(tileNum) {
-	let qText = "H. A one-month expedition of your organization was successful. You may place any valued token on any animal in this row if the space is not occupied.";
+	let qText = "A one-month expedition of your organization was successful. You may place any valued token on any animal in this row if the space is not occupied.";
 	$("#questionCard").text(qText);
 	currentQuestion = 8;
 	
@@ -2154,7 +2154,7 @@ function q8(tileNum) {
 }
 
 function q9(tileNum) {
-	let qText = "I. This space can't be occupied because of hazardous waste. Move two spaces up or down. You may place any token (including a bomb) in one of these spaces if not a question tile. If another player's token is already there and not protected by a defender, you may replace it with your own token of any value.";
+	let qText = "This space can't be occupied because of hazardous waste. Move two spaces up or down. You may place any token (including a bomb) in one of these spaces if not a question tile. If another player's token is already there and not protected by a defender, you may replace it with your own token of any value.";
 	$("#questionCard").text(qText);
 	currentQuestion = 9;
 	
@@ -2250,7 +2250,7 @@ function q9(tileNum) {
 }
 
 function q10(tileNum) {
-	let qText = "J. You're feeling adventurous! Move three spaces up or down. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
+	let qText = "You're feeling adventurous! Move three spaces up or down. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
 	$("#questionCard").text(qText);
 	currentQuestion = 10;
 	
@@ -2333,7 +2333,7 @@ function q10(tileNum) {
 }
 
 function q11(tileNum) {
-	let qText = "K. You have been granted unlimited authority in this area. You may place any token (except a bomb) on any space in the current column. If another person's token is occupying the space you'd like (and it isn't protected by a defender) you may discard that token and place your own instead.";
+	let qText = "You have been granted unlimited authority in this area. You may place any token (except a bomb) on any space in the current column. If another person's token is occupying the space you'd like (and it isn't protected by a defender) you may discard that token and place your own instead.";
 	$("#questionCard").text(qText);
 	currentQuestion = 11;
 
@@ -2421,7 +2421,7 @@ function q11(tileNum) {
 let extraTurnUser = false;
 let extraTurnComp = false;
 function q12(tileNum) {
-	let qText = "L. All the members of your team have suddenly become ill, so you've lost your next turn.";
+	let qText = "All the members of your team have suddenly become ill, so you've lost your next turn.";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -2460,7 +2460,7 @@ function q12(tileNum) {
 }
 
 function q13(tileNum) {
-	let qText = "M. Poachers have attacked! All tokens (both yours and others players') are destroyed in the two spaces above and the two spaces below the question tile if not protected by defenders.";
+	let qText = "Poachers have attacked! All tokens (both yours and others players') are destroyed in the two spaces above and the two spaces below the question tile if not protected by defenders.";
 	$("#questionCard").text(qText);
 
 	// (see question 1 for similar logic)
@@ -2502,7 +2502,7 @@ function q13(tileNum) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click below to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click below to continue with " + robotName + "'s turn.</p>";
 			$("#continue").show();
 		}
 	 }
@@ -2514,7 +2514,7 @@ function q13(tileNum) {
 			msg += "<p>Click below to view the changes.</p>";
 			$("#seeChanges").show();
 		} else {
-			msg += "<p>No tokens were destroyed. Click the deck to continue.</p>";
+			msg += "<p>No tokens were destroyed. Click the deck to continue with your turn.</p>";
 			$("#continue").hide();
 			$("#pickNumber").addClass("cardHighlight");
 		}
@@ -2524,7 +2524,7 @@ function q13(tileNum) {
 }
 
 function q14(tileNum) {
-	let qText = "N. Your team has discovered valuable information about how to help the animals in this area. You may place any token (except a bomb) in any space surrounding the current question tile.";
+	let qText = "Your team has discovered valuable information about how to help the animals in this area. You may place any token (except a bomb) in any space surrounding the current question tile.";
 	$("#questionCard").text(qText);
 	currentQuestion = 14;
 	
@@ -2586,7 +2586,7 @@ function q14(tileNum) {
 }
 
 function q15(tileNum) {
-	let qText = "O. Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
+	let qText = "Your opponent's team has become stranded in the wilderness, so the next player loses their next turn.";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -2612,7 +2612,7 @@ function q15(tileNum) {
 }
 
 function q16(tileNum) {
-	let qText = "P. Volunteers have arrived to help you further your mission. Move three spaces to the right or to the left. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
+	let qText = "Volunteers have arrived to help you further your mission. Move three spaces to the right or to the left. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
 	$("#questionCard").text(qText);
 	currentQuestion = 16;
 	
@@ -2715,14 +2715,14 @@ function q16(tileNum) {
 }
 
 function q17(tileNum) {
-	let qText = "Q. A pack of wolves has attacked some of the bison. You must remove a valued token from the bison figure if you have one placed there that isn't protected by a defender.";
+	let qText = "A pack of wolves has attacked some of the bison. You must remove a valued token from the bison figure if you have one placed there that isn't protected by a defender.";
 	$("#questionCard").text(qText);
 	
 	destroyTokenOnAnimal("a2", "bison", "Q", tileNum, qText);
 }
 
 function q18(tileNum) {
-	let qText = "R. Hunters seeking ivory have entered the elephants' territory. You must remove a valued token from the elephant figure if you have one placed there that isn't protected by a defender.";
+	let qText = "Hunters seeking ivory have entered the elephants' territory. You must remove a valued token from the elephant figure if you have one placed there that isn't protected by a defender.";
 	$("#questionCard").text(qText);
 	
 	destroyTokenOnAnimal("a1", "elephant", "R", tileNum, qText);
@@ -2819,7 +2819,7 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 }
 
 function q19(tileNum) {
-	let qText = "S. Your opponent keeps getting one step ahead of you! The next player may place any token (except a bomb) in any space surrounding the current question tile.";
+	let qText = "Your opponent keeps getting one step ahead of you! The next player may place any token (except a bomb) in any space surrounding the current question tile.";
 	$("#questionCard").text(qText);
 	currentQuestion = 19;
 	
@@ -2835,7 +2835,7 @@ function q19(tileNum) {
     }
 	
 	let msg = "";
-	// FOR USER
+	// FOR COMP
 	if (playerNum == 1) {
 		
 		if (highlighted.length > 0) {
@@ -2846,19 +2846,18 @@ function q19(tileNum) {
 			}
 			
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click Draw Number to not place anything and move to your turn.</p>";
-			ruleForClicking = 14;
+			msg += "<p>Please select the space where you would like to place a token, or click the deck to not place anything and continue to your turn.</p>";
+			ruleForClicking = 19;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 19)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click the deck to continue with your turn.</p>";
 		}
 		
-		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
 	}
-	// FOR COMP
+	// FOR USER
 	else {
 		
 		let compChoices = highlighted;
@@ -2875,6 +2874,8 @@ function q19(tileNum) {
 			msg += "<p>" + robotName + " wasn't able to play anything. Click below to move on to " + robotName + "'s turn.</p>";
 		}
 		
+		$(".robotTurnHighlight").removeClass("robotTurnHighlight");
+		clearQuestion();
 		$("#continue").show();
 	}
 	
@@ -2882,7 +2883,7 @@ function q19(tileNum) {
 }
 
 function q20(tileNum) {
-	let qText = "T. Your opponent has made the decision to cooperate more with other wildlife organizations. The next player discards one of their bombs if they have one. ";
+	let qText = "Your opponent has made the decision to cooperate more with other wildlife organizations. The next player discards one of their bombs if they have one. ";
 	$("#questionCard").text(qText);
 	
 	let msg = "";
@@ -2918,23 +2919,23 @@ $("body").on("click", ".highlight", function() {
 	let msg = "";
 	if (ruleForClicking == 2) {
 		// ask the user what they want to do on this space, or invite them to choose a different space
-		msg = "<p>You have chosen tile number " + this.id + ". Select which coin you'd like on this tile instead, or select a different one. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select which coin to play on this tile instead, or select a different tile. Or click continue to not select anything.</p>";
 		
 		displayTurnChoicesRule2(); // after the user selects a button, it goes to the function handleRule2()
 		
 	} else if (ruleForClicking == 6) {
 		// ask the user what they want to do on this space, or invite them to choose a different space
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different one.</p>";
 		displayTurnChoices();
 		hideButtons(true, false);
 	} else if (ruleForClicking == 7) {
-		msg = "<p>You have chosen tile number " + this.id + ". Click below to place a single token from " + robotName + " and continue to his turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place " + robotName + "'s token</button>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to place a single token from " + robotName + " and continue to its turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place " + robotName + "'s token</button>";
 	} else if (ruleForClicking == 8) {
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(true, true);
 	} else if (ruleForClicking == 9) {
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(false, false);
 		
@@ -2946,22 +2947,22 @@ $("body").on("click", ".highlight", function() {
 			$("#playDefender").show();
 		}
 	} else if (ruleForClicking == 10 || ruleForClicking == 16) {
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(false, false);
 	} else if (ruleForClicking == 11 || ruleForClicking == 14) {
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(true, false);
+	} else if (ruleForClicking == 18) {
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to remove this token, or select a different one.</p><button id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
 	} else if (ruleForClicking == 19) {
-		msg = "<p>You have chosen tile number " + this.id + ". Select what you'd like to place on this tile, or select a different one. Or click Draw Number to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click the deck to not select anything.</p>";
 		msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
 		
 		displayTurnChoices();
 		hideButtons(true, false);
-	} else if (ruleForClicking == 18) {
-		msg = "<p>You have chosen tile number " + this.id + ". Click below to remove this token, or select a different one.</p><button id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
-	}
+	} 
 	
 	$("#turnDisplay").html(msg);
 });
@@ -2981,11 +2982,11 @@ function hideButtons(hideBomb, hideDefender) {
 function removeToken(tileNum) {
 	console.log("destroying token on tile " + tileNum);
 	players[0].destroyToken(tileNum, 0);
-	
 	$("#removeToken").hide();
-	$("#continue").show();
-	$("#turnDisplay").append("<p>Your token has been removed. Click below to continue.</p>");
+	
 	clearQuestion();
+	$("#continue").show();
+	$("#turnDisplay").html("<p>Your token has been removed. Click below to continue with " + robotName + "'s turn.</p>");
 }
 
 function playRobotToken() {
