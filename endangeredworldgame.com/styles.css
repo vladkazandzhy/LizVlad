@@ -46,7 +46,10 @@ html, body {
 	margin: 5px auto;
 	display: inline-block;
 	font-size: .7em;
-	background: #f0f0f0;
+}
+
+#inventory table {
+	background: #f0f0f0;	
 }
 
 #inventory .token {
@@ -146,6 +149,10 @@ button:hover {
 	display: none;
 }
 
+#robotTurnMsg2 {
+	display: none;
+}
+
 #main2 {
 	text-align: center;
 	width: 95%;
@@ -168,16 +175,20 @@ button:hover {
 }
 
 .playToken {
-	width: 20%;
+	width: 18%;
 }
 
 .tokenRow {
 	margin-bottom: 10px;
 }
 
+#doNothing {
+	font-size: 1.3em;
+}
+
 .tokenRow img {
 	margin: 5px;
-	max-width: 100px;
+	max-width: 80px;
 }
 
 

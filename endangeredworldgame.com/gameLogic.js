@@ -198,18 +198,7 @@ function NumberBag() {
 	
 	// remove question tile if needed
 	if ($("#" + previousNumber).hasClass("question")) {
-		let questionId = getQuestionId(previousNumber);
-		let tile = $("#" + previousNumber);
-		tile.removeAttr("style");
-		tile.removeClass("filled");
-		tile.removeClass("question");
-		tile.removeClass("q" + questionId);
-		
-		// in some questions, players can place a coin in the question space,
-		// in which case you don't need to replace the text
-		if (!tile.find('img').length) {
-			$("#" + previousNumber).text(previousNumber.toString());
-		}
+		removeQuestionInfo(previousNumber);
 	}	
 
     // choose a random number from what's left in the number bag
@@ -249,6 +238,21 @@ function NumberBag() {
 	 }
 	 highlighted.length = 0;
   }
+}
+
+function removeQuestionInfo(previousNumber) {
+	let questionId = getQuestionId(previousNumber);
+	let tile = $("#" + previousNumber);
+	tile.removeAttr("style");
+	tile.removeClass("filled");
+	tile.removeClass("question");
+	tile.removeClass("q" + questionId);
+	
+	// in some questions, players can place a coin in the question space,
+	// in which case you don't need to replace the text
+	if (!tile.find('img').length) {
+		$("#" + previousNumber).text(previousNumber.toString());
+	}
 }
 
 /*
@@ -348,7 +352,13 @@ function takeTurn(rand) {
 		displayTurnChoices();
 	  } else {
 		$("#turnChoices").hide();
-		$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.");
+		
+		if (!extraTurnComp) {
+			$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.</p>");
+		} else {
+			$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>.</p>");
+			extraTurnComp = false;
+		}
 		calculateRobotChoice(rand);
 		endCompTurn();
 	  }
@@ -365,8 +375,13 @@ function displayTurnChoices() {
   if (!tile.hasClass("occupied")){
 	   $("#turnChoices").show();
 	   
+	   // show all individual buttons because sometimes they're hidden
 	  $("#turnText").show();
 	  $("#doNothing").show();
+	  $("#playGold").show();
+	  $("#playSilver").show();
+	  $("#playBronze").show();
+	  $("#playPlain").show();
 	  $("#playBomb").show();
 	  $("#playDefender").show();
 
@@ -434,7 +449,7 @@ function displayTurnChoicesRule2() {
 
 // user choices (for usual turns)
 $("#doNothing").click(function() {
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -457,7 +472,7 @@ $("#playGold").click(function() {
 	}
 	clearQuestion();
 	
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -481,7 +496,7 @@ $("#playSilver").click(function() {
 	}
 	clearQuestion();
   
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -504,7 +519,7 @@ $("#playBronze").click(function() {
 	}
 	clearQuestion();
 	
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -525,7 +540,7 @@ $("#playPlain").click(function() {
 	}
 	clearQuestion();
 
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -541,7 +556,7 @@ $("#playDefender").click(function() {
 	}
 	clearQuestion();
   
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -557,7 +572,7 @@ $("#playBomb").click(function() {
 	
 	clearQuestion();
 	
-	if (!extraTurn) {
+	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
@@ -639,9 +654,10 @@ function handleRule2(type, playerNum) {
 
 // special case for question 3
 $("#playDefenderRule3").click(function() {
+  removeQuestionInfo(tileNum);
   players[0].playDefender(tileNum);
   $("#playDefenderRule3").hide();
-  $("#turnDisplay").text("You played a Defender. Click the deck to continue with your next turn.");
+  $("#turnDisplay").text("You played a defender. Click the deck to continue with your next turn.");
 });
 
 // this function prompts the user to draw another number,
@@ -651,7 +667,7 @@ function takeExtraTurn() {
     $('#turnDisplay').html("<p>Click the deck to take your second turn.</p>");
 	$("#turnChoices").hide();
     playerNum++;
-	extraTurn = false;
+	extraTurnUser = false;
 	endCompTurn();
 }
 
@@ -667,8 +683,10 @@ $("#seeChanges").click(function() {
 	destroy();
 	$("#seeChanges").hide();
 	if (playerNum == 0) {
+		$("#turnDisplay").html("<p>Click below to continue with " + robotName + "'s turn.</p>");
 		$("#continue").show();
 	} else {
+		$("#turnDisplay").html("<p>Click the deck to continue with your turn.</p>");
 		$("#pickNumber").addClass("cardHighlight");
 	}
 });
@@ -1142,7 +1160,7 @@ function getSurroundingSpaces(num) {
 function endHumanTurn() {
 	// if there are still numbers, comp takes turn
 	if (!bag.checkIfEnd()) {
-		let tileNum = drawNumber();
+		tileNum = drawNumber();
 		takeTurn(tileNum);
 	} else {
 		alert("Game over!");
@@ -1248,6 +1266,7 @@ function robotSelectBestSpace(arr) {
 	let minIndex = -1;
 	for (let i = 0; i < arr.length; i++) {
 		if (getAnimalId(arr[i]) < min) {
+			min = getAnimalId(arr[i]);
 			minIndex = i;
 		}
 	}
@@ -1488,6 +1507,7 @@ robotName = "Robot";
 function randomizeRobotName() {
 	let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
 	robotName = items[Math.floor(Math.random() * items.length)];
+	$("#tokenExists").text("There is already a token here, so you can't play anything. Click to continue with " + robotName +"'s turn.");
 	$("#robotName").text(robotName);
 }
 
@@ -1859,7 +1879,7 @@ function q3(tileNum) {
 		
 		$("#continue").show();
 	} else {
-		msg = "<p>Click below to play the defender on tile " + tileNum + ". Otherwise, click the deck to continue with your turn and keep it for later.</p>";
+		msg = "<p>Click below to play the defender on tile " + tileNum + ". If you'd like to keep the defender for later, click the deck to continue with your turn.</p>";
 		players[0].addDefender();
 		$("#turnChoices").hide();
 		
@@ -1878,11 +1898,11 @@ function q4(tileNum) {
 	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>Click below to continue.</p>";
+		msg = "<p>Click below to continue with " + robotName + "'s turn.</p>";
 		players[0].addGold();
 		$("#continue").show();
 	} else {
-		msg = "<p>Click the deck to continue.</p>";
+		msg = "<p>Click the deck to continue with your turn.</p>";
 		players[1].addGold();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -1898,11 +1918,11 @@ function q5(tileNum) {
 	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
-		msg = "<p>Click below to continue.</p>";
+		msg = "<p>Click below to continue with " + robotName + "'s turn.</p>";
 		players[1].addSilver();
 		$("#continue").show();
 	} else {
-		msg = "<p>Click the deck to continue.</p>";
+		msg = "<p>Click the deck to continue with your turn.</p>";
 		players[0].addSilver();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -1938,46 +1958,45 @@ function q6(tileNum) {
 	else {
 		let compChoiceNum;
 		let toPlay;
-
-		// loop through all spaces, create an array of all defended spots that have animals on them
-		for (let i = 0; i < 100; i++) {
-			let tile = $("#" + i);
-			if (tile.hasClass("defendedbyplayer1") && tile.hasClass("animal")) {
-				highlighted.push(i);
-			}
-		}
-		console.log(highlighted);
-		highlighted = [];
-	
-		// if there are defended spots
-		if (highlighted.length > 0) {
-			compChoiceNum = robotSelectBestSpace(highlighted);
-			toPlay = findBestToken(compChoiceNum, false, false);
-		}
-		// if there aren't defended spots
-		else {
-			// if the comp has a defender, play it in the place with the most animal spaces around
-			if (players[1].defender > 0) {
-				// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
-				let max = 0;
-				let maxIndex = -1;
-				for (let i = 0; i < 100; i++) {
-					let surSpaces = getSurroundingSpaces(i);
-					let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
-					console.log(nearbyAnimalPoints);
-					if (nearbyAnimalPoints > max) {
-						max = nearbyAnimalPoints;
-						maxIndex = i;
-					}
+		
+		// first priority: play a defender if you have one
+		// if the comp has a defender, play it in the place with the most animal spaces around
+		if (players[1].defender > 5) {
+			// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
+			let max = 0;
+			let maxIndex = -1;
+			for (let i = 0; i < 100; i++) {
+				let surSpaces = getSurroundingSpaces(i);
+				let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
+				console.log(nearbyAnimalPoints);
+				if (nearbyAnimalPoints > max) {
+					max = nearbyAnimalPoints;
+					maxIndex = i;
 				}
-				// wherever there are the greatest points, place the defender
-				compChoiceNum = maxIndex;
-				toPlay = "defender";
-				players[1].playDefender(compChoiceNum);
 			}
-			// if the comp has no defenders and no defended spots, pick the biggest animal spot
+			// wherever there are the greatest points, place the defender
+			compChoiceNum = maxIndex;
+			toPlay = "defender";
+			players[1].playDefender(compChoiceNum);
+		} 
+		
+		// loop through all spaces, create an array of all defended spots that have animals on them
+		else {
+			for (let i = 0; i < 100; i++) {
+				let tile = $("#" + i);
+				if (tile.hasClass("defendedbyplayer1") && tile.hasClass("animal") && !tile.hasClass("occupied")) {
+					highlighted.push(i);
+				}
+			}
+		
+			// if there are defended spots
+			if (highlighted.length > 0) {
+				compChoiceNum = robotSelectBestSpace(highlighted);
+				toPlay = findBestToken(compChoiceNum, false, false);
+			}
+			// if there aren't defended spots
 			else {
-				let arr;
+				let arr = [];
 				for (let i = 0; i < 100; i++) {
 					let tile = $("#" + i);
 					if (!tile.hasClass("occupied") && tile.hasClass("animal")) {
@@ -1988,6 +2007,7 @@ function q6(tileNum) {
 				
 				// determine what the ideal choice would be for this space
 				toPlay = findBestToken(compChoiceNum, true, false);
+				
 			}
 		}
 		msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
@@ -2088,6 +2108,7 @@ function q8(tileNum) {
 		}
 	}
 	
+	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
 	
@@ -2397,7 +2418,8 @@ function q11(tileNum) {
 	$("#turnDisplay").html(msg);
 }
 
-let extraTurn = false;
+let extraTurnUser = false;
+let extraTurnComp = false;
 function q12(tileNum) {
 	let qText = "L. All the members of your team have suddenly become ill, so you've lost your next turn.";
 	$("#questionCard").text(qText);
@@ -2405,9 +2427,10 @@ function q12(tileNum) {
 	let msg = "";
 	// inform the user what's happening
 	if (playerNum === 0) {
+		extraTurnComp = true;
 		msg = "<div id='robotTurnMsg'><p>Click below to have " + robotName + " take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button></div>";
 	} else {
-		extraTurn = true;
+		extraTurnUser = true;
 		$("#turnChoices").hide();
 		msg = "<p>You will now have two turns in a row.</p>";
 		$("#pickNumber").addClass("cardHighlight");
@@ -2417,17 +2440,18 @@ function q12(tileNum) {
 	
 	// when the user clicks continue, the computer takes its turn, then the user is prompted to have the comp take its second turn
 	$("body").on("click", "#compFirstTurn", function() {
-		console.log("compFirstTurn");
 		$("#robotTurnMsg").hide();
 		endHumanTurn();
 		$("#pickNumber").removeClass("cardHighlight");
-		$("#turnDisplay").append("<div id='robotTurnMsg2'><p>Click below to have " + robotName + " take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
+		$("turnChoices").hide();
+		$("#robotTurnMsg2").show();
+		$("#robotTurnMsg2").html("<p>Click below to have " + robotName + " take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
 	});
 
 	// when the user clicks to have comp take second turn, this makes sure the player
 	// stays as comp and then comp takes its turn
 	$("body").on("click", "#compSecondTurn", function() {
-		console.log("compSecondTurn");
+		$(".robotTurnHighlight").removeClass("robotTurnHighlight");
 		$("#robotTurnMsg2").hide();
 		playerNum++;
 		endHumanTurn();
@@ -2965,10 +2989,10 @@ function removeToken(tileNum) {
 }
 
 function playRobotToken() {
-	clearQuestion();
 	$("#playRobotToken").hide();
 	$("#pickNumber").addClass("cardHighlight");
 	
 	players[1].playPlain(questionTileChoice);
+	clearQuestion();
 	endHumanTurn();
 }
