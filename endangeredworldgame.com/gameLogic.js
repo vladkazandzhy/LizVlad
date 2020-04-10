@@ -1,3 +1,16 @@
+$( function() {
+    $("#results").tooltip({
+		content: function () {
+			return $( this ).prop( 'title' );
+		}
+	});
+ } );
+
+$('body').on('click', ".help-icon", function(e) {
+	e.preventDefault();
+});
+
+
 // the Player object will keep track of tokens and points
 function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   this.num = num;
@@ -179,7 +192,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -214,10 +227,27 @@ function NumberBag() {
     // highlight the current tile in red
     let tile = $("#" + currentNumber);
     tile.addClass("current");
+	
+	// add note of how many cards are left
+	if (numberBag.length == 50) {
+		$("#cardsLeft").text("There are 50 cards left.");
+	} else if (numberBag.length == 25) {
+		$("#cardsLeft").text("There are 25 cards left.");
+	} else if (numberBag.length == 15) {
+		$("#cardsLeft").text("There are 15 cards left.");
+	} else if (numberBag.length == 5) {
+		$("#cardsLeft").text("There are 5 cards left.");
+	} else if (numberBag.length == 1) {
+		$("#cardsLeft").text("This is 1 card left.");
+	} else if (numberBag.length == 0) {
+		$("#cardsLeft").text("This is the final card!");
+	} else {
+		$("#cardsLeft").text("");
+	}
 
     return currentNumber;
   };
-/*
+
   this.checkIfEnd = function() {
     if (numberBag.length == 0) {
       return true;
@@ -225,7 +255,7 @@ function NumberBag() {
       return false;
     }
   };
-*/
+
   this.getCurrent = function() {
     return currentNumber;
   };
@@ -368,9 +398,10 @@ function takeTurn(rand) {
 		  }
 		}
 	}
-	// when there are no cards left
+	// when there are no cards left (backup if checkIfEnd doesn't work)
 	else {
-	  endGame();
+		console.log("ending game in takeTurn");
+		endGameAfterUser();
 	}
   
 }
@@ -1167,36 +1198,36 @@ function getSurroundingSpaces(num) {
 // start the robot's turn
 function endHumanTurn() {
 	// if there are still numbers, comp takes turn
-	tileNum = drawNumber();
-	takeTurn(tileNum);
-	/*
 	if (!bag.checkIfEnd()) {
 		tileNum = drawNumber();
 		takeTurn(tileNum);
 	} else {
-		endGame();
+		endGameAfterUser();
 	}
-	*/
+	
 }
 
 function endCompTurn() {	
 	// if there are still numbers, human takes turn
-	$("#pickNumber").addClass("cardHighlight");
-	/*
 	if (!bag.checkIfEnd()) {
 		$("#pickNumber").addClass("cardHighlight");
 	} else {
-		endGame();
+		endGameAfterComp();
 	}
-	*/
 }
 
-function endGame() {
+function endGameAfterUser() {
 	$("#main2").hide();
 	$("#main3").show();
 }
 
+function endGameAfterComp() {
+	$("#pickNumber").hide();
+	$("#main3").show();
+}
+
 $("#showScore").click(function() {
+	$("#main2").hide();
 	$("#promptFinalScore").hide();
 	countFinalScore();
 });
@@ -1239,8 +1270,9 @@ function countFinalScore() {
 		for (var i = 0; i < animalsWonByPlayer.length; i++) {
 			let animalScore = calculateAnimalScore(animalsWonByPlayer[i]);
 			playerFinalScore += animalScore;
-			$("#userWon").append('<img class="animalResults" src="images/animals/' + animalsWonByPlayer[i] + '.jpg">');
-			$("#userWon").append('<p><b>' + animalScore + '</b> points</p>');
+			$("#userWon").append(generateAnimalLink(animalScore, animalsWonByPlayer[i]));
+			//$("#userWon").append('<img class="animalResults" id="animal' + animalsWonByPlayer[i] + '" src="images/animals/' + animalsWonByPlayer[i] + '.jpg">');
+			//$("#userWon").append('<p><b>' + animalScore + '</b> points</p>');
 		}
 	}
 	
@@ -1248,16 +1280,14 @@ function countFinalScore() {
 		for (var i = 0; i < animalsWonByComp.length; i++) {
 			let animalScore = calculateAnimalScore(animalsWonByComp[i]);
 			compFinalScore += animalScore;
-			$("#compWon").append('<img class="animalResults" src="images/animals/' + animalsWonByComp[i] + '.jpg">');
-			$("#compWon").append('<p><b>' + animalScore + '</b> points</p>');
+			$("#compWon").append(generateAnimalLink(animalScore, animalsWonByComp[i]));
 		}
 	}
 	
 	if (lostAnimals.length > 0) {
 		for (var i = 0; i < lostAnimals.length; i++) {
 			let animalScore = calculateAnimalScore(lostAnimals[i]);
-			$("#nobodyWon").append('<img class="animalResults" src="images/animals/' + lostAnimals[i] + '.jpg">');
-			$("#nobodyWon").append('<p><b>' + animalScore + '</b> points</p>');
+			$("#nobodyWon").append(generateAnimalLink(animalScore, lostAnimals[i]));
 		}
 	}
 	
@@ -1273,8 +1303,69 @@ function countFinalScore() {
 		
 	
 	
-	$("#resultsSummary").html("<h1>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h1>");
+	$("#resultsSummary").html("<h1>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h1><p><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>");
 	
+}
+
+function generateAnimalLink(animalScore, animalId) {
+	let description = getAnimalDescription(animalId);
+	let code = '<img class="animalResults" id="animal' + animalId + '" src="images/animals/' + animalId + '.jpg">';
+	code += '<p><b>' + animalScore + '</b> points <a href="#" title="' + description + '"><img class="help-icon" src="images/help-icon.png"></a></p>';
+	
+	return code;
+}
+
+function getAnimalDescription(animalId) {
+	let description;
+	switch (animalId) {
+		case 1:
+			description = "<b><u>Asian Elephant</u></b><br>Elephants are right- and left-tusked, and the dominant tusk is usually smaller due to greater use. Female Asian elephants have very small tusks that are hardly visible.";
+			break;
+		case 2:
+			description = "<b><u>Plains Bison</u></b><br>The hump on a bison's back is made of muscle and supported by long back bones. This hump helps the bison be able to plow through snow with its head.";
+			break;
+		case 3:
+			description = "<b><u>Black Rhino</u></b><br>Black rhinos have poor eyesight and sometimes charge at rocks, trees, and even trains, thinking they are threats. But their sense of smell and hearing are excellent!";
+			break;
+		case 4:
+			description = "<b><u>Pygmy Hippopotamus</u></b><br>Pygmy hippos are able to sleep underwater. They have a special reflex that lets them rise to the surface, take a breath, and sink back down--all without waking up!";
+			break;
+		case 5:
+			description = "<b><u>Hawaiian Monk Seal</u></b><br>After giving birth, a female Hawaiian monk seal will not eat for 5-6 weeks while she nurses her pup, causing her to lose hundreds of pounds.";
+			break;
+		case 6:
+			description = "<b><u>Giant Panda</u></b><br>Giant pandas primarily eat bamboo, between 20 and 40 pounds a day! They eat for more than 12 hours a day, napping for 2-4 hours between meals.";
+			break;
+		case 7:
+			description = "<b><u>African Wild Dog</u></b><br>When hunting, African wild dogs share the kill without fighting among themselves, giving priority to pups, the elderly, and the injured.";
+			break;
+		case 8:
+			description = "<b><u>Bonobo</u></b><br>Bonobos share 98.7% of their DNA with humans. They are able to understand language, play musical instruments, and use various tools.";
+			break;
+		case 9:
+			description = "<b><u>Amur Leopard</u></b><br>Amur leopards have thick, pale fur to help them stay warm and blend in with snow. They can run up to 37 mph and jump more than 10 feet high and 19 feet far.";
+			break;
+		case 10:
+			description = "<b><u>Red Panda</u></b><br>Red pandas use their bushy tails to maintain balance when climbing trees. They also wrap their tails around them to stay warm in the winter.";
+			break;
+		case 11:
+			description = "<b><u>Black-footed Ferret</u></b><br>Black-footed ferrets are nocturnal and primarily eat prairie dogs. One ferret can eat more than 100 prairie dogs in a single year!";
+			break;
+		case 12:
+			description = "<b><u>Giant Tortoise</u></b><br>Giant tortoises can go up to a year without eating or drinking because of their slow metabolism.";
+			break;
+		case 13:
+			description = "<b><u>Southern Sea Otter</u></b><br>Sea otters' nostrils and ears close when they swim, and they can hold their breath for up to 5 minutes.";
+			break;
+		case 14:
+			description = "<b><u>Tasmanian Devil</u></b><br>The Tasmanian devil's bite is one of the strongest in the world. They can even bite through metal!";
+			break;
+		case 15:
+			description = "<b><u>Iberian Lynx</u></b><br>Lynxes have very sharp vision. They can detect a mouse from up to 250 feet away!";
+			break;
+	}
+	
+	return description;
 }
 
 function calculateAnimalScore(animalId) {
@@ -1640,7 +1731,8 @@ function handleQuestion(tileNum, id) {
 	
 	$("#questionTile").attr("src", "images/questions/" + id + ".png");
 	$("#questionTile").css("display", "block");
-	questionId = id;	
+	questionId = id;
+	console.log("Handling question " + questionId);
 }
 
 $("#questionTile").click(function() {

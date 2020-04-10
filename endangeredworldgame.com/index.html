@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Endangered World Game</title>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="styles.css" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -226,6 +227,7 @@
 			<div id="cards">
 				<img id="pickNumber" class="cardHighlight" alt="back of card" src="images/cards/back.jpg">
 				<img id="cardFront" alt="front of card" src="images/cards/0.jpg">
+				<div id="cardsLeft"></div>
 			</div>
 			
 			<div id="turnDiv">
@@ -312,6 +314,7 @@
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
       crossorigin="anonymous"
     ></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="gameLogic.js"></script>
   </body>
 </html>

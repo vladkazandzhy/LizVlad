@@ -1,3 +1,13 @@
+.ui-tooltip {
+    text-align: center;
+	font-size: 1em;
+}
+
+.help-icon {
+	height: 14px;
+	width: auto;
+}
+
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
 	
@@ -181,7 +191,7 @@ button {
 	transition: transform 0.5s ease;
 }
 
-#turnChoices .tokenRow .playToken:hover, #doNothing:hover, #showScore:hover, #questionTile:hover
+#turnChoices .tokenRow .playToken:hover, #doNothing:hover, #continue:hover, #showScore:hover, #questionTile:hover
 {
         -webkit-transform: scale(1.2);
         -ms-transform: scale(1.2);
@@ -192,7 +202,7 @@ button {
 	margin-bottom: 10px;
 }
 
-#doNothing, #showScore {
+#doNothing, #showScore, #continue {
 	font-size: 1.3em;
 	transition: transform 0.5s ease;
 }
