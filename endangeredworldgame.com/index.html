@@ -7,6 +7,63 @@
   </head>
   <body>
 	<div id="container">
+		<div id="intro">
+			<h1>Welcome to Endangered World!</h1>
+			<p>The online version of Endangered World will help you
+			get a feel for this new and exciting board game! Today, you'll
+			be playing against a robot named <span id="robotNameIntro">Robot</span>,
+			but when you buy the board game, you can play with up to four people.</p>
+			<p>We hope you enjoy this board game simulation and that you'll support our
+			<a href="#">Kickstarter campaign</a> so we can bring this board game to life!</p>
+			<p>Click below to read the rules or load the game.</p>
+			<div id="rules">
+				<h1>What's the game about?</h1>
+				<p>The animal population is dwindling, and it's up to you to
+				save them! Embark on a mission to protect endangered
+				species from all over the world&mdash;otters, pandas, rhinos,
+				and more. But watch out! Other wildlife organizations may
+				end up getting in your way, and you never know what
+				twists and turns might ruin your well-considered plans.
+				How will you use your resources, and how many animals
+				can you save?</p>
+				<h1>How do I play?</h1>
+				<p>You and the robot will take turns drawing cards. Each card matches up with a tile
+				on the game board. All you have to do is decide what to play! Here are your choices:</p>
+				<ul>
+					<li><b>Gold</b> coin - 6 points</li>
+					<li><b>Silver</b> coin - 4 points</li>
+					<li><b>Bronze</b> coin - 2 points</li>
+					<li><b>Plain</b> token - 1 point</li>
+					<li><b>Defender</b> - protects all your surrounding tokens from being destroyed</li>
+					<li><b>Bomb</b> - destroys all your opponent's undefended tokens in the surrounding spaces</li>
+				</ul>
+				<p>There are also 20 "Twists & Turns" cards that will have different instructions to follow
+				and can really throw the game for a loop!</p>
+				<h1>How is the game scored?</h1>
+				<p>Your objective is the score the most points by saving the most animals. At the end of the game,
+				the score is calculated based on how many points each player has on each animal:</p>
+				<ul>
+					<li>If there are no tokens on it, or if there is an equal number of points
+					on it, then nobody wins that animal.</li>
+					<li>If you have more points on it, you win the animal.</li>
+					<li>If the robot has more points on it, it wins the animal.</li>
+				</ul>
+				<hr>
+				<p>The number of points gained from each animal depends on the animal's size:</p>
+				<ul>
+					<li>5 very small animals (2 x 1) - <b>20 points</b> each</li>
+					<li>4 small animals (2 x 2) - <b>30 points</b> each</li>
+					<li>3 medium animals (3 x 2) - <b>40 points</b> each</li>
+					<li>2 large animals (4 x 2) - <b>50 points</b> each</li>
+					<li>1 very large animal (4 x 3) - <b>60 points</b></li>
+				</ul>
+				<p>Lastly, each unused bomb earns a player <b>10 points</b>, so be careful how you use your bombs!</p>
+				<h1>Anything else I should know?</h1>
+				<p>Nope! Just press the button below to start enjoying your game!</p>
+			</div>
+			<button class="buttonHover" type="button" id="readRules">How to Play</button>
+			<button class="buttonHover" type="button" id="loadGame">Load Game</button>
+		</div>
 		<div id="main" class="element">
 			<div id="inventory">
 				<div id="userInventory">
@@ -218,8 +275,8 @@
 			  </tr>
 			</table>
 			<div id="setupBoard">
-				<button type="button" id="setBoard">Set Up the Board</button><br>
-				<button type="button" id="startGame">Start the Game!</button>
+				<button class="buttonHover" type="button" id="setBoard">Set Up the Board</button><br>
+				<button class="buttonHover" type="button" id="startGame">Start the Game!</button>
 			</div>
 		</div>
 
@@ -233,22 +290,22 @@
 			<div id="turnDiv">
 				<div id="questionCard"></div>
 				<div id="turnDisplay"></div>
-				<img id="questionTile" alt="question tile" src="images/questions/1.png">
+				<img class="buttonHover" id="questionTile" alt="question tile" src="images/questions/1.png">
 				
 				
 				<p id="tokenExists"></p>
 				<div id="turnChoices">
 					<div class="tokenRow">
-					  <img id="playGold" class="playToken" alt="gold coin" src="images/tokens/gold.png">
-					  <img id="playSilver" class="playToken" alt="gold coin" src="images/tokens/silver.png">
-					  <img id="playBronze" class="playToken" alt="gold coin" src="images/tokens/bronze.png">
-					  <img id="playPlain" class="playToken" alt="gold coin" src="images/tokens/plain0.png">
+					  <img class="buttonHover" id="playGold" class="playToken" alt="gold coin" src="images/tokens/gold.png">
+					  <img class="buttonHover" id="playSilver" class="playToken" alt="gold coin" src="images/tokens/silver.png">
+					  <img class="buttonHover" id="playBronze" class="playToken" alt="gold coin" src="images/tokens/bronze.png">
+					  <img class="buttonHover" id="playPlain" class="playToken" alt="gold coin" src="images/tokens/plain0.png">
 					</div>
 					<div class="tokenRow">
-					  <img id="playDefender" class="playToken" alt="gold coin" src="images/tokens/defender.png">
-					  <img id="playBomb" class="playToken" alt="gold coin" src="images/tokens/bomb.png">
+					  <img class="buttonHover" id="playDefender" class="playToken" alt="gold coin" src="images/tokens/defender.png">
+					  <img class="buttonHover" id="playBomb" class="playToken" alt="gold coin" src="images/tokens/bomb.png">
 					</div>
-				  <button type="button" id="doNothing">Do Nothing</button>
+				  <button class="buttonHover" type="button" id="doNothing">Do Nothing</button>
 				  <!--
 				  <button type="button" id="playGold">Gold Coin</button>
 				  <button type="button" id="playSilver">Silver Coin</button>
@@ -284,10 +341,10 @@
 				</div>
 				
 				
-				<button type="button" id="playDefenderRule3">Play Defender</button>
+				<button class="buttonHover" type="button" id="playDefenderRule3">Play Defender</button>
 				
-				<button type="button" id="seeChanges">See Changes</button>
-				<button type="button" id="continue">Continue</button>
+				<button class="buttonHover" type="button" id="seeChanges">See Changes</button>
+				<button class="buttonHover" type="button" id="continue">Continue</button>
 			</div>
 			
 			
@@ -296,7 +353,7 @@
 		<div id="main3">
 			<div id="promptFinalScore">
 				<p>There are no more cards left! Click below to see who won!</p>
-				<button type="button" id="showScore">See Final Score</button>
+				<button class="buttonHover" type="button" id="showScore">See Final Score</button>
 			</div>
 			<div id="resultsSummary"></div>
 			<div id="results">

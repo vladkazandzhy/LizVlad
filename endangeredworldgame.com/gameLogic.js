@@ -11,6 +11,30 @@ $('body').on('click', ".help-icon", function(e) {
 });
 
 
+$( document ).ready(function() {
+	
+let robotName = "Robot";
+randomizeRobotName();
+
+function randomizeRobotName() {
+	let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
+	robotName = items[Math.floor(Math.random() * items.length)];
+	$("#robotNameIntro").text(robotName);
+	$("#tokenExists").text("There is already a token here, so you can't play anything. Click to continue with " + robotName +"'s turn.");
+	$("#robotName").text(robotName);
+}
+
+$("#readRules").on("click", function() {
+	$("#rules").show();
+	$("#readRules").hide();
+});
+
+$("#loadGame").on("click", function() {
+	$("#intro").hide();
+	$("#main").show();
+	$("#main2").css("display", "grid");
+});
+
 // the Player object will keep track of tokens and points
 function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   this.num = num;
@@ -192,7 +216,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -1328,13 +1352,13 @@ function getAnimalDescription(animalId) {
 			description = "<b><u>Black Rhino</u></b><br>Black rhinos have poor eyesight and sometimes charge at rocks, trees, and even trains, thinking they are threats. But their sense of smell and hearing are excellent!";
 			break;
 		case 4:
-			description = "<b><u>Pygmy Hippopotamus</u></b><br>Pygmy hippos are able to sleep underwater. They have a special reflex that lets them rise to the surface, take a breath, and sink back down--all without waking up!";
+			description = "<b><u>Pygmy Hippopotamus</u></b><br>Pygmy hippos are able to sleep underwater. They have a special reflex that lets them rise to the surface, take a breath, and sink back down&mdash;all without waking up!";
 			break;
 		case 5:
 			description = "<b><u>Hawaiian Monk Seal</u></b><br>After giving birth, a female Hawaiian monk seal will not eat for 5-6 weeks while she nurses her pup, causing her to lose hundreds of pounds.";
 			break;
 		case 6:
-			description = "<b><u>Giant Panda</u></b><br>Giant pandas primarily eat bamboo, between 20 and 40 pounds a day! They eat for more than 12 hours a day, napping for 2-4 hours between meals.";
+			description = "<b><u>Giant Panda</u></b><br>Giant pandas primarily eat bamboo&mdash;between 20 and 40 pounds a day! They eat for more than 12 hours a day, napping for 2-4 hours between meals.";
 			break;
 		case 7:
 			description = "<b><u>African Wild Dog</u></b><br>When hunting, African wild dogs share the kill without fighting among themselves, giving priority to pups, the elderly, and the injured.";
@@ -1641,14 +1665,6 @@ $("#startGame").click(function() {
   players[0].display();
   players[1].display();
 });
-
-robotName = "Robot";
-function randomizeRobotName() {
-	let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
-	robotName = items[Math.floor(Math.random() * items.length)];
-	$("#tokenExists").text("There is already a token here, so you can't play anything. Click to continue with " + robotName +"'s turn.");
-	$("#robotName").text(robotName);
-}
 
 // set up the number of tokens for the players
 let players = [];
@@ -3137,3 +3153,5 @@ function playRobotToken() {
 	clearQuestion();
 	endHumanTurn();
 }
+
+});

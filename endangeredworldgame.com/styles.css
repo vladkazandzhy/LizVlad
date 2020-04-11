@@ -8,31 +8,6 @@
 	width: auto;
 }
 
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-	
-}
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-	
-}
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
-	
-}
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-	
-}
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-	
-}
-
 html, body {
 	width: 100%;
 	max-width: 1200px;
@@ -46,7 +21,28 @@ html, body {
 	margin-bottom: 20px;
 }
 
+#intro {
+	width: 90%;
+	max-width: 400px;
+	padding: 10px;
+	margin: 20px auto;
+	border: 3px solid black;
+	border-radius: 20px;
+	text-align: center;
+}
+
+#intro ul {
+	text-align: left;
+	list-style-position: outside;
+	margin-left: 10px;
+}
+
+#rules {
+	display: none;
+}
+
 #main {
+	display: none;
 	text-align: center;
 	width: 95%;
 	margin: 0 auto;
@@ -164,7 +160,7 @@ button {
 	text-align: center;
 	width: 95%;
 	margin: 0 auto;
-	display: grid;
+	display: none;
 	grid-column-gap: 10px;
 }
 
@@ -191,7 +187,11 @@ button {
 	transition: transform 0.5s ease;
 }
 
-#turnChoices .tokenRow .playToken:hover, #doNothing:hover, #continue:hover, #showScore:hover, #questionTile:hover
+.buttonHover {
+	font-size: 1.3em;
+	transition: transform 0.5s ease;
+}
+.buttonHover:hover
 {
         -webkit-transform: scale(1.2);
         -ms-transform: scale(1.2);
@@ -202,10 +202,7 @@ button {
 	margin-bottom: 10px;
 }
 
-#doNothing, #showScore, #continue {
-	font-size: 1.3em;
-	transition: transform 0.5s ease;
-}
+
 
 .tokenRow img {
 	margin: 5px;
