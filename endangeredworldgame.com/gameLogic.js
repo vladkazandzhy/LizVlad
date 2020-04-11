@@ -11,28 +11,28 @@ $('body').on('click', ".help-icon", function(e) {
 });
 
 
-$( document ).ready(function() {
-	
 let robotName = "Robot";
-randomizeRobotName();
+$( document ).ready(function() {
+	randomizeRobotName();
 
-function randomizeRobotName() {
-	let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
-	robotName = items[Math.floor(Math.random() * items.length)];
-	$("#robotNameIntro").text(robotName);
-	$("#tokenExists").text("There is already a token here, so you can't play anything. Click to continue with " + robotName +"'s turn.");
-	$("#robotName").text(robotName);
-}
+	function randomizeRobotName() {
+		let items = ["Proto", "Rusty", "Max", "Spark", "Prime", "Alpha", "Beta", "Bolt", "Cybel", "Delta"]
+		robotName = items[Math.floor(Math.random() * items.length)];
+		$("#robotNameIntro").text(robotName);
+		$("#tokenExists").text("There is already a token here, so you can't play anything. Click to continue with " + robotName +"'s turn.");
+		$("#robotName").text(robotName);
+	}
 
-$("#readRules").on("click", function() {
-	$("#rules").show();
-	$("#readRules").hide();
-});
+	$("#readRules").on("click", function() {
+		$("#rules").show();
+		$("#readRules").hide();
+	});
 
-$("#loadGame").on("click", function() {
-	$("#intro").hide();
-	$("#main").show();
-	$("#main2").css("display", "grid");
+	$("#loadGame").on("click", function() {
+		$("#intro").hide();
+		$("#main").show();
+		$("#main2").css("display", "grid");
+	});
 });
 
 // the Player object will keep track of tokens and points
@@ -1651,7 +1651,6 @@ function placeQuestions(id) {
 let bag;
 // start the game by filling the numbers and tokens and displaying them
 $("#startGame").click(function() {
-	randomizeRobotName();
   $("#setupBoard").hide();
   $("#cards").show();
   $("#turnDisplay").html('<p>Click the deck to begin the game!</p>');
@@ -3153,5 +3152,3 @@ function playRobotToken() {
 	clearQuestion();
 	endHumanTurn();
 }
-
-});
