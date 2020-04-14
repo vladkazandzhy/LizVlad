@@ -470,6 +470,7 @@ function displayTurnChoices() {
   // when space has a token on it already
   else {
 	  $("#tokenExists").show();
+	  $("#continue").html('Continue');
 	  $("#continue").show();
   }
 }
@@ -1643,7 +1644,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + 16);
+      tile.addClass("q" + id);
 
       // remove number and add image
       tile.text("");
