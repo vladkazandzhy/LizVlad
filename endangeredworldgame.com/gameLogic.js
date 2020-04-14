@@ -262,7 +262,7 @@ function NumberBag() {
 	} else if (numberBag.length == 5) {
 		$("#cardsLeft").text("There are 5 cards left.");
 	} else if (numberBag.length == 1) {
-		$("#cardsLeft").text("This is 1 card left.");
+		$("#cardsLeft").text("There is 1 card left.");
 	} else if (numberBag.length == 0) {
 		$("#cardsLeft").text("This is the final card!");
 	} else {
@@ -737,6 +737,7 @@ function takeExtraTurn() {
 // this is shown during certain questions
 $("#continue").click(function() {
 	$("#continue").hide();
+	$("#continue").html('Do Nothing');
 	$("#tokenExists").hide();
 	endHumanTurn();
 });
@@ -778,6 +779,7 @@ function calculateRobotChoice(tileNum) {
 	let tile = $("#" + tileNum);
 	if (tile.hasClass("occupied")) {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing. Click the deck to continue with your turn.</p>");
+			$("#turnChoicesComp").hide();
 			return;
 	}
 	
@@ -1251,6 +1253,7 @@ function endGameAfterComp() {
 }
 
 $("#showScore").click(function() {
+	//$("#main").show();
 	$("#main2").hide();
 	$("#promptFinalScore").hide();
 	countFinalScore();
@@ -1325,9 +1328,16 @@ function countFinalScore() {
 	playerFinalScore += playerBombScore;
 	compFinalScore += compBombScore;
 		
+	let msg;
+	if (playerFinalScore > compFinalScore) {
+		msg = "<h1>You won!</h1>";
+	} else if (compFinalScore > playerFinalScore) {
+		msg = "<h1>" + robotName + " won!</h1>";
+	} else {
+		msg = "<h1>You and " + robotName + " tied!</h1>";
+	}
 	
-	
-	$("#resultsSummary").html("<h1>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h1><p><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>");
+	$("#resultsSummary").html(msg + "<h2>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h2><p><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>");
 	
 }
 
@@ -1633,7 +1643,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + id);
+      tile.addClass("q" + 16);
 
       // remove number and add image
       tile.text("");
@@ -1651,6 +1661,7 @@ function placeQuestions(id) {
 let bag;
 // start the game by filling the numbers and tokens and displaying them
 $("#startGame").click(function() {
+	$("#mainRight").css("display", "grid");
   $("#setupBoard").hide();
   $("#cards").show();
   $("#turnDisplay").html('<p>Click the deck to begin the game!</p>');
@@ -2032,6 +2043,7 @@ function q3(tileNum) {
 			msg += "<p>It decided not to play the Defender here. Click below to continue with " + robotName + "'s turn.</p>";
 		}
 		
+		$("#continue").html('Continue');
 		$("#continue").show();
 	} else {
 		msg = "<p>Click below to play the defender on tile " + tileNum + ". If you'd like to keep the defender for later, click the deck to continue with your turn.</p>";
@@ -2055,6 +2067,7 @@ function q4(tileNum) {
 	if (playerNum === 0) {
 		msg = "<p>Click below to continue with " + robotName + "'s turn.</p>";
 		players[0].addGold();
+		$("#continue").html('Continue');
 		$("#continue").show();
 	} else {
 		msg = "<p>Click the deck to continue with your turn.</p>";
@@ -2075,6 +2088,7 @@ function q5(tileNum) {
 	if (playerNum === 0) {
 		msg = "<p>Click below to continue with " + robotName + "'s turn.</p>";
 		players[1].addSilver();
+		$("#continue").html('Continue');
 		$("#continue").show();
 	} else {
 		msg = "<p>Click the deck to continue with your turn.</p>";
@@ -2274,7 +2288,7 @@ function q8(tileNum) {
 			}
 			
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 8;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 8)
@@ -2282,6 +2296,7 @@ function q8(tileNum) {
 		// if not, inform the user and prompt them to continue with the robot's turn
 		else {
 			msg += "<p>There are no unnoccupied animal figures in the current row. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		$("#continue").show();
 	}
@@ -2342,12 +2357,13 @@ function q9(tileNum) {
 		
 		if (highlighted.length > 0) {
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 9;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 9)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		
 		$("#continue").show();
@@ -2439,12 +2455,13 @@ function q10(tileNum) {
 		
 		if (highlighted.length > 0) {
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 10;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 10)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		
 		$("#continue").show();
@@ -2468,7 +2485,7 @@ function q10(tileNum) {
 		
 		if (compChoices.length > 0) {
 			let compChoiceNum = robotSelectBestSpace(compChoices);
-			let toPlay = findBestToken(compChoices, true, true);
+			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
 				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
@@ -2519,12 +2536,13 @@ function q11(tileNum) {
 		
 		if (highlighted.length > 0) {
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 11;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 11)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		
 		$("#continue").show();
@@ -2583,7 +2601,7 @@ function q12(tileNum) {
 	// inform the user what's happening
 	if (playerNum === 0) {
 		extraTurnComp = true;
-		msg = "<div id='robotTurnMsg'><p>Click below to have " + robotName + " take its first turn.</p><button type='button' id='compFirstTurn'>Continue</button></div>";
+		msg = "<div id='robotTurnMsg'><p>Click below to have " + robotName + " take its first turn.</p><button class='buttonHover' type='button' id='compFirstTurn'>Continue</button></div>";
 	} else {
 		extraTurnUser = true;
 		$("#turnChoices").hide();
@@ -2600,7 +2618,7 @@ function q12(tileNum) {
 		$("#pickNumber").removeClass("cardHighlight");
 		$("turnChoices").hide();
 		$("#robotTurnMsg2").show();
-		$("#robotTurnMsg2").html("<p>Click below to have " + robotName + " take its second turn.</p><button type='button' id='compSecondTurn'>Continue</button></div>");
+		$("#robotTurnMsg2").html("<p>Click below to have " + robotName + " take its second turn.</p><button class='buttonHover' type='button' id='compSecondTurn'>Continue</button></div>");
 	});
 
 	// when the user clicks to have comp take second turn, this makes sure the player
@@ -2658,6 +2676,7 @@ function q13(tileNum) {
 			$("#seeChanges").show();
 		} else {
 			msg += "<p>No tokens were destroyed. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 			$("#continue").show();
 		}
 	 }
@@ -2705,12 +2724,13 @@ function q14(tileNum) {
 			}
 			
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 14;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 14)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		
 		$("#continue").show();
@@ -2752,7 +2772,7 @@ function q15(tileNum) {
 	} else {
 		$("#turnChoices").hide();
 		$("#pickNumber").removeClass("cardHighlight");
-		msg = "<p>Click below to have " + robotName + " take another turn.</p><button type='button' id='compTurnAgain'>Continue</button>";
+		msg = "<p>Click below to have " + robotName + " take another turn.</p><button class='buttonHover' type='button' id='compTurnAgain'>Continue</button>";
 	}
 	
 	$("#turnDisplay").html(msg);
@@ -2769,7 +2789,6 @@ function q15(tileNum) {
 function q16(tileNum) {
 	let qText = "Volunteers have arrived to help you further your mission. Move three spaces to the right or to the left. If not occupied, you may place any token (including a bomb) in one of these spaces. If occupied, you may place any token in the original space.";
 	$("#questionCard").text(qText);
-	currentQuestion = 16;
 	
 	// (see question 10 for similar logic)
 
@@ -2803,6 +2822,7 @@ function q16(tileNum) {
 	let msg = "";
 	// FOR USER
 	if (playerNum == 0) {
+		currentQuestion = 16;
 		
 		// highlight the relevant spaces
 		let tile;
@@ -2820,12 +2840,13 @@ function q16(tileNum) {
 		
 		if (highlighted.length > 0) {
 			// prompt the user to click on one of these highlighted spaces
-			msg += "<p>Please select the space where you would like to place a token, or click continue to not place anything.</p>";
+			msg += "<p>Please select the space where you would like to place a token, or click Do Nothing to not place anything.</p>";
 			ruleForClicking = 10;
 				
 			// this then jumps to the end of the code, search for: if (ruleForClicking == 16)
 		} else {
 			msg += "<p>There are no valid places to play a token. Click below to continue with " + robotName + "'s turn.</p>";
+			$("#continue").html('Continue');
 		}
 		
 		$("#continue").show();
@@ -2860,7 +2881,6 @@ function q16(tileNum) {
 			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
-		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");	
 	}
@@ -2920,6 +2940,7 @@ function destroyTokenOnAnimal(animalId, animalName, questionLetter, tileNum, qTe
 		// if there aren't, inform user and prompt them to move on
 		else {
 			msg += "<p>You have no undefended tokens on the " + animalName + ". Click below to continue.</p>";
+			$("#continue").html('Continue');
 			
 			$("#continue").show();
 		}
@@ -3031,6 +3052,7 @@ function q19(tileNum) {
 		
 		$(".robotTurnHighlight").removeClass("robotTurnHighlight");
 		clearQuestion();
+		$("#continue").html('Continue');
 		$("#continue").show();
 	}
 	
@@ -3051,6 +3073,7 @@ function q20(tileNum) {
 		} else {
 			msg += "<p>" + robotName + " didn't have any bombs, so nothing was discarded.</p><p>Click below to continue.</p>";	
 		}
+		$("#continue").html('Continue');
 		$("#continue").show();
 	}
 	// FOR COMP
@@ -3074,7 +3097,7 @@ $("body").on("click", ".highlight", function() {
 	let msg = "";
 	if (ruleForClicking == 2) {
 		// ask the user what they want to do on this space, or invite them to choose a different space
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select which coin to play on this tile instead, or select a different tile. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select which coin to play on this tile instead, or select a different tile. Or click Do Nothing to not select anything.</p>";
 		
 		displayTurnChoicesRule2(); // after the user selects a button, it goes to the function handleRule2()
 		
@@ -3084,13 +3107,13 @@ $("body").on("click", ".highlight", function() {
 		displayTurnChoices();
 		hideButtons(true, false);
 	} else if (ruleForClicking == 7) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to place a single token from " + robotName + " and continue to its turn, or select a different one.</p><button id='playRobotToken' onclick='playRobotToken()'>Place " + robotName + "'s token</button>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to place a single token from " + robotName + " and continue to its turn, or select a different one.</p><button class='buttonHover' id='playRobotToken' onclick='playRobotToken()'>Place " + robotName + "'s token</button>";
 	} else if (ruleForClicking == 8) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click Do Nothing to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(true, true);
 	} else if (ruleForClicking == 9) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click Do Nothing to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(false, false);
 		
@@ -3102,15 +3125,15 @@ $("body").on("click", ".highlight", function() {
 			$("#playDefender").show();
 		}
 	} else if (ruleForClicking == 10 || ruleForClicking == 16) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click Do Nothing to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(false, false);
 	} else if (ruleForClicking == 11 || ruleForClicking == 14) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click continue to not select anything.</p>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click Do Nothing to not select anything.</p>";
 		displayTurnChoices();
 		hideButtons(true, false);
 	} else if (ruleForClicking == 18) {
-		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to remove this token, or select a different one.</p><button id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
+		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Click below to remove this token, or select a different one.</p><button class='buttonHover' id='removeToken' onclick='removeToken(" + this.id + ")'>Remove Token</button>";
 	} else if (ruleForClicking == 19) {
 		msg = "<p>You have chosen tile <b>" + this.id + "</b>. Select what to place on this tile, or select a different tile. Or click the deck to not select anything.</p>";
 		msg += "<p>As soon as you make a choice, the game will continue to your turn.</p>";
