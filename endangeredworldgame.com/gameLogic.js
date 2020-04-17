@@ -120,6 +120,7 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
 		function destroyEverything() {
 			// remove the player class and image
 			$("#" + tileNum).removeClass("player" + player);
+			$("#" + tileNum).removeClass("occupied");
 			$("#" + tileNum + " img:last-child").remove();
 
 			// remove the bronze/silver/gold class
@@ -216,7 +217,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -714,9 +715,7 @@ function handlePlayBomb() {
 }
 
 function clearQuestion() {
-	console.log("no question to clear");
 	if (currentQuestion > 0) {
-		console.log("clearing question");
 		// reset global variables
 		currentQuestion = 0;
 		questionTileChoice = -1;
@@ -828,6 +827,7 @@ $("#seeChanges").click(function() {
 	$("#seeChanges").hide();
 	if (playerNum == 0) {
 		$("#turnDisplay").html("<p>Click below to continue with " + robotName + "'s turn.</p>");
+		$("#continue").html("Continue");
 		$("#continue").show();
 	} else {
 		$("#turnDisplay").html("<p>Click the deck to continue with your turn.</p>");
@@ -837,6 +837,10 @@ $("#seeChanges").click(function() {
 	 
 // do the destroying where needed
 function destroy() {
+	if ($("#playingIcon").is(":visible")) {
+		$("#playBombSound").trigger('play');
+	}
+	
 	for (let i = 0; i < highlighted.length; i++) {
 		let nearbyTile = $("#" + highlighted[i]);
 		if (nearbyTile.hasClass("player0") && !(nearbyTile.hasClass("defendedbyplayer0"))) {
@@ -919,8 +923,9 @@ function shouldPlayBomb(surSpaces) {
       }
     }
   }
+  console.log("playerPoints around is " + playerPoints);
   
-  if (playerPoints >= 5) {
+  if (playerPoints >= 4) {
 	  return true;
   } else {
 	  return false;
@@ -956,7 +961,9 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 			$("#playDefenderComp").addClass("robotTurnHighlight");
 			return "defender";
 		}
-	} else if (bombAllowed) {
+	}
+	
+	if (bombAllowed) {
 		let shouldPlayBombVar = shouldPlayBomb(surSpaces);
 		if (shouldPlayBombVar) {
 			players[1].playBomb(tile);
@@ -987,8 +994,8 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	
 	// find how many points are on the animal figure
 	let animalId = getAnimalId(tile);
-	let compPoints = checkAnimalPoints(animalId, 0);
-	let playerPoints = checkAnimalPoints(animalId, 1);
+	let playerPoints = checkAnimalPoints(animalId, 0);
+	let compPoints = checkAnimalPoints(animalId, 1);
 	
 	/*
 	console.log("id is " + animalId);
@@ -1007,10 +1014,17 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	
 	// determine if the score is close on that particular animal
 	let closeScore;
+	let landslide;
 	if (Math.abs(compPoints - playerPoints) >= 3) {
 		closeScore = true;
 	} else {
 		closeScore = false;
+	}
+	
+	if (Math.abs(compPoints - playerPoints) >= 6) {
+		landslide = true;
+	} else {
+		landslide = false;
 	}
 	
 	/*
@@ -1025,38 +1039,52 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	// logic for maximum token to play
 	// TO DO: maybe add defendedbyplayer1 to logic?
 	let choice;
-	switch(animalSize) {
-		case "xs":
-			choice = playMax("plain");
-			break;
-		case "sm":
-			if (defended) {
-				choice = playMax("bronze");
-			} else {
-				choice = playMax("plain");
-			}
-			break;
-		case "m":
-			if (defended) {
-				choice = playMax("silver");
-			} else {
-				choice = playMax("bronze");
-			}
-			break;
-		case "l":
-		case "xl":
-			if (defended) {
-				choice = playMax("gold");
-			} else {
-				if (closeScore && !compWinning) {
+	if (landslide) {
+		choice = playMax("plain");
+	} else {
+		switch(animalSize) {
+			case "xs":
+				if (playerPoints == 2) {
 					choice = playMax("silver");
-				} else if (closeScore && compWinning) {
+				} else if (playerPoints == 1) {
+					if (players[1].bronze >= 0) {
+						choice = playMax("bronze");
+					} else {
+						choice = playMax("silver");
+					}
+				} else {
+					choice = playMax("plain");
+				}
+				break;
+			case "sm":
+				if (defended) {
 					choice = playMax("bronze");
 				} else {
 					choice = playMax("plain");
 				}
-			}
-			break;
+				break;
+			case "m":
+				if (defended) {
+					choice = playMax("silver");
+				} else {
+					choice = playMax("bronze");
+				}
+				break;
+			case "l":
+			case "xl":
+				if (defended) {
+					choice = playMax("gold");
+				} else {
+					if (closeScore && !compWinning) {
+						choice = playMax("silver");
+					} else if (closeScore && compWinning) {
+						choice = playMax("bronze");
+					} else {
+						choice = playMax("plain");
+					}
+				}
+				break;
+		}
 	}
 	
 	switch(choice) {
@@ -2315,8 +2343,8 @@ function q7(tileNum) {
 		let maxIndex = -1;
 		for (let i = 0; i < highlighted.length; i++) {
 			animalId = getAnimalId(highlighted[i]);
-			compPoints = checkAnimalPoints(animalId, 0);
-			playerPoints = checkAnimalPoints(animalId, 1);
+			playerPoints = checkAnimalPoints(animalId, 0);
+			compPoints = checkAnimalPoints(animalId, 1);
 			difference = Math.abs(compPoints - playerPoints);
 			
 			// find the greatest difference
@@ -3310,6 +3338,8 @@ $("body").keydown(function(e) {
 		case 67: // c
 			if ($("#continue").is(":visible")) {
 				handleContinue();
+			} else if ($("#compTurnAgain").is(":visible")) {
+				handleContinue();
 			}
 			break;
 		case 82: // r
@@ -3318,7 +3348,8 @@ $("body").keydown(function(e) {
 			}
 			break;
 		case 32: // space
-			if ($("#pickNumber").hasClass("cardHighlight")) {
+			if ($("#pickNumber").is(":visible") &&
+				$("#pickNumber").hasClass("cardHighlight")) {
 				handlePickNumber();
 			}
 			break;
