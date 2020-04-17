@@ -1,3 +1,38 @@
+#warning {
+    margin: auto 0;
+    background-color: black;
+}
+
+#noscript {
+    margin: 0;
+    color: red;
+    background-color: black;
+    text-align: center;
+    padding: 2%;
+}
+
+#noscript a {
+    color: red;
+}
+
+.audioIcons {
+	width: 100%;
+}
+
+#playingIcon {
+	display: none;
+}
+
+#topSection {
+	width: 280px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 20px auto;
+	justify-items: center;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
 .ui-tooltip {
     text-align: center;
 	font-size: 1em;
@@ -54,7 +89,7 @@ p {
 #inventory {
 	margin: 5px auto;
 	display: inline-block;
-	font-size: .7em;
+	width: 100%;
 }
 
 #inventory td {
@@ -67,7 +102,8 @@ p {
 }
 
 #inventory table {
-	background: #f0f0f0;	
+	background: #f0f0f0;
+	font-size: .85em;
 }
 
 #inventory table, #inventory td {
@@ -120,7 +156,7 @@ button {
 	padding-top: 10px;
 	text-align: center;
 	justify-self: center;
-	align-self: center;
+	align-self: start;
 }
 
 #cards img {
@@ -207,6 +243,7 @@ button {
 	.buttonHover {
 		font-size: 1.2em;
 	}
+	
 }
 
 @media only screen and (min-width: 640px) {
@@ -226,7 +263,6 @@ button {
 		font-size: 1.7em;
 	}
 	#cards {
-		align-self: start;
 		padding-top: 15%;
 	}
 }
@@ -278,7 +314,7 @@ button {
 }
 
 @media only screen and (min-width: 370px) {
-	.tg {
+	.tg, #topSection {
 		width: 340px;
 	}
 	.tg td, .tg th {
@@ -286,9 +322,15 @@ button {
 		height: 31px;
 		font-size: 1em;
 	}
+	#topSection {
+		grid-template-columns: 30px auto;
+	}
+	#inventory table {
+		font-size: 1em;
+	}
 }
 @media only screen and (min-width: 450px) {
-	.tg {
+	.tg, #topSection {
 		width: 420px;
 	}
 	.tg td, .tg th {
@@ -297,8 +339,8 @@ button {
 	}
 }
 @media only screen and (min-width: 620px) {
-	.tg {
-		width: 280px;
+	.tg, #topSection {
+		width: 310px;
 	}
 	.tg td, .tg th {
 		width: 25px;
@@ -306,7 +348,7 @@ button {
 	}
 }
 @media only screen and (min-width: 720px) {
-	.tg {
+	.tg, #topSection {
 		width: 330px;
 	}
 	.tg td, .tg th {
@@ -315,7 +357,7 @@ button {
 	}
 }
 @media only screen and (min-width: 820px) {
-	.tg {
+	.tg, #topSection {
 		width: 380px;
 	}
 	.tg td, .tg th {
@@ -324,7 +366,7 @@ button {
 	}
 }
 @media only screen and (min-width: 920px) {
-	.tg {
+	.tg, #topSection {
 		width: 430px;
 	}
 	.tg td, .tg th {
@@ -332,29 +374,31 @@ button {
 		height: 40px;
 		font-size: 1.3em;
 	}
-	#userName, #robotName {
-		width: 75px;
-	}
-	#inventory td {
-		font-size: 1.4em;
-	}
-
-	#inventory .token {
-		width: 1.4em;
-		vertical-align: text-bottom;
-	}
+	#topSection {
+		grid-template-columns: 45px auto;
+	}	
 }
 @media only screen and (min-width: 1050px) {
-	.tg {
+	.tg, #topSection {
 		width: 495px;
 	}
 	.tg td, .tg th {
 		width: 45px;
 		height: 46px;
 	}
+	#userName, #robotName {
+		width: 75px;
+	}
+	#inventory td {
+		font-size: 1.4em;
+	}
+	#inventory .token {
+		width: 1.4em;
+		vertical-align: text-bottom;
+	}
 }
 @media only screen and (min-width: 1200px) {
-	.tg {
+	.tg, #topSection {
 		width: 570px;
 	}
 	.tg td, .tg th {
@@ -503,6 +547,10 @@ button {
 	display: none;
 	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 	grid-column-gap: 10px;
+}
+
+#playAgain {
+	display: none;
 }
 
 .animalResults {

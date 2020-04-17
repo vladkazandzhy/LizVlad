@@ -216,7 +216,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 3; i++) {
       numberBag.push(i);
     }
     console.log("Filled bag with " + numberBag.length + " numbers.");
@@ -341,6 +341,12 @@ let tileNum;
 
 // start the user's turn when "Draw a Number" is clicked
 $('body').on('click', "#pickNumber", function() {
+	handlePickNumber();
+});
+
+function handlePickNumber() {
+	
+	
 	$("#turnChoicesComp").hide();
 	$(".robotTurnHighlight").removeClass("robotTurnHighlight");
 	
@@ -351,6 +357,10 @@ $('body').on('click', "#pickNumber", function() {
 	
 	// only count the click if it's highlighted (able to be drawn);
 	if ($("#pickNumber").hasClass("cardHighlight")) {
+		if ($("#playingIcon").is(":visible")) {
+			$("#playCardSound").trigger('play');
+		}
+		
 		$("#pickNumber").removeClass("cardHighlight");
   
 		  // hide the extra defender button if needed
@@ -363,8 +373,7 @@ $('body').on('click', "#pickNumber", function() {
 	  takeTurn(tileNum);
 	  
 	}
-
-});
+}
 
 // this function will be the same for both the user and computer
 function drawNumber() {	
@@ -415,7 +424,6 @@ function takeTurn(rand) {
 				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.</p>");
 			} else {
 				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>.</p>");
-				extraTurnComp = false;
 			}
 			calculateRobotChoice(rand);
 			endCompTurn();
@@ -511,15 +519,29 @@ function displayTurnChoicesRule2() {
   
 }
 
-// user choices (for usual turns)
 $("#doNothing").click(function() {
+	handleDoNothing();
+});
+
+function handleDoNothing() {
 	if (!extraTurnUser) {
 		endHumanTurn();
 	} else {
 		takeExtraTurn();
 	}
-});
+	clearQuestion();
+}
+
 $("#playGold").click(function() {
+	handlePlayGold();
+});
+
+function handlePlayGold() {
+	if ($("#playingIcon").is(":visible")) {
+		//$("#playCoinSound").trigger('play');
+		$("#playTokenSound").trigger('play');
+	}
+	
 	// take into account questions
 	if (currentQuestion == 0) {
 		players[0].playGold(tileNum);
@@ -541,9 +563,18 @@ $("#playGold").click(function() {
 	} else {
 		takeExtraTurn();
 	}
+}
 
-});
 $("#playSilver").click(function() {
+	handlePlaySilver();
+});
+
+function handlePlaySilver() {
+	if ($("#playingIcon").is(":visible")) {
+		//$("#playCoinSound").trigger('play');
+		$("#playTokenSound").trigger('play');
+	}
+	
 	// take into account questions
 	if (currentQuestion == 0) {
 		players[0].playSilver(tileNum);
@@ -565,8 +596,18 @@ $("#playSilver").click(function() {
 	} else {
 		takeExtraTurn();
 	}	
-});
+}
+
 $("#playBronze").click(function() {
+	handlePlayBronze();
+});
+
+function handlePlayBronze() {
+	if ($("#playingIcon").is(":visible")) {
+		//$("#playCoinSound").trigger('play');
+		$("#playTokenSound").trigger('play');
+	}
+	
 	// take into account questions
 	if (currentQuestion == 0) {
 		players[0].playBronze(tileNum);
@@ -588,8 +629,18 @@ $("#playBronze").click(function() {
 	} else {
 		takeExtraTurn();
 	}
-});
+}
+
 $("#playPlain").click(function() {
+	handlePlayPlain();
+});
+
+function handlePlayPlain() {
+	if ($("#playingIcon").is(":visible")) {
+		//$("#playCoinSound").trigger('play');
+		$("#playTokenSound").trigger('play');
+	}
+	
 	// take into account questions
 	if (currentQuestion == 0) {
 		players[0].playPlain(tileNum);
@@ -609,8 +660,18 @@ $("#playPlain").click(function() {
 	} else {
 		takeExtraTurn();
 	}
-});
+}
+
 $("#playDefender").click(function() {
+	handlePlayDefender();
+});
+
+function handlePlayDefender() {
+	if ($("#playingIcon").is(":visible")) {
+		//$("#playDefenderSound").trigger('play');
+		$("#playTokenSound").trigger('play');
+	}
+	
 	// take into account questions
 	if (currentQuestion == 0) {
 		players[0].playDefender(tileNum); 
@@ -625,8 +686,17 @@ $("#playDefender").click(function() {
 	} else {
 		takeExtraTurn();
 	}
-});
+}
+
 $("#playBomb").click(function() {
+	handlePlayBomb();
+});
+
+function handlePlayBomb() {
+	if ($("#playingIcon").is(":visible")) {
+		$("#playBombSound").trigger('play');
+	}
+	
 	if (currentQuestion == 0) {
 		players[playerNum].playBomb(tileNum);
 	} else {
@@ -641,14 +711,18 @@ $("#playBomb").click(function() {
 	} else {
 		takeExtraTurn();
 	}
-});
+}
 
 function clearQuestion() {
-	// reset global variables
-	currentQuestion = 0;
-	questionTileChoice = -1;
-	$("#continue").hide();
-	$("#pickNumber").removeClass("cardHighlight");
+	console.log("no question to clear");
+	if (currentQuestion > 0) {
+		console.log("clearing question");
+		// reset global variables
+		currentQuestion = 0;
+		questionTileChoice = -1;
+		$("#continue").hide();
+		//$("#pickNumber").removeClass("cardHighlight"); // don't know why this was here... maybe important?
+	}
 }
 
 // special case for question 9
@@ -737,11 +811,16 @@ function takeExtraTurn() {
 
 // this is shown during certain questions
 $("#continue").click(function() {
+	handleContinue();
+});
+
+function handleContinue() {
+	clearQuestion();
 	$("#continue").hide();
 	$("#continue").html('Do Nothing');
 	$("#tokenExists").hide();
 	endHumanTurn();
-});
+}
 
 // when the user clicks this, the tokens are destroyed and the user can continue playing
 $("#seeChanges").click(function() {
@@ -779,9 +858,13 @@ function calculateRobotChoice(tileNum) {
 	// if there's already a token, do nothing
 	let tile = $("#" + tileNum);
 	if (tile.hasClass("occupied")) {
+		if (!extraTurnComp) {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing. Click the deck to continue with your turn.</p>");
-			$("#turnChoicesComp").hide();
-			return;
+		} else {
+			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing.</p>");
+		}
+		$("#turnChoicesComp").hide();
+		return;
 	}
 	
 	let tokenPlayed = findBestToken(tileNum, true, true);
@@ -1254,7 +1337,7 @@ function endGameAfterComp() {
 }
 
 $("#showScore").click(function() {
-	//$("#main").show();
+	$("#playAgain").show();
 	$("#main2").hide();
 	$("#promptFinalScore").hide();
 	countFinalScore();
@@ -1633,6 +1716,11 @@ function placeAnimal(w, h, id, animalType) {
 let bagOfQuestions = [];
 // place the 20 question tiles in free places
 function placeQuestions(id) {
+	// this logic is just too complicated, so I'm removing this question
+	if (id == 12) {
+		return;
+	}
+	
   let placed = false;
 
   while (!placed) {
@@ -1684,14 +1772,6 @@ function fillTokens() {
   let comp = new Player(1, "Robot", 2, 5, 8, 50, 5, 5);
   players.push(player);
   players.push(comp);
-
-
-  console.log(
-    `${players[0].name} {id:${players[0].num}, gold:${players[0].gold}, silver:${players[0].silver}, bronze:${players[0].bronze}, plain:${players[0].plain}, defender:${players[0].defender}, bomb:${players[0].bomb}}`
-  );
-  console.log(
-    `${players[1].name} {id:${players[1].num}, gold:${players[1].gold}, silver:${players[1].silver}, bronze:${players[1].bronze}, plain:${players[1].plain}, defender:${players[1].defender}, bomb:${players[1].bomb}}`
-  );
 }
 
 /******************************************* TWENTY QUESTIONS *******************************************/
@@ -1763,6 +1843,14 @@ function handleQuestion(tileNum, id) {
 }
 
 $("#questionTile").click(function() {
+	flipQuestion();
+});
+
+function flipQuestion() {
+	if ($("#playingIcon").is(":visible")) {
+		$("#playQuestionSound").trigger('play');
+	}
+	
 	$("#turnDisplay").html("");
 	$("#questionTile").css("display", "none");
 	$("#questionCard").show();
@@ -1789,7 +1877,7 @@ $("#questionTile").click(function() {
 		case 19: q19(tileNum); break;
 		case 20: q20(tileNum); break;
 	}
-});
+}
 
 // important global variables for handling questions
 let highlighted = [];
@@ -2617,7 +2705,7 @@ function q12(tileNum) {
 		$("#robotTurnMsg").hide();
 		endHumanTurn();
 		$("#pickNumber").removeClass("cardHighlight");
-		$("turnChoices").hide();
+		$("#turnChoices").hide();
 		$("#robotTurnMsg2").show();
 		$("#robotTurnMsg2").html("<p>Click below to have " + robotName + " take its second turn.</p><button class='buttonHover' type='button' id='compSecondTurn'>Continue</button></div>");
 	});
@@ -2625,6 +2713,7 @@ function q12(tileNum) {
 	// when the user clicks to have comp take second turn, this makes sure the player
 	// stays as comp and then comp takes its turn
 	$("body").on("click", "#compSecondTurn", function() {
+		extraTurnComp = false;
 		$(".robotTurnHighlight").removeClass("robotTurnHighlight");
 		$("#robotTurnMsg2").hide();
 		playerNum++;
@@ -3165,6 +3254,7 @@ function removeToken(tileNum) {
 	
 	clearQuestion();
 	$("#continue").show();
+	$("#continue").html("Continue");
 	$("#turnDisplay").html("<p>Your token has been removed. Click below to continue with " + robotName + "'s turn.</p>");
 }
 
@@ -3176,3 +3266,77 @@ function playRobotToken() {
 	clearQuestion();
 	endHumanTurn();
 }
+
+$("body").keydown(function(e) {
+	var x = event.which || event.keyCode;
+	switch(x) {
+		case 54: // 6
+			if ($("#playGold").is(":visible")) {
+				handlePlayGold();
+			}
+			break;
+		case 52: // 4
+			if ($("#playSilver").is(":visible")) {
+				handlePlaySilver();
+			}
+			break;
+		case 50: // 2
+			if ($("#playBronze").is(":visible")) {
+				handlePlayBronze();
+			}
+			break;
+		case 49: // 1
+			if ($("#playPlain").is(":visible")) {
+				handlePlayPlain();
+			}
+			break;
+		case 68: // d
+			if ($("#playDefender").is(":visible")) {
+				handlePlayDefender();
+			}
+			break;
+		case 66: // b
+			if ($("#playBomb").is(":visible")) {
+				handlePlayBomb();
+			}
+			break;
+		case 78: // n
+			if ($("#doNothing").is(":visible")) {
+				handleDoNothing();
+			} else if ($("#continue").is(":visible")) {
+				handleContinue();
+			}
+			break;
+		case 67: // c
+			if ($("#continue").is(":visible")) {
+				handleContinue();
+			}
+			break;
+		case 82: // r
+			if ($("#questionTile").is(":visible")) {
+				flipQuestion();
+			}
+			break;
+		case 32: // space
+			if ($("#pickNumber").hasClass("cardHighlight")) {
+				handlePickNumber();
+			}
+			break;
+	}
+});
+
+$("#muteIcon").click(function() {
+	$("#muteIcon").hide();
+	$("#playingIcon").show();
+	$("#playAudio").trigger('play');
+});
+
+$("#playingIcon").click(function() {
+	$("#playingIcon").hide();
+	$("#muteIcon").show();
+	$("#playAudio").trigger('pause');
+});
+
+$("#playAgain").click(function() {
+	location.reload();
+});

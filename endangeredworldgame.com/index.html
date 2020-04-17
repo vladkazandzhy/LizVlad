@@ -6,6 +6,36 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
+	<noscript>
+		<div id="noscript">
+			<img src="images/warning.png" alt="warning symbol" id="warning">
+			<p>This website requires JavaScript to function properly.
+			<a href="http://www.enable-javascript.com/" target="_blank">Click here</a> to
+			learn how to enable JavaScript in your web browser.</p>
+		</div>
+	</noscript>
+	<audio id="playAudio" loop>
+		<source src="audio/village.wav" type="audio/wav">
+		<source src="audio/yucatan.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="playCardSound" volume="0.1">
+		<source src="audio/card.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="playCoinSound" volume="0.1">
+		<source src="audio/coin.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="playDefenderSound" volume="0.1">
+		<source src="audio/defender.mp3" type="audio/mpeg">
+	</audio>
+	<audio id="playBombSound" volume="0.5">
+		<source src="audio/bomb.wav" type="audio/wav">
+	</audio>
+	<audio id="playQuestionSound" volume="0.5">
+		<source src="audio/question.wav" type="audio/wav">
+	</audio>
+	<audio id="playTokenSound" volume="0.5">
+		<source src="audio/token.wav" type="audio/wav">
+	</audio>
 	<div id="intro">
 		<h1>Welcome to Endangered World!</h1>
 		<p>The online version of Endangered World will help you
@@ -58,7 +88,20 @@
 			</ul>
 			<p>Lastly, each unused bomb earns a player <b>10 points</b>, so be careful how you use your bombs!</p>
 			<h1>Anything else I should know?</h1>
-			<p>Nope! Just press the button below to start enjoying your game!</p>
+			<p>If you're on a computer, these keyboard shortcuts might come in handy while you play:</p>
+			<ul>
+				<li><b>space</b> - draw card</li>
+				<li><b>6</b> - play gold coin</li>
+				<li><b>4</b> - play silver coin</li>
+				<li><b>2</b> - play bronze coin</li>
+				<li><b>1</b> - play plain token</li>
+				<li><b>d</b> - play defender</li>
+				<li><b>b</b> - play bomb</li>
+				<li><b>n</b> - do nothing</li>
+				<li><b>c</b> - continue</li>
+				<li><b>r</b> - read question tile</li>
+			</ul>
+			<p>That's all! Now just press the button below to start enjoying your game!</p>
 		</div>
 		<button class="buttonHover" type="button" id="readRules">How to Play</button>
 		<button class="buttonHover" type="button" id="loadGame">Load Game</button>
@@ -66,68 +109,74 @@
 	<div id="container">
 		
 		<div id="main" class="element">
-			<div id="inventory">
-				<div id="userInventory">
-					<table>
-						<tr>
-							<td id="userName">You</td>
-							<td>
-								<img class="token" src="images/tokens/gold.png">
-								<span id="userGold">2</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/silver.png">
-								<span id="userSilver">5</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/bronze.png">
-								<span id="userBronze">8</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/plain0.png">
-								<span id="userPlain">50</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/defender.png">
-								<span id="userDefender">5</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/bomb.png">
-								<span id="userBomb">5</span>
-							</td>
-						</tr>
-					</table>
+			<div id="topSection">
+				<div id="audioSection">
+					<img id="playingIcon" class="audioIcons" src="images/audioIcon.png">
+					<img id="muteIcon" class="audioIcons" src="images/muteIcon.png">
 				</div>
-				<div id="compInventory">
-					<table>
-						<tr>
-							<td id="robotName">Robot</td>
-							<td>
-								<img class="token" src="images/tokens/gold.png">
-								<span id="compGold">2</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/silver.png">
-								<span id="compSilver">5</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/bronze.png">
-								<span id="compBronze">8</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/plain1.png">
-								<span id="compPlain">50</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/defender.png">
-								<span id="compDefender">5</span>
-							</td>
-							<td>
-								<img class="token" src="images/tokens/bomb.png">
-								<span id="compBomb">5</span>
-							</td>
-						</tr>
-					</table>
+				<div id="inventory">
+					<div id="userInventory">
+						<table>
+							<tr>
+								<td id="userName">You</td>
+								<td>
+									<img class="token" src="images/tokens/gold.png">
+									<span id="userGold">2</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/silver.png">
+									<span id="userSilver">5</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/bronze.png">
+									<span id="userBronze">8</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/plain0.png">
+									<span id="userPlain">50</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/defender.png">
+									<span id="userDefender">5</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/bomb.png">
+									<span id="userBomb">5</span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div id="compInventory">
+						<table>
+							<tr>
+								<td id="robotName">Robot</td>
+								<td>
+									<img class="token" src="images/tokens/gold.png">
+									<span id="compGold">2</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/silver.png">
+									<span id="compSilver">5</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/bronze.png">
+									<span id="compBronze">8</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/plain1.png">
+									<span id="compPlain">50</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/defender.png">
+									<span id="compDefender">5</span>
+								</td>
+								<td>
+									<img class="token" src="images/tokens/bomb.png">
+									<span id="compBomb">5</span>
+								</td>
+							</tr>
+						</table>
+					</div>
 				</div>
 			</div>
 			<table class="tg" id="board">
@@ -341,12 +390,9 @@
 					  <button type="button" id="playBomb">Bomb</button>
 					  <button type="button" id="doNothing">Do Nothing</button>
 					  -->
-					  <div id='robotTurnMsg2'></div>
 					</div>
-					
-					
+					<div id='robotTurnMsg2'></div>
 					<button class="buttonHover" type="button" id="playDefenderRule3">Play Defender</button>
-					
 					<button class="buttonHover" type="button" id="seeChanges">See Changes</button>
 					<button class="buttonHover" type="button" id="continue">Do Nothing</button>
 				</div>
@@ -358,6 +404,7 @@
 					<button class="buttonHover" type="button" id="showScore">See Final Score</button>
 				</div>
 				<div id="resultsSummary"></div>
+				<button class="buttonHover" type="button" id="playAgain">Play Again!</button>
 				<div id="results">
 					<div id="userWon"></div>
 					<div id="compWon"></div>
