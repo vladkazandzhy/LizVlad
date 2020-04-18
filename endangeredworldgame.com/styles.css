@@ -1,3 +1,19 @@
+#shortcutDiv {
+	display: none;
+}
+
+#shortcutIcon {
+	display: block;
+	margin: 10px auto 20px auto;
+	width: 40px;
+}
+
+#shortcutIcon:hover, #playingIcon:hover, #muteIcon:hover {
+	cursor: pointer;
+}
+
+
+
 #warning {
     margin: auto 0;
     background-color: black;
@@ -36,6 +52,9 @@
 .ui-tooltip {
     text-align: center;
 	font-size: 1em;
+}
+.custom-tooltip-styling {
+	text-align: left;
 }
 
 .help-icon {
@@ -159,7 +178,7 @@ button {
 	align-self: start;
 }
 
-#cards img {
+#cardStack img {
 	border-radius: 20%;
 	width: 95%;
 	max-width: 200px;
@@ -280,6 +299,7 @@ button {
         -webkit-transform: scale(1.2);
         -ms-transform: scale(1.2);
         transform: scale(1.2);
+		cursor: pointer;
 }
 
 .tokenRow {
@@ -471,6 +491,7 @@ button {
 
 .cardHighlight:hover {
 	border: 4px solid #71d400;
+	cursor: pointer;
 }
 .robotTurnHighlight {
 	border: 4px solid #06cf17;
@@ -491,11 +512,6 @@ button {
 
 #tokenExists {
 	display: none;
-}
-
-#setBoard,
-#startGame {
-  font-size: 1.4rem;
 }
 
 .modal {
