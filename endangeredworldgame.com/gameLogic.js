@@ -1884,7 +1884,7 @@ function handleQuestion(tileNum, id) {
 		$("#turnDisplay").html("<p>" + robotName + " drew a Twists & Turns card at tile <b>" + tileNum + "</b>.</p><p>Click below to read the card.</p>");
 	}
 	
-	$("#questionTile").attr("src", "images/questions/" + id + ".png");
+	$("#questionTile").attr("src", "images/questions/cropped/" + id + ".png");
 	$("#questionTile").css("display", "block");
 	questionId = id;
 	console.log("Handling question " + questionId);
@@ -3405,6 +3405,21 @@ $("#muteIcon").click(function() {
 	$("#muteIcon").hide();
 	$("#playingIcon").show();
 	$("#playAudio").trigger('play');
+	
+	var playAudio = document.getElementById("playAudio");
+	playAudio.volume = 0.2;
+	
+	var playCardSound = document.getElementById("playCardSound");
+	playCardSound.volume = 0.05;
+	
+	var playBombSound = document.getElementById("playBombSound");
+	playBombSound.volume = 0.1;
+	
+	var playQuestionSound  = document.getElementById("playQuestionSound");
+	playQuestionSound.volume = 0.2;
+	
+	var playTokenSound = document.getElementById("playTokenSound");
+	playTokenSound.volume = 0.1;
 });
 
 $("#playingIcon").click(function() {
