@@ -38,13 +38,15 @@
 	</audio>
 	<div id="intro">
 		<h1>Welcome to Endangered World!</h1>
-		<p>The online version of Endangered World will help you
-		get a feel for this new and exciting board game! Today, you'll
+		<p>Endangered World is a new and exciting board game! Today, you'll
 		be playing against a robot named <span id="robotNameIntro">Robot</span>,
-		but when you buy the board game, you can play with up to four people.</p>
-		<p>We hope you enjoy this board game simulation and that you'll support our
-		<a href="#">Kickstarter campaign</a> so we can bring this board game to life!</p>
-		<p>Click below to read the rules or load the game.</p>
+		but when you buy the physical board game, you can play with up to four people.</p>
+		<p>If you've purchased full game access in our <a href="#">Kickstarter campaign</a>, please enter your email and click Load Full Game.</p>
+		<input type="email" id="email" name="email">
+		<button class="buttonHover" type="button" id="loadFullGame">Load Full Game</button>
+		<p>Otherwise, click Load Trial Game below. You'll be able to play the first half of the game.</p>
+		<button class="buttonHover" type="button" id="loadTrialGame">Load Trial Game</button>
+		<p>First time playing? Click below to read the rules.</p>
 		<div id="rules">
 			<h1>What's the game about?</h1>
 			<p>The animal population is dwindling, and it's up to you to
@@ -102,10 +104,10 @@
 				<li><b>r</b> - read question tile</li>
 			</ul>
 			<p>If you want to reference these during the game, just click the icon above the cards.</p>
-			<p>That's all! Now just press the button below to start enjoying your game!</p>
+			<p>That's all! Enjoy your game!</p>
+			<button class="buttonHover" type="button" id="returnToTop">Return to Top</button>
 		</div>
 		<button class="buttonHover" type="button" id="readRules">How to Play</button>
-		<button class="buttonHover" type="button" id="loadGame">Load Game</button>
 	</div>
 	<div id="container">
 		

@@ -93,8 +93,20 @@ p {
 	margin-left: 10px;
 }
 
+input {
+	width: 90%;
+	height: 2em;
+	border-radius: 5px;
+}
+
 #rules {
 	display: none;
+}
+
+#trialMessage {
+	text-align: center;
+	margin: 10px;
+	
 }
 
 #main {

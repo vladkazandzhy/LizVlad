@@ -21,6 +21,7 @@ $('body').on('click', "#shortcutIcon", function(e) {
 });
 
 
+let trialVersion = true;
 let robotName = "Robot";
 $( document ).ready(function() {
 	randomizeRobotName();
@@ -38,10 +39,14 @@ $( document ).ready(function() {
 		$("#readRules").hide();
 	});
 
-	$("#loadGame").on("click", function() {
+	$("#loadTrialGame").on("click", function() {
 		$("#intro").hide();
 		$("#main").show();
 		$("#main2").css("display", "grid");
+	});
+	
+	$("#returnToTop").on("click", function() {
+		$("html, body").animate({ scrollTop: 0 }, "slow");
 	});
 	
 });
@@ -267,6 +272,10 @@ function NumberBag() {
     // highlight the current tile in red
     let tile = $("#" + currentNumber);
     tile.addClass("current");
+	
+	if (numberBag.length == 98) {
+		$("#mainRight").html('<div id="trialMessage"><p>Thank you for playing the trial version of Endangered World! Please visit our <a href="#">Kickstarter campaign</a> to purchase the full version or pre-order the board game.</p><p>If you\'d like to play the trial version again, click <a href="index.php">here</a>.</div>')
+	}
 	
 	// add note of how many cards are left
 	if (numberBag.length == 50) {
