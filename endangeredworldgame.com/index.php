@@ -15,27 +15,36 @@
 		</div>
 	</noscript>
 	<audio id="playAudio" loop>
-		<source src="audio/jungleTheme.wav" type="audio/wav">
 		<source src="audio/jungleTheme.mp3" type="audio/mpeg">
+		<source src="audio/jungleTheme.ogg" type="audio/ogg">
+		<source src="audio/jungleTheme.wav" type="audio/wav">
 	</audio>
 	<audio id="playCardSound">
 		<source src="audio/card.mp3" type="audio/mpeg">
-	</audio>
-	<audio id="playCoinSound">
-		<source src="audio/coin.mp3" type="audio/mpeg">
-	</audio>
-	<audio id="playDefenderSound">
-		<source src="audio/defender.mp3" type="audio/mpeg">
+		<source src="audio/card.ogg" type="audio/ogg">
+		<source src="audio/card.wav" type="audio/wav">
 	</audio>
 	<audio id="playBombSound">
+		<source src="audio/bomb.mp3" type="audio/mpeg">
+		<source src="audio/bomb.ogg" type="audio/ogg">
 		<source src="audio/bomb.wav" type="audio/wav">
 	</audio>
 	<audio id="playQuestionSound">
+		<source src="audio/question.mp3" type="audio/mpeg">
+		<source src="audio/question.ogg" type="audio/ogg">
 		<source src="audio/question.wav" type="audio/wav">
 	</audio>
 	<audio id="playTokenSound">
+		<source src="audio/token.mp3" type="audio/mpeg">
+		<source src="audio/token.ogg" type="audio/ogg">
 		<source src="audio/token.wav" type="audio/wav">
 	</audio>
+	<audio id="endGameSound">
+		<source src="audio/finalScore.mp3" type="audio/mpeg">
+		<source src="audio/finalScore.ogg" type="audio/ogg">
+		<source src="audio/finalScore.wav" type="audio/wav">
+	</audio>
+	
 	<div id="intro">
 		<h1>Welcome to Endangered World!</h1>
 		<p>Endangered World is a new and exciting board game! Today, you'll

@@ -20,7 +20,7 @@ $('body').on('click', "#shortcutIcon", function(e) {
 	e.preventDefault();
 });
 
-
+let startTime, endTime, userEmail;
 let trialVersion = true;
 let robotName = "Robot";
 $( document ).ready(function() {
@@ -39,11 +39,39 @@ $( document ).ready(function() {
 		$("#readRules").hide();
 	});
 
+
+	$("#loadFullGame").on("click", function(e) {
+	  e.preventDefault();
+		
+		if ($("#email").val() == "") {
+			alert("Please enter an email address.")
+		} else {
+			$.post("php/checkUser.php", $("#email").serialize(), function(data) {
+			  if (data == "Invalid email address.") {
+				  alert(data);
+			  }
+			  else {
+				  userEmail = data;
+				  trialVersion = false;
+				  startGame();
+			  }
+			});
+		}
+	  
+	});
+
 	$("#loadTrialGame").on("click", function() {
+		userEmail = "trial";
+		startGame();
+	});
+	
+	function startGame() {
+		$.post("php/trackGames.php", {userEmail:userEmail,duration:0,playerScore:0,compScore:0,tieScore:0});
+		startTime = new Date();
 		$("#intro").hide();
 		$("#main").show();
 		$("#main2").css("display", "grid");
-	});
+	}
 	
 	$("#returnToTop").on("click", function() {
 		$("html, body").animate({ scrollTop: 0 }, "slow");
@@ -273,13 +301,12 @@ function NumberBag() {
     let tile = $("#" + currentNumber);
     tile.addClass("current");
 	
-	if (numberBag.length == 98) {
-		$("#mainRight").html('<div id="trialMessage"><p>Thank you for playing the trial version of Endangered World! Please visit our <a href="#">Kickstarter campaign</a> to purchase the full version or pre-order the board game.</p><p>If you\'d like to play the trial version again, click <a href="index.php">here</a>.</div>')
-	}
-	
 	// add note of how many cards are left
 	if (numberBag.length == 50) {
 		$("#cardsLeft").text("There are 50 cards left.");
+		if (trialVersion) {
+			$("#mainRight").html('<div id="trialMessage"><p>Thank you for playing the trial version of Endangered World! Please visit our <a href="#">Kickstarter campaign</a> to purchase the full version or pre-order the board game.</p><p>If you\'d like to play the trial version again, click <a href="index.php">here</a>.</div>');
+		}
 	} else if (numberBag.length == 25) {
 		$("#cardsLeft").text("There are 25 cards left.");
 	} else if (numberBag.length == 15) {
@@ -1393,7 +1420,20 @@ $("#showScore").click(function() {
 });
 
 // calculate the final score
-function countFinalScore() {	
+function countFinalScore() {
+	
+	// calculate duration of game to save in database
+	endTime = new Date();
+	let timeDiff = endTime - startTime; //in ms
+	// strip the ms
+	timeDiff /= 60000;
+	// get minutes 
+	let minutes = timeDiff.toFixed(2);
+	
+	
+	if ($("#playingIcon").is(":visible")) {
+		$("#endGameSound").trigger('play');
+	}
 	let playerPoints = 0;
 	let compPoints = 0;
 	let animalsWonByPlayer = [];
@@ -1425,6 +1465,7 @@ function countFinalScore() {
 
 	let playerFinalScore = 0;
 	let compFinalScore = 0;
+	let lostAnimalsScore = 0;
 	// count the points for each animal won by player and comp
 	if (animalsWonByPlayer.length > 0) {
 		for (var i = 0; i < animalsWonByPlayer.length; i++) {
@@ -1447,6 +1488,7 @@ function countFinalScore() {
 	if (lostAnimals.length > 0) {
 		for (var i = 0; i < lostAnimals.length; i++) {
 			let animalScore = calculateAnimalScore(lostAnimals[i]);
+			lostAnimalsScore += animalScore;
 			$("#nobodyWon").append(generateAnimalLink(animalScore, lostAnimals[i]));
 		}
 	}
@@ -1471,6 +1513,8 @@ function countFinalScore() {
 	}
 	
 	$("#resultsSummary").html(msg + "<h2>Your final score: <b>" + playerFinalScore + "</b><br>" + robotName + "'s final score: <b>" + compFinalScore + "</b></h2><p><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>");
+	
+	$.post("php/trackGames.php", {userEmail:userEmail,duration:minutes,playerScore:playerFinalScore,compScore:compFinalScore,tieScore:lostAnimalsScore});
 	
 }
 
@@ -3419,7 +3463,7 @@ $("#muteIcon").click(function() {
 	playAudio.volume = 0.2;
 	
 	var playCardSound = document.getElementById("playCardSound");
-	playCardSound.volume = 0.05;
+	playCardSound.volume = 0.1;
 	
 	var playBombSound = document.getElementById("playBombSound");
 	playBombSound.volume = 0.1;
@@ -3429,6 +3473,9 @@ $("#muteIcon").click(function() {
 	
 	var playTokenSound = document.getElementById("playTokenSound");
 	playTokenSound.volume = 0.1;
+
+	var endGameSound = document.getElementById("endGameSound");
+	endGameSound.volume = 0.4;
 });
 
 $("#playingIcon").click(function() {
