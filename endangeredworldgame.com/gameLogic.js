@@ -948,7 +948,11 @@ function showCompChoices() {
 }
 
 // if there are at least 5 opponent points around, then play a bomb if you have one
-function shouldPlayBomb(surSpaces) {
+function shouldPlayBomb(surSpaces, tile) {
+	let animalId = getAnimalId(tile);
+	if (checkIfLastAnimalSpace(animalId)) {
+		return false;
+	}
 	if (players[1].bomb <= 0) {
 		return false;
 	}
@@ -1024,7 +1028,7 @@ function shouldPlayBomb(surSpaces) {
 // then place a defender if you have one
 function shouldPlayDefender(surSpaces, tile) {
 	let animalId = getAnimalId(tile);
-	if (checkIfLastAnimalSpace(animalId)) {
+	if (checkIfLastAnimalSpace(animalId) || animalHasDefenderAlready(animalId)) {
 		return false;
 	}
 	if (players[1].defender <= 0) {
@@ -1057,7 +1061,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	}
 	
 	if (bombAllowed) {
-		let shouldPlayBombVar = shouldPlayBomb(surSpaces);
+		let shouldPlayBombVar = shouldPlayBomb(surSpaces, tile);
 		if (shouldPlayBombVar) {
 			players[1].playBomb(tile);
 			$("#playBombComp").addClass("robotTurnHighlight");
@@ -1424,6 +1428,24 @@ function checkAnimalPoints(animalId, playerId) {
 
 	//console.log("points on animal " + animalId + " for player " + playerId + " is " + playerPoints + ".");
   return playerPoints;
+}
+
+function animalHasDefenderAlready(animalId) {
+	let animalSquares = [];
+	
+  for (var i = 0; i < 100; i++) {
+    if ($("#" + i).hasClass("a" + animalId)) {
+      animalSquares.push(i);
+    }
+  }
+
+  for (var i = 0; i < animalSquares.length; i++) {
+    if ($("#" + animalSquares[i]).hasClass("defendedbyplayer1")) {
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 // this is used by the computer to play a maximum number
