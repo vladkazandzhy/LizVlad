@@ -51,7 +51,7 @@
 		be playing against a robot named <span id="robotNameIntro">Robot</span>,
 		but when you buy the physical board game, you can play with up to four people.</p>
 		<p>If you've purchased full game access in our <a href="#">Kickstarter campaign</a>, please enter your email and click Load Full Game.</p>
-		<input type="email" id="email" name="email">
+		<input type="email" id="email" name="email" autocomplete="on">
 		<button class="buttonHover" type="button" id="loadFullGame">Load Full Game</button>
 		<p>Otherwise, click Load Trial Game below. You'll be able to play the first half of the game.</p>
 		<button class="buttonHover" type="button" id="loadTrialGame">Load Trial Game</button>
