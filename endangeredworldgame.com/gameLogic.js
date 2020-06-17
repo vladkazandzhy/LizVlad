@@ -2635,7 +2635,7 @@ function q6(tileNum) {
 				
 			}
 		}
-		msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+		msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 		
 		clearQuestion();
 		$("#turnChoices").hide();
@@ -2764,7 +2764,7 @@ function q8(tileNum) {
 			let compChoiceNum = robotSelectBestSpace(highlighted);
 			let toPlay = findBestToken(compChoiceNum, false, false);
 			
-			msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+			msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 		}
 		// if not, inform the user and prompt them to continue with their turn
 		else {
@@ -2859,7 +2859,7 @@ function q9(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
 				if (tileDestroyed) {
 					msg += ", destroying your tile in the process";
 				}
@@ -2947,7 +2947,7 @@ function q10(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
@@ -3030,7 +3030,7 @@ function q11(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
 				if (toPlay == "bomb") {
 					msg += ", destroying your tile in the process";
 				}
@@ -3225,7 +3225,7 @@ function q14(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
@@ -3354,7 +3354,7 @@ function q16(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 				
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
@@ -3523,7 +3523,7 @@ function q19(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile number " + compChoiceNum + ". Click below to move on to " + robotName + "'s turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click below to move on to " + robotName + "'s turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click below to move on to " + robotName + "'s turn.</p>";
 			}
