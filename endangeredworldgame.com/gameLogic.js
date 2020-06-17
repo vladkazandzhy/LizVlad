@@ -79,6 +79,7 @@ $( document ).ready(function() {
 	
 });
 
+let destroyArr = [];
 // the Player object will keep track of tokens and points
 function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   this.num = num;
@@ -165,33 +166,53 @@ function Player(num, name, gold, silver, bronze, plain, defender, bomb) {
   };
   
   // making this a separate function because it will be used by question tiles
-  this.destroyToken = function(tileNum, player) {
-	    console.log("Destroying token of player " + player + " on tile #" + tileNum + ".");
+  this.destroyToken = function(tile, player) {
+		console.log("Destroying token of player " + player + " on tile #" + tile + ".");
+
+		let type = "plain token";
+		// remove the bronze/silver/gold class
+		if ($("#" + tile).hasClass("gold")) {
+			type = "gold coin";
+		} else if ($("#" + tile).hasClass("silver")) {
+			type = "silver coin";
+		} else if ($("#" + tile).hasClass("bronze")) {
+			type = "bronze coin";
+		}
+
+		if (player == 0) {
+			this.createDestroyMsg(type, tile);
+		}
+		
 		
 		// give it a second to work
 		setTimeout(destroyEverything, 750);
 		
 		function destroyEverything() {
 			// remove the player class and image
-			$("#" + tileNum).removeClass("player" + player);
-			$("#" + tileNum).removeClass("occupied");
-			$("#" + tileNum + " img:last-child").remove();
+			$("#" + tile).removeClass("player" + player);
+			$("#" + tile).removeClass("occupied");
+			$("#" + tile + " img:last-child").remove();
 
 			// remove the bronze/silver/gold class
-			if ($("#" + tileNum).hasClass("gold")) {
-			  $("#" + tileNum).removeClass("gold");
-			} else if ($("#" + tileNum).hasClass("silver")) {
-			  $("#" + tileNum).removeClass("silver");
-			} else if ($("#" + tileNum).hasClass("bronze")) {
-			  $("#" + tileNum).removeClass("bronze");
+			if (type == "gold coin") {
+				$("#" + tile).removeClass("gold");
+			} else if (type == "silver coin") {
+				$("#" + tile).removeClass("silver");
+			} else if (type == "bronze coin") {
+				$("#" + tile).removeClass("bronze");
 			}
 
 			// put the number back in the space if unoccupied
-			if (!$("#" + tileNum).hasClass("filled")) {
-			  $("#" + tileNum).text(tileNum);
+			if (!$("#" + tile).hasClass("filled")) {
+				$("#" + tile).text(tile);
 			}
 		}
-  }
+	}
+
+	this.createDestroyMsg = function(type, tile) {
+		let msg = "your " + type + " on tile " + tile;
+		destroyArr.push(msg);
+	}
 
   // display current statistics
   this.display = function() {
@@ -272,7 +293,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 30; i++) {
       numberBag.push(i);
     }
   };
@@ -450,15 +471,10 @@ function drawNumber() {
   
   console.log("Player " + playerNum + " just drew tile " + rand +".");
 
-  // just console.log
-  //let whoseTurn;
-  //playerNum == 0 ? (whoseTurn = "Liz") : (whoseTurn = "Robot");
-  //console.log(`${whoseTurn} random number is: ${rand}`);
-
   return rand;
 }
 
-
+let normalCompTurn = true;
 function takeTurn(rand) {
 	// when there are cards left
 	if (typeof rand != 'undefined') {
@@ -478,13 +494,42 @@ function takeTurn(rand) {
 			displayTurnChoices();
 		  } else {
 			$("#turnChoices").hide();
-			
-			if (!extraTurnComp) {
-				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>. Click the deck to continue.</p>");
+			calculateRobotChoice(rand);	
+
+			if (normalCompTurn) {
+				let msg = "<p>" + robotName + " played the following on tile <b>" + rand + "</b>.";
+	
+
+				if (destroyArr.length > 0) {
+					msg += " This destroyed " + destroyArr[0];
+					if (destroyArr.length == 1) {
+						msg += ".";
+					} else if (destroyArr.length == 2) {
+						msg += (" and " + destroyArr[1] + ".");
+					} else {
+						for (let i = 1; i < destroyArr.length; i++) {
+							msg += ", ";
+							if (i == destroyArr.length - 2) {
+								msg += "and ";
+							}
+							msg += destroyArr[i];
+						}
+						msg += ".";
+					}
+					destroyArr = [];
+				}
+	
+				if (!extraTurnComp) {
+					msg += " Click the deck to continue.</p>";
+				} else {
+					msg += "</p>";
+				}
+	
+				$("#turnDisplay").html(msg);
 			} else {
-				$("#turnDisplay").html("<p>" + robotName + " played the following on tile <b>" + rand + "</b>.</p>");
+				normalCompTurn = true;
 			}
-			calculateRobotChoice(rand);
+			
 			endCompTurn();
 		  }
 		}
@@ -834,8 +879,8 @@ function handleRule2(type, playerNum) {
     // add the relevant picture to the board
     tile.append(
       "<img src='images/tokens/" +
-        type +
-        "0.png' alt='token' style='width:20px;height:20px;'>"
+        type + playerNum +
+        ".png' alt='token' style='width:70%;height:auto;'>"
     );
 	
 	players[playerNum].display();
@@ -918,8 +963,10 @@ function calculateRobotChoice(tileNum) {
 	if (tile.hasClass("occupied")) {
 		if (!extraTurnComp) {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing. Click the deck to continue with your turn.</p>");
+			normalCompTurn = false;
 		} else {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing.</p>");
+			normalCompTurn = false;
 		}
 		$("#turnChoicesComp").hide();
 		return;
@@ -953,8 +1000,6 @@ function showCompChoices() {
 
 // if there are at least 5 opponent points around, then play a bomb if you have one
 function shouldPlayBomb(surSpaces, tile) {
-	console.log("*********");
-	console.log("should play bomb?");
 	let animalId = getAnimalId(tile);
 	if (getNumUnoccupiedOnAnimal(animalId) == 1) {
 		return false;
@@ -985,7 +1030,6 @@ function shouldPlayBomb(surSpaces, tile) {
       }
     }
   }
-	console.log("playerPoints around is " + playerPoints);
 	
 	if (playerPoints > 0) {
 		for (var i = 0; i < undefendedSpaces.length; i++) {
@@ -993,7 +1037,6 @@ function shouldPlayBomb(surSpaces, tile) {
 			let numUnoccupiedOnAnimal = getNumUnoccupiedOnAnimal(animalId);
 
 			if ((numUnoccupiedOnAnimal == 0) || numbersLeft <= 25) {
-				console.log("completely occupied or close to end: tile " + undefendedSpaces[i]);
 				let playerPoints = checkAnimalPoints(animalId, 0);
 				let compPoints = checkAnimalPoints(animalId, 1);
 				let tilePoints = 0;
@@ -1007,16 +1050,11 @@ function shouldPlayBomb(surSpaces, tile) {
 				} else {
 					tilePoints = 1;
 				}
-				console.log("playerPoints is " + playerPoints);
-				console.log("compPoints is " + compPoints);
-				console.log("tilePoints is " + tilePoints);
 
 				// if tied or player winning
 				if (playerPoints >= compPoints) {
-					console.log("player is winning or tied on this animal");
 					// if bomb would change who saves the animal
 					if (compPoints >= (playerPoints - tilePoints)) {
-						console.log("a bomb would make the comp win");
 						return true;
 					}
 				}
@@ -1062,8 +1100,6 @@ function getNumUndefendedCompPointsAround(surSpaces) {
 // if there are a significant number of animal tiles around that aren't the opponent's,
 // then place a defender if you have one
 function shouldPlayDefender(surSpaces, tile) {
-	console.log("********");
-	console.log("should play defender?");
 	let animalId = getAnimalId(tile);
 	if (players[1].defender <= 0) {
 		return false;
@@ -1072,7 +1108,6 @@ function shouldPlayDefender(surSpaces, tile) {
 		return false;
 	}
 	if (surSpaces.length < 8) {
-		console.log("not enough spaces around");
 		return false;
 	}
 
@@ -1080,11 +1115,7 @@ function shouldPlayDefender(surSpaces, tile) {
 	let animalTiles = countPotentialNearbyAnimals(surSpaces);
 	let numNearbyAnimals = countPotentialNearbyAnimalsNum(surSpaces);
 
-	console.log("nearby animal tiles: " + animalTiles);
-	console.log("nearby animal figures: " + numNearbyAnimals);
-
 	let compPoints = getNumUndefendedCompPointsAround(surSpaces);
-	console.log("undefended compPoints around is " + compPoints);
   
   if (animalTiles >= 14 || (numNearbyAnimals >= 3 && animalTiles >= 9) || compPoints >= 4) {
 	  return true;
@@ -1095,8 +1126,6 @@ function shouldPlayDefender(surSpaces, tile) {
 
 // turning this into a separate function so questions can use it
 function findBestToken(tile, defenderAllowed, bombAllowed) {
-	console.log("***************************")
-	console.log("starting logic");
 	let surSpaces = getSurroundingSpaces(tile);
 	
 	// consider defenders and bombs first
@@ -1117,7 +1146,6 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 			return "bomb";
 		}
 	}
-	console.log("****no defender or bomb****");
 	
 	if (!$("#" + tile).hasClass("animal")) {
 		$("#turnDisplay").html("<p>" + robotName + " chose to do nothing on tile <b>" + tile + "</b>. Click the deck to continue with your turn.</p>");
@@ -1145,20 +1173,11 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	let compPoints = checkAnimalPoints(animalId, 1);
 	let numUnoccupiedOnAnimal = getNumUnoccupiedOnAnimal(animalId);
 	
-	
-	console.log("id is " + animalId);
-	console.log("size is " + animalSize);
-	console.log("compPoints is " + compPoints);
-	console.log("playerPoints is " + playerPoints);
-	console.log("numUnoccupiedOnAnimal?" + numUnoccupiedOnAnimal);
-	
 	// determine if the computer is winning
 	let compWinning;
 	if (compPoints >= playerPoints) {
-		console.log("comp is winning or tied");
 		compWinning = true;
 	} else {
-		console.log("comp is not winning");
 		compWinning = false;
 	}
 	
@@ -1170,19 +1189,12 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	} else {
 		closeScore = false;
 	}
-	console.log("close score? " + closeScore);
 	
 	if (Math.abs(compPoints - playerPoints) >= 7) {
 		landslide = true;
 	} else {
 		landslide = false;
 	}
-	console.log("landslide? " + landslide);
-	
-	/*
-	console.log("compWinning is " + compWinning);
-	console.log("closeScore is " + closeScore);
-	*/
 
 	// if it's the last place and the comp is winning and there are undefended spots around, play a defender if comp has it
 	if (players[1].defender > 0 && numUnoccupiedOnAnimal == 1 && compPoints > playerPoints && getNumUndefendedCompPointsAround(surSpaces) > 0) {
@@ -1196,7 +1208,6 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 		defended = true;
 	}
 	// logic for maximum token to play
-	// TO DO: maybe add defendedbyplayer1 to logic?
 	let choice;
 	if (landslide) {
 		choice = playMax("plain");
@@ -1204,14 +1215,14 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 		switch(animalSize) {
 			case "xs":
 				if ((numUnoccupiedOnAnimal == 1) || numbersLeft <= 25) {
-					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces);
+					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize);
 				} else {
 					choice = playMax("plain");
 				}
 				break;
 			case "sm":
 				if ((numUnoccupiedOnAnimal == 1) || numbersLeft <= 25) {
-					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces);
+					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize);
 				} else if (defended) {
 					choice = playMax("bronze");
 				} else {
@@ -1220,7 +1231,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 				break;
 			case "m":
 				if ((numUnoccupiedOnAnimal == 1) || numbersLeft <= 25) {
-					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces);
+					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize);
 				} else if (defended) {
 					choice = playMax("silver");
 				} else {
@@ -1230,7 +1241,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 			case "l":
 			case "xl":
 				if ((numUnoccupiedOnAnimal == 1) || numbersLeft <= 25) {
-					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces);
+					choice = handleLastAnimalSpace(compPoints, playerPoints, animalSize);
 				} else if (defended) {
 					choice = playMax("gold");
 				} else {
@@ -1270,8 +1281,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	return choice;
 }
 
-function handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces) {
-	console.log("last space or near end of game");
+function handleLastAnimalSpace(compPoints, playerPoints, animalSize) {
 	if (compPoints >= playerPoints) {
 		return playMax("plain");
 	}
@@ -1347,7 +1357,6 @@ function handleLastAnimalSpace(compPoints, playerPoints, animalSize, surSpaces) 
 }
 
 function getNumUnoccupiedOnAnimal(animalId) {
-	console.log("animalId is " + animalId);
 	if (animalId > 15) {
 		return -1;
 	}
@@ -1367,7 +1376,6 @@ function getNumUnoccupiedOnAnimal(animalId) {
 		}
 	}
 
-	console.log("unoccupied on this animal: " + unoccupied);
 	return unoccupied;
 }
 
@@ -1482,7 +1490,6 @@ function checkAnimalPoints(animalId, playerId) {
     }
   }
 
-	//console.log("points on animal " + animalId + " for player " + playerId + " is " + playerPoints + ".");
   return playerPoints;
 }
 
@@ -1497,12 +1504,9 @@ function animalHasDefenderAlready(animalId) {
 
   for (var i = 0; i < animalSquares.length; i++) {
     if ($("#" + animalSquares[i]).hasClass("player1defender")) {
-			console.log("this animal already has a comp defender on it on tile " + animalSquares[i]);
       return true;
     }
 	}
-	
-	console.log("no comp defender on this animal");
   
   return false;
 }
@@ -1867,14 +1871,10 @@ function calculateAnimalScore(animalId) {
 }
 
 function robotSelectBestSpace(arr) {
-	
-	console.log(arr);
-	console.log("robot best space is ");
 
 	// find a last animal space if there is one
 	for (let i = 0; i < arr.length; i++) {
 		if (getNumUnoccupiedOnAnimal(getAnimalId(arr[i])) == 1) {
-			console.log(arr[i]);
 			return arr[i];
 		}
 	}
@@ -1897,7 +1897,6 @@ function robotSelectBestSpace(arr) {
 		compChoiceNum = arr[Math.floor(Math.random() * arr.length)];
 	}
 	
-	console.log(compChoiceNum);
 	return compChoiceNum;
 }
 
@@ -3643,7 +3642,6 @@ function hideButtons(hideBomb, hideDefender) {
 }
 
 function removeToken(tileNum) {
-	console.log("destroying token on tile " + tileNum);
 	players[0].destroyToken(tileNum, 0);
 	$("#removeToken").hide();
 	
