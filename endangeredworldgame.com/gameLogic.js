@@ -293,7 +293,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
   };
