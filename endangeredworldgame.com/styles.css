@@ -73,8 +73,10 @@ p {
 }
 
 #container {
+	margin: 0 auto;
 	display: grid;
 	grid-column-gap: 20px;
+	justify-content: center;
 }
 
 #intro {
@@ -289,7 +291,7 @@ button {
 
 @media only screen and (min-width: 640px) {
 	#container {
-		grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(310px, 600px));
 	}
 	#cardStack {
 		grid-template-columns: 1fr 1fr;
