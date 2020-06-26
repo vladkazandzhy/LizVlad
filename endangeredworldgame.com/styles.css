@@ -223,6 +223,7 @@ button {
 
 #questionCard {
 	display: none;
+	opacity: 0;
 	width: 90%;
 	max-width: 300px;
 	border: 2px solid black;

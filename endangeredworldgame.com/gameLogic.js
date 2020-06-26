@@ -24,6 +24,11 @@ let startTime, endTime, userEmail;
 let trialVersion = true;
 let robotName = "Robot";
 $( document ).ready(function() {
+	var isIE = /*@cc_on!@*/false || !!document.documentMode;
+	if (isIE) {
+		$("#intro").html("<h1>Welcome to Endangered World!</h1><p>Unfortunately, Endangered World is not available to play using Internet Explorer. For best results, please use <b>Chrome, Safari, or Firefox</b>.</p><p>For more information about the Endangered World board game, please visit our <a href='#'>Kickstarter campaign</a>. Thank you!</p>")
+	}
+
 	randomizeRobotName();
 
 	function randomizeRobotName() {
@@ -293,7 +298,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       numberBag.push(i);
     }
   };
@@ -474,7 +479,7 @@ function drawNumber() {
   return rand;
 }
 
-let normalCompTurn = true;
+let compDoNothing = false;
 function takeTurn(rand) {
 	// when there are cards left
 	if (typeof rand != 'undefined') {
@@ -496,7 +501,8 @@ function takeTurn(rand) {
 			$("#turnChoices").hide();
 			calculateRobotChoice(rand);	
 
-			if (normalCompTurn) {
+			console.log("comp do nothing? " + compDoNothing);
+			if (!compDoNothing) {
 				let msg = "<p>" + robotName + " played the following on tile <b>" + rand + "</b>.";
 	
 
@@ -527,7 +533,7 @@ function takeTurn(rand) {
 	
 				$("#turnDisplay").html(msg);
 			} else {
-				normalCompTurn = true;
+				compDoNothing = false;
 			}
 			
 			endCompTurn();
@@ -961,12 +967,11 @@ function calculateRobotChoice(tileNum) {
 	// if there's already a token, do nothing
 	let tile = $("#" + tileNum);
 	if (tile.hasClass("occupied")) {
+		compDoNothing = true;
 		if (!extraTurnComp) {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing. Click the deck to continue with your turn.</p>");
-			normalCompTurn = false;
 		} else {
 			$("#turnDisplay").html("<p>This space was already occupied, so " + robotName + " did nothing.</p>");
-			normalCompTurn = false;
 		}
 		$("#turnChoicesComp").hide();
 		return;
@@ -1148,6 +1153,7 @@ function findBestToken(tile, defenderAllowed, bombAllowed) {
 	}
 	
 	if (!$("#" + tile).hasClass("animal")) {
+		compDoNothing = true;
 		$("#turnDisplay").html("<p>" + robotName + " chose to do nothing on tile <b>" + tile + "</b>. Click the deck to continue with your turn.</p>");
 		$("#turnChoicesComp").hide();
 		return "nothing";
@@ -1944,9 +1950,9 @@ function setUpBoard() {
     clearBoard();
   } else {
     // place 20 question tiles
-    for (let i = 1; i <= 20; i++) {
-      placeQuestions(i);
-    }
+    // for (let i = 1; i <= 20; i++) {
+    //   placeQuestions(i);
+    // }
 
     // we can move on now that the board is properly set up
     boardSetUp = true;
@@ -2212,7 +2218,11 @@ function handleQuestion(tileNum, id) {
 }
 
 $("#questionTile").click(function() {
-	flipQuestion();
+	// set hidden questionCard back to opacity like default
+	$("#questionCard").animate({opacity: "0"}, 250);
+	// animate questionTile opacity change
+	$("#questionTile").animate({opacity: "0"}, 250);
+	setTimeout(flipQuestion, 250);
 });
 
 function flipQuestion() {
@@ -2221,8 +2231,14 @@ function flipQuestion() {
 	}
 	
 	$("#turnDisplay").html("");
+	
+	// hide the questionTile and set opacity back to normal
 	$("#questionTile").css("display", "none");
+	$("#questionTile").animate({opacity: "1"});
+
+	// animate the opacity of the questionCard
 	$("#questionCard").show();
+	$("#questionCard").animate({opacity: "1"}, 500);
 	
 	switch (questionId) {
 		case 1: q1(tileNum); break;
