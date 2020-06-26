@@ -74,6 +74,8 @@ p {
 
 #container {
 	margin: 0 auto;
+	padding-right: 10px;
+	padding-left: 10px;
 	display: grid;
 	grid-column-gap: 20px;
 	justify-content: center;
@@ -114,7 +116,7 @@ input {
 #main {
 	display: none;
 	text-align: center;
-	width: 95%;
+	width: 100%;
 	margin: 0 auto;
 }
 
@@ -267,7 +269,7 @@ button {
 	grid-column-gap: 10px;
 }
 
-@media only screen and (max-width: 639px) {
+@media only screen and (max-width: 689px) {
 	#container {
 		grid-template-columns: 1fr;
 	}
@@ -290,9 +292,10 @@ button {
 	
 }
 
-@media only screen and (min-width: 640px) {
+@media only screen and (min-width: 690px) {
 	#container {
-		grid-template-columns: repeat(auto-fit, minmax(310px, 600px));
+		grid-template-columns: repeat(auto-fit, minmax(310px, auto));
+		grid-column-gap: 30px;
 	}
 	#cardStack {
 		grid-template-columns: 1fr 1fr;
@@ -307,7 +310,7 @@ button {
 		font-size: 1.7em;
 	}
 	#cards {
-		padding-top: 15%;
+		padding-top: 20%;
 	}
 }
 
@@ -383,7 +386,7 @@ button {
 		height: 39px;
 	}
 }
-@media only screen and (min-width: 620px) {
+@media only screen and (min-width: 690px) {
 	.tg, #topSection {
 		width: 310px;
 	}
@@ -422,6 +425,9 @@ button {
 	#topSection {
 		grid-template-columns: 45px auto;
 	}	
+	#container {
+		grid-column-gap: 50px;
+	}
 }
 @media only screen and (min-width: 1050px) {
 	.tg, #topSection {

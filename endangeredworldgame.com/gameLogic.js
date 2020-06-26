@@ -2238,7 +2238,7 @@ function flipQuestion() {
 
 	// animate the opacity of the questionCard
 	$("#questionCard").show();
-	$("#questionCard").animate({opacity: "1"}, 500);
+	$("#questionCard").animate({opacity: "1"}, 250);
 	
 	switch (questionId) {
 		case 1: q1(tileNum); break;
