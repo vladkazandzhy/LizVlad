@@ -298,7 +298,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
   };
@@ -1950,9 +1950,9 @@ function setUpBoard() {
     clearBoard();
   } else {
     // place 20 question tiles
-    // for (let i = 1; i <= 20; i++) {
-    //   placeQuestions(i);
-    // }
+    for (let i = 1; i <= 20; i++) {
+      placeQuestions(i);
+    }
 
     // we can move on now that the board is properly set up
     boardSetUp = true;
