@@ -1877,11 +1877,35 @@ function calculateAnimalScore(animalId) {
 }
 
 function robotSelectBestSpace(arr) {
+	console.log(arr);
+	let landslideLimit = 1;
+	if (players[1].gold > 0) {
+		landslideLimit = 6;
+	} else if (players[1].silver > 0) {
+		landslideLimit = 4;
+	} else if (players[1].bronze > 0) {
+		landslideLimit = 2;
+	}
 
-	// find a last animal space if there is one
+	// find a last animal space if there is one and it's close
 	for (let i = 0; i < arr.length; i++) {
-		if (getNumUnoccupiedOnAnimal(getAnimalId(arr[i])) == 1) {
-			return arr[i];
+		let animalId = getAnimalId(arr[i]);
+		if (getNumUnoccupiedOnAnimal(animalId) == 1) {
+			// find how many points are on the animal figure
+			let playerPoints = checkAnimalPoints(animalId, 0);
+			let compPoints = checkAnimalPoints(animalId, 1);
+			
+			// determine if the score difference is too big on that particular animal
+			let landslide;
+			if (Math.abs(compPoints - playerPoints) > landslideLimit) {
+				landslide = true;
+			} else {
+				landslide = false;
+			}
+
+			if (compPoints <= playerPoints && !landslide) {
+				return arr[i];
+			}
 		}
 	}
 
@@ -2601,9 +2625,13 @@ function q6(tileNum) {
 		let compChoiceNum;
 		let toPlay;
 		
+		if (numbersLeft <= 25) {
+			handleQ6Comp();
+		}
+
 		// first priority: play a defender if you have one
 		// if the comp has a defender, play it in the place with the most animal spaces around
-		if (players[1].defender > 5) {
+		else if (players[1].defender > 0) {
 			// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
 			let max = 0;
 			let maxIndex = -1;
@@ -2647,7 +2675,7 @@ function q6(tileNum) {
 				compChoiceNum = robotSelectBestSpace(arr);
 				
 				// determine what the ideal choice would be for this space
-				toPlay = findBestToken(compChoiceNum, true, false);
+				toPlay = findBestToken(compChoiceNum, false, false);
 				
 			}
 		}
@@ -2658,6 +2686,24 @@ function q6(tileNum) {
 		$("#pickNumber").addClass("cardHighlight");
 	}
 	
+	$("#turnDisplay").html(msg);
+}
+
+function handleQ6Comp() {
+	let arr = [];
+	for (let i = 0; i < 100; i++) {
+		let tile = $("#" + i);
+		if (!tile.hasClass("occupied") && tile.hasClass("animal")) {
+				arr.push(i);
+		}
+	}
+	let compChoiceNum = robotSelectBestSpace(arr);
+	let toPlay = findBestToken(compChoiceNum, false, false);
+
+	let msg = "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+	clearQuestion();
+	$("#turnChoices").hide();
+	$("#pickNumber").addClass("cardHighlight");
 	$("#turnDisplay").html(msg);
 }
 

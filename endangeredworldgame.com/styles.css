@@ -217,7 +217,7 @@ button {
 #questionTile {
 	display: none;
 	box-shadow: 3px 3px 5px 2px grey;
-	margin: 0 auto;
+	margin: 10px auto;
 	width: 50%;
 	max-width: 153px;
 	transition: transform 0.5s ease;
@@ -225,7 +225,6 @@ button {
 
 #questionCard {
 	display: none;
-	opacity: 0;
 	width: 90%;
 	max-width: 300px;
 	border: 2px solid black;
@@ -280,7 +279,7 @@ button {
 		grid-template-columns: 1fr 2fr;
 	}
 	#results {
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 	}
 	.buttonHover {
 		font-size: 1.2em;
@@ -592,7 +591,6 @@ button {
 
 #results {
 	display: none;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 	grid-column-gap: 10px;
 }
 
