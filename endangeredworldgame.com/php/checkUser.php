@@ -6,7 +6,7 @@
   $email = htmlspecialchars($email);
   
   $res = mysqli_query($link, "SELECT user_id, email FROM users WHERE email='$email'");
-  $row = mysqli_fetch_array($res);
+  $row = mysqli_fetch_array($res, MYSQLI_ASSOC);
   $count = mysqli_num_rows($res);
 
   if ($count == 1) {

@@ -47,56 +47,61 @@
 	
 	<div id="intro">
 		<h1>Welcome to Endangered World!</h1>
-		<p>Endangered World is a new and exciting board game! Today, you'll
-		be playing against a robot named <span id="robotNameIntro">Robot</span>,
-		but when you buy the physical board game, you can play with up to four people.</p>
-		<p>If you've purchased full game access in our <a href="#">Kickstarter campaign</a>, please enter your email and click Load Full Game.</p>
+		<img class="w75" id="box" src="images/box.png">
+		<img class="w75" src="images/kickstarter-logo.png">
+		<p>Endangered World is an exciting board game being launched on Kickstarter in 2021!</p>
+		<p>Today, you'll be playing against a robot named <span id="robotNameIntro">Robot</span>,
+		but when you buy the physical board game, you can play with up to four people.</p><hr>
+		<p>If you have full game access from the Kickstarter campaign, please enter your email and click <b>Load Full Game</b>.</p>
 		<input type="email" id="email" name="email" autocomplete="on">
 		<button class="buttonHover" type="button" id="loadFullGame">Load Full Game</button>
-		<p>Otherwise, click Load Trial Game below. You'll be able to play the first half of the game.</p>
-		<button class="buttonHover" type="button" id="loadTrialGame">Load Trial Game</button>
+		<p>Otherwise, click <b>Load Trial Game</b> below. You'll be able to play the first half of the game.</p>
+		<button class="buttonHover" type="button" id="loadTrialGame">Load Trial Game</button><hr>
 		<p>First time playing? Click below to read the rules.</p>
 		<div id="rules">
-			<h1>What's the game about?</h1>
-			<p>The animal population is dwindling, and it's up to you to
-			save them! Embark on a mission to protect endangered
-			species from all over the world&mdash;otters, pandas, rhinos,
-			and more. But watch out! Other wildlife organizations may
-			end up getting in your way, and you never know what
-			twists and turns might ruin your well-considered plans.
-			How will you use your resources, and how many animals
-			can you save?</p>
 			<h1>How do I play?</h1>
-			<p>You and the robot will take turns drawing cards. Each card matches up with a tile
-			on the game board. All you have to do is decide what to play! Here are your choices:</p>
+			<p><i>Objective: Score the most points by saving the most animals!</i></p>
+			<h2>1. Draw a Number</h2>
+			<p>You and the robot will take turns drawing cards.</p>
+			<img class="w50 br20" src="images/cards/back.jpg">
+			<img class="w50 br20" src="images/cards/31.jpg">
+			<p>Each card matches up with a tile on the game board.</p>
+			<img class="w100" src="images/boardHighlight.png">
+			<p>All you have to do is decide what to play!</p>
+			<h2>2. Use Your Resources</h2>
+			<p>Here are the resources you can play:</p>
+			<img class="w25" src="images/tokens/gold.png">
+			<img class="w25" src="images/tokens/silver.png">
+			<img class="w25" src="images/tokens/bronze.png">
+			<img class="w25" src="images/tokens/plain0.png">
 			<ul>
 				<li><b>Gold</b> coin - 6 points</li>
 				<li><b>Silver</b> coin - 4 points</li>
 				<li><b>Bronze</b> coin - 2 points</li>
 				<li><b>Plain</b> token - 1 point</li>
+			</ul>
+			<h2>3. Defend and Destroy</h2>
+			<p>And here are the special tokens you can play:</p>
+			<img class="w25" src="images/tokens/defender.png">
+			<img class="w25" src="images/tokens/bomb.png">
+			<ul>
 				<li><b>Defender</b> - protects all your surrounding tokens from being destroyed</li>
 				<li><b>Bomb</b> - destroys all your opponent's undefended tokens in the surrounding spaces</li>
 			</ul>
-			<p>There are also 20 "Twists & Turns" cards that will have different instructions to follow
-			and can really throw the game for a loop!</p>
+			<h2>4. Handle Twists & Turns</h2>
+			<p>There are also several "Twists & Turns" cards with different instructions to follow:</p>
+			<img class="w100" id="twistsImg" src="images/twists-and-turns.png">
 			<h1>How is the game scored?</h1>
-			<p>Your objective is the score the most points by saving the most animals. At the end of the game,
-			the score is calculated based on how many points each player has on each animal:</p>
+			<p>At the end of the game, the score is calculated based on how many resource points each player has on each animal:</p>
 			<ul>
-				<li>If there are no tokens on it, or if there is an equal number of points
-				on it, then nobody wins that animal.</li>
 				<li>If you have more points on it, you win the animal.</li>
 				<li>If the robot has more points on it, it wins the animal.</li>
+				<li>If there are no tokens on it, or if there is an equal number of points
+				on it, then nobody wins that animal.</li>
 			</ul>
 			<hr>
-			<p>The number of points gained from each animal depends on the animal's size:</p>
-			<ul>
-				<li>5 very small animals (2 x 1) - <b>20 points</b> each</li>
-				<li>4 small animals (2 x 2) - <b>30 points</b> each</li>
-				<li>3 medium animals (3 x 2) - <b>40 points</b> each</li>
-				<li>2 large animals (4 x 2) - <b>50 points</b> each</li>
-				<li>1 very large animal (4 x 3) - <b>60 points</b></li>
-			</ul>
+			<p>The number of animal points depends on the animal's size and can be seen here:</p>
+			<img class="w100" id="scoring" src="images/scoring.png">
 			<p>Lastly, each unused bomb earns a player <b>10 points</b>, so be careful how you use your bombs!</p>
 			<h1>Anything else I should know?</h1>
 			<p>If you're on a computer, these keyboard shortcuts might come in handy while you play:</p>
@@ -112,8 +117,9 @@
 				<li><b>c</b> - continue</li>
 				<li><b>r</b> - read question tile</li>
 			</ul>
-			<p>If you want to reference these during the game, just click the icon above the cards.</p>
-			<p>That's all! Enjoy your game!</p>
+			<p>If you want to reference these during the game, just click this icon above the cards:</p>
+			<img class="w25" src="images/shortcut.png">
+			<h1>That's all! Enjoy your game!</h1>
 			<button class="buttonHover" type="button" id="returnToTop">Return to Top</button>
 		</div>
 		<button class="buttonHover" type="button" id="readRules">How to Play</button>
@@ -367,7 +373,7 @@
 				<div id="turnDiv">
 					<div id="questionCard"></div>
 					<div id="turnDisplay"></div>
-					<img class="buttonHover" id="questionTile" alt="question tile" src="images/questions/1.png">
+					<img class="buttonHover" id="questionTile" alt="question tile" src="images/questions/cropped/1.png">
 					
 					
 					<p id="tokenExists"></p>
@@ -429,6 +435,9 @@
 				</div>
 				<div id="resultsSummary"></div>
 				<button class="buttonHover" type="button" id="playAgain">Play Again!</button>
+				<div id="resultsHistory">					
+				</div>
+				<p id="iconNote"><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>
 				<div id="results">
 					<div id="userWon"></div>
 					<div id="compWon"></div>

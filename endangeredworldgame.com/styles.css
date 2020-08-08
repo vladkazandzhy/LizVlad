@@ -91,6 +91,33 @@ p {
 	text-align: center;
 }
 
+#box, #twistsImg, #scoring {
+	margin-top: -25px;
+}
+
+.w25 {
+	width: 25%;
+	max-width: 75px;
+}
+
+.w50 {
+	width: 50%;
+	max-width: 150px;
+}
+
+.w75 {
+	width: 75%;
+}
+
+.w100 {
+	width: 100%;
+}
+
+.br20 {
+	border-radius: 20%;
+}
+
+
 #intro ul {
 	text-align: left;
 	list-style-position: outside;
@@ -169,7 +196,7 @@ input {
 	margin: 10px auto;
 }
 
-tbody {
+#board tbody {
 	box-shadow: 4px 4px 3px 2px grey;
 }
 
@@ -594,8 +621,66 @@ button {
 	grid-column-gap: 10px;
 }
 
-#playAgain {
+#resultsHistory, #playAgain, #iconNote {
 	display: none;
+}
+
+#iconNote {
+	margin-bottom: 0;
+}
+
+#resultsHistory h3 {
+	color: #006b14;
+	margin-bottom: 5px;
+}
+
+#resultsHistory p {
+	color: #006b14;
+	margin-top: 0px;
+	margin-bottom: 35px;
+}
+
+#resultsHistory a {
+	color: #13a12e;
+}
+
+#resultsTable {
+	margin: 5px auto 5px auto;
+}
+
+table.greenTable {
+  font-family: Georgia, serif;
+  border: 6px solid #24943A;
+  background-color: #D4EED1;
+  width: 70%;
+  max-width: 400px;
+  text-align: center;
+  table-layout: fixed;
+}
+table.greenTable td, table.greenTable th {
+  border: 1px solid #24943A;
+  padding: 3px 2px;
+  width: 33%.33;
+}
+table.greenTable tbody td {
+  font-size: 13px;
+}
+table.greenTable thead {
+  background: #24943A;
+  background: -moz-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+  background: -webkit-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+  background: linear-gradient(to bottom, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+  border-bottom: 0px solid #444444;
+}
+table.greenTable thead th {
+  font-size: 19px;
+  font-weight: bold;
+  color: #F0F0F0;
+  text-align: center;
+  border-left: 2px solid #24943A;
+}
+table.greenTable thead th:first-child {
+  border-left: none;
 }
 
 .animalResults {
