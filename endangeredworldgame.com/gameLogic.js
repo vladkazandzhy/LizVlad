@@ -1116,28 +1116,53 @@ function getNumUndefendedCompPointsAround(surSpaces) {
 // if there are a significant number of animal tiles around that aren't the opponent's,
 // then place a defender if you have one
 function shouldPlayDefender(surSpaces, tile) {
-	let animalId = getAnimalId(tile);
 	if (players[1].defender <= 0) {
 		return false;
 	}
-	if ((getNumUnoccupiedOnAnimal(animalId) == 1) || animalHasDefenderAlready(animalId)) {
+	
+	let animalId = getAnimalId(tile);
+	if (animalHasDefenderAlready(animalId)) {
 		return false;
+	}
+	
+	let lastSpace = false;
+	if (getNumUnoccupiedOnAnimal(animalId) == 1) {
+		lastSpace = true;
 	}
 	if (surSpaces.length < 8) {
 		return false;
+	}
+	
+	// find how many points are on the animal figure
+	let playerPoints = checkAnimalPoints(animalId, 0);
+	let compPoints = checkAnimalPoints(animalId, 1);
+	// determine if the computer is winning
+	let compWinning;
+	if (compPoints >= playerPoints) {
+		compWinning = true;
+	} else {
+		compWinning = false;
 	}
 
   // find out how many animal figure points are around
 	let animalTiles = countPotentialNearbyAnimals(surSpaces);
 	let numNearbyAnimals = countPotentialNearbyAnimalsNum(surSpaces);
-
-	let compPoints = getNumUndefendedCompPointsAround(surSpaces);
+	let undefendedCompPoints = getNumUndefendedCompPointsAround(surSpaces);
   
-  if (animalTiles >= 14 || (numNearbyAnimals >= 3 && animalTiles >= 9) || compPoints >= 4) {
-	  return true;
-  } else {
-	  return false;
-  }
+	if (lastSpace && compWinning) {
+		if (undefendedCompPoints > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		if (animalTiles >= 15 || (numNearbyAnimals >= 3 && animalTiles >= 9) || undefendedCompPoints >= 4) {
+		  return true;
+	    } else {
+		  return false;
+	    }
+	}
+  
 }
 
 // turning this into a separate function so questions can use it
@@ -1529,7 +1554,7 @@ function animalHasDefenderAlready(animalId) {
     if ($("#" + animalSquares[i]).hasClass("player1defender")) {
       return true;
     }
-	}
+  }
   
   return false;
 }
