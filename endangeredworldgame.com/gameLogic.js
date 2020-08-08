@@ -2704,7 +2704,7 @@ function q6(tileNum) {
 				for (let i = 0; i < 100; i++) {
 					let surSpaces = getSurroundingSpaces(i);
 					let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
-					if (nearbyAnimalPoints > max) {
+					if (nearbyAnimalPoints > max && !animalHasDefenderAlready(getAnimalId)) {
 						max = nearbyAnimalPoints;
 						maxIndex = i;
 					}
