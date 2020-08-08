@@ -296,7 +296,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 30; i++) {
       numberBag.push(i);
     }
   };
@@ -2154,7 +2154,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + id);
+      tile.addClass("q" + 6);
 
       // remove number and add image
       tile.text("");
@@ -2582,7 +2582,7 @@ function q3(tileNum) {
 		$("#continue").html('Continue');
 		$("#continue").show();
 	} else {
-		msg = "<p>Click below to play the defender on tile " + tileNum + ". If you'd like to keep the defender for later, click the deck to continue with your turn.</p>";
+		msg = "<p>Click below to play the defender on tile <b>" + tileNum + "</b>. If you'd like to keep the defender for later, click the deck to continue with your turn.</p>";
 		players[0].addDefender();
 		$("#turnChoices").hide();
 		
@@ -2668,61 +2668,60 @@ function q6(tileNum) {
 		let toPlay;
 		
 		if (numbersLeft <= 25) {
-			handleQ6Comp();
-		}
-
-		// first priority: play a defender if you have one
-		// if the comp has a defender, play it in the place with the most animal spaces around
-		else if (players[1].defender > 0) {
-			// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
-			let max = 0;
-			let maxIndex = -1;
-			for (let i = 0; i < 100; i++) {
-				let surSpaces = getSurroundingSpaces(i);
-				let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
-				if (nearbyAnimalPoints > max) {
-					max = nearbyAnimalPoints;
-					maxIndex = i;
-				}
-			}
-			// wherever there are the greatest points, place the defender
-			compChoiceNum = maxIndex;
-			toPlay = "defender";
-			players[1].playDefender(compChoiceNum);
-		} 
-		
-		// loop through all spaces, create an array of all defended spots that have animals on them
-		else {
-			for (let i = 0; i < 100; i++) {
-				let tile = $("#" + i);
-				if (tile.hasClass("defendedbyplayer1") && tile.hasClass("animal") && !tile.hasClass("occupied")) {
-					highlighted.push(i);
-				}
-			}
-		
-			// if there are defended spots
-			if (highlighted.length > 0) {
-				compChoiceNum = robotSelectBestSpace(highlighted);
-				toPlay = findBestToken(compChoiceNum, false, false);
-			}
-			// if there aren't defended spots
-			else {
-				let arr = [];
+			msg = handleQ6Comp();
+		} else {
+			// first priority: play a defender if you have one
+			// if the comp has a defender, play it in the place with the most animal spaces around
+			if (players[1].defender > 0) {
+				// loop through the board (except for questions), for each space determine how many surrounding animal spaces there are
+				let max = 0;
+				let maxIndex = -1;
 				for (let i = 0; i < 100; i++) {
-					let tile = $("#" + i);
-					if (!tile.hasClass("occupied") && tile.hasClass("animal")) {
-						arr.push(i);
+					let surSpaces = getSurroundingSpaces(i);
+					let nearbyAnimalPoints = countPotentialNearbyAnimals(surSpaces);
+					if (nearbyAnimalPoints > max) {
+						max = nearbyAnimalPoints;
+						maxIndex = i;
 					}
 				}
-				compChoiceNum = robotSelectBestSpace(arr);
-				
-				// determine what the ideal choice would be for this space
-				toPlay = findBestToken(compChoiceNum, false, false);
-				
+				// wherever there are the greatest points, place the defender
+				compChoiceNum = maxIndex;
+				toPlay = "defender";
+				players[1].playDefender(compChoiceNum);
+			} 
+			
+			// loop through all spaces, create an array of all defended spots that have animals on them
+			else {
+				for (let i = 0; i < 100; i++) {
+					let tile = $("#" + i);
+					if (tile.hasClass("defendedbyplayer1") && tile.hasClass("animal") && !tile.hasClass("occupied")) {
+						highlighted.push(i);
+					}
+				}
+			
+				// if there are defended spots
+				if (highlighted.length > 0) {
+					compChoiceNum = robotSelectBestSpace(highlighted);
+					toPlay = findBestToken(compChoiceNum, false, false);
+				}
+				// if there aren't defended spots
+				else {
+					let arr = [];
+					for (let i = 0; i < 100; i++) {
+						let tile = $("#" + i);
+						if (!tile.hasClass("occupied") && tile.hasClass("animal")) {
+							arr.push(i);
+						}
+					}
+					compChoiceNum = robotSelectBestSpace(arr);
+					
+					// determine what the ideal choice would be for this space
+					toPlay = findBestToken(compChoiceNum, false, false);
+					
+				}
 			}
+			msg = "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>. Click the deck to continue with your turn.</p>";
 		}
-		msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
-		
 		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -2732,6 +2731,7 @@ function q6(tileNum) {
 }
 
 function handleQ6Comp() {
+	console.log("handleQ6");
 	let arr = [];
 	for (let i = 0; i < 100; i++) {
 		let tile = $("#" + i);
@@ -2742,11 +2742,8 @@ function handleQ6Comp() {
 	let compChoiceNum = robotSelectBestSpace(arr);
 	let toPlay = findBestToken(compChoiceNum, false, false);
 
-	let msg = "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
-	clearQuestion();
-	$("#turnChoices").hide();
-	$("#pickNumber").addClass("cardHighlight");
-	$("#turnDisplay").html(msg);
+	let msg = "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>. Click the deck to continue with your turn.</p>";
+	return msg;
 }
 
 function q7(tileNum) {
@@ -2813,7 +2810,7 @@ function q7(tileNum) {
 		}
 		
 		players[0].playPlain(compChoiceNum);
-		msg += "<p>" + robotName + " has placed one of your plain tokens on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+		msg += "<p>" + robotName + " has placed one of your plain tokens on tile <b>" + compChoiceNum + "</b>. Click the deck to continue with your turn.</p>";
 		
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");
@@ -2870,7 +2867,7 @@ function q8(tileNum) {
 			let compChoiceNum = robotSelectBestSpace(highlighted);
 			let toPlay = findBestToken(compChoiceNum, false, false);
 			
-			msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+			msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>. Click the deck to continue with your turn.</p>";
 		}
 		// if not, inform the user and prompt them to continue with their turn
 		else {
@@ -2966,7 +2963,7 @@ function q9(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>";
 				if (destroyArr.length > 0) {
 					msg += "." + getDestroyMsg();
 				}
@@ -3058,7 +3055,7 @@ function q10(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>";
 
 				if (destroyArr.length > 0) {
 					msg += "." + getDestroyMsg();
@@ -3147,7 +3144,7 @@ function q11(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>";
 				if (toPlay == "bomb") {
 					msg += ", destroying your tile in the process";
 				}
@@ -3345,7 +3342,7 @@ function q14(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 			
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click the deck to continue with your turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>. Click the deck to continue with your turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click the deck to continue with your turn.</p>";
 			}
@@ -3476,7 +3473,7 @@ function q16(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, true);
 				
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum;
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>";
 				if (destroyArr.length > 0) {
 					msg += "." + getDestroyMsg();
 				}
@@ -3652,7 +3649,7 @@ function q19(tileNum) {
 			let toPlay = findBestToken(compChoiceNum, true, false);
 
 			if (toPlay != "nothing") {
-				msg += "<p>" + robotName + " played a " + toPlay + " on tile " + compChoiceNum + ". Click below to move on to " + robotName + "'s turn.</p>";
+				msg += "<p>" + robotName + " played a " + toPlay + " on tile <b>" + compChoiceNum + "</b>. Click below to move on to " + robotName + "'s turn.</p>";
 			} else {
 				msg += "<p>" + robotName + " chose not to play anything. Click below to move on to " + robotName + "'s turn.</p>";
 			}
