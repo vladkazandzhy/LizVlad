@@ -296,7 +296,7 @@ function NumberBag() {
 
   // fill up the number bag array
   this.fillBag = function() {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 100; i++) {
       numberBag.push(i);
     }
   };
@@ -2154,7 +2154,7 @@ function placeQuestions(id) {
     if (!tile.hasClass("filled")) {
       tile.addClass("filled");
       tile.addClass("question");
-      tile.addClass("q" + 6);
+      tile.addClass("q" + id);
 
       // remove number and add image
       tile.text("");
