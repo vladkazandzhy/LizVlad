@@ -49,7 +49,7 @@
 		<h1>Welcome to Endangered World!</h1>
 		<img class="w75" id="box" src="images/box.png">
 		<img class="w75" src="images/kickstarter-logo.png">
-		<p>Endangered World is an exciting board game being launched on Kickstarter in 2021!</p>
+		<p>Endangered World is an exciting new board game being launched on Kickstarter in 2021!</p>
 		<p>Today, you'll be playing against a robot named <span id="robotNameIntro">Robot</span>,
 		but when you buy the physical board game, you can play with up to four people.</p><hr>
 		<p>If you have full game access from the Kickstarter campaign, please enter your email and click <b>Load Full Game</b>.</p>
@@ -92,7 +92,7 @@
 			<p>There are also several "Twists & Turns" cards with different instructions to follow:</p>
 			<img class="w100" id="twistsImg" src="images/twists-and-turns.png">
 			<h1>How is the game scored?</h1>
-			<p>At the end of the game, the score is calculated based on how many resource points each player has on each animal:</p>
+			<p>At the end of the game, the score is based on how many resource points are on each animal:</p>
 			<ul>
 				<li>If you have more points on it, you win the animal.</li>
 				<li>If the robot has more points on it, it wins the animal.</li>
@@ -104,7 +104,9 @@
 			<img class="w100" id="scoring" src="images/scoring.png">
 			<p>Lastly, each unused bomb earns a player <b>10 points</b>, so be careful how you use your bombs!</p>
 			<h1>Anything else I should know?</h1>
-			<p>If you're on a computer, these keyboard shortcuts might come in handy while you play:</p>
+			<p>Enjoy some relaxing jungle music while you play! To turn the sound on or off, click this audio button at the top of the screen:</p>
+			<img class="w25" src="images/muteIcon.png">
+			<p>Lastly, if you're on a computer, these keyboard shortcuts might come in handy while you play:</p>
 			<ul>
 				<li><b>space</b> - draw card</li>
 				<li><b>6</b> - play gold coin</li>
@@ -117,12 +119,13 @@
 				<li><b>c</b> - continue</li>
 				<li><b>r</b> - read question tile</li>
 			</ul>
-			<p>If you want to reference these during the game, just click this icon above the cards:</p>
+			<p>To reference these during the game, just click this icon above the cards:</p>
 			<img class="w25" src="images/shortcut.png">
 			<h1>That's all! Enjoy your game!</h1>
 			<button class="buttonHover" type="button" id="returnToTop">Return to Top</button>
 		</div>
 		<button class="buttonHover" type="button" id="readRules">How to Play</button>
+		<p id="helpLink">For questions or issues, contact <a href="mailto:help@endangeredworldgame.com">help@endangeredworldgame.com</a>.</p>
 	</div>
 	<div id="container">
 		
@@ -446,9 +449,6 @@
 			</div>
 			
 		</div>
-		
-		
-		
 		
 	</div>
 
