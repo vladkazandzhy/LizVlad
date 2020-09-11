@@ -46,13 +46,13 @@
 	</audio>
 	
 	<div id="intro">
-		<h1>Welcome to Endangered World!</h1>
+		<h1>Welcome to Endangered World Online!</h1>
 		<img class="w75" id="box" src="images/box.png">
 		<img class="w75" src="images/kickstarter-logo.png">
-		<p>Endangered World is an exciting new board game being launched on Kickstarter in 2021!</p>
-		<p>Today, you'll be playing against a robot named <span id="robotNameIntro">Robot</span>,
-		but when you buy the physical board game, you can play with up to four people.</p><hr>
-		<p>If you have full game access from the Kickstarter campaign, please enter your email and click <b>Load Full Game</b>.</p>
+		<!--<p>Endangered World is an exciting new board game being launched on Kickstarter in 2021!</p>-->
+		<!--<p>Today, you'll be playing against a robot named <span id="robotNameIntro">Robot</span>,
+		but when you buy the physical board game, you can play with up to four people.</p><hr>-->
+		<p>If you have full game access from the Kickstarter campaign, please enter your access code or email and click <b>Load Full Game</b>.</p>
 		<input type="email" id="email" name="email" autocomplete="on">
 		<button class="buttonHover" type="button" id="loadFullGame">Load Full Game</button>
 		<p>Otherwise, click <b>Load Trial Game</b> below. You'll be able to play the first half of the game.</p>
@@ -61,6 +61,9 @@
 		<div id="rules">
 			<h1>How do I play?</h1>
 			<p><i>Objective: Score the most points by saving the most animals!</i></p>
+			<p>First, select the game difficulty, set up the board, and click "Start the Game!"</p>
+			<img class="w100" src="images/setup.png">
+			<p>Then follow these 3 easy steps.</p>
 			<h2>1. Draw a Number</h2>
 			<p>You and the robot will take turns drawing cards.</p>
 			<img class="w50 br20" src="images/cards/back.jpg">
@@ -88,6 +91,9 @@
 				<li><b>Defender</b> - protects all your surrounding tokens from being destroyed</li>
 				<li><b>Bomb</b> - destroys all your opponent's undefended tokens in the surrounding spaces</li>
 			</ul>
+			<p>Try to use them wisely at the most important parts of the game.</p>
+			<img class="w75" src="images/bombGraphic.png">
+			<p>Here, for example, a bomb played by blue on tile 11 would destroy yellow on tile 0, green on tile 12, and red on tile 20. Red's gold coin on tile 2 is defended, and nothing happens to the blue token on tile 21.</p>
 			<h2>4. Handle Twists & Turns</h2>
 			<p>There are also several "Twists & Turns" cards with different instructions to follow:</p>
 			<img class="w100" id="twistsImg" src="images/twists-and-turns.png">
@@ -346,6 +352,20 @@
 			  </tr>
 			</table>
 			<div id="setupBoard">
+				<div class="col-12 pb-5 difficulty">
+					<input class="checkbox-tools" type="radio" name="tools" id="easyGame">
+					<label class="for-checkbox-tools" for="easyGame">
+						EASY
+					</label><!--
+					--><input class="checkbox-tools" type="radio" name="tools" id="medGame" checked>
+					<label class="for-checkbox-tools" for="medGame">
+						MEDIUM
+					</label><!--
+					--><input class="checkbox-tools" type="radio" name="tools" id="hardGame">
+					<label class="for-checkbox-tools" for="hardGame">
+						HARD
+					</label>
+				</div>
 				<button class="buttonHover" type="button" id="setBoard">Set Up the Board</button><br>
 				<button class="buttonHover" type="button" id="startGame">Start the Game!</button>
 			</div>
@@ -437,7 +457,8 @@
 					<button class="buttonHover" type="button" id="showScore">See Final Score</button>
 				</div>
 				<div id="resultsSummary"></div>
-				<button class="buttonHover" type="button" id="playAgain">Play Again!</button>
+				<button class="buttonHover" type="button" id="playAgain">Play Again!</button><br><br>
+				<a href="http://endangeredworldgame.com"><button class="buttonHover" type="button" id="returnToSite">Return to the Site</button></a>
 				<div id="resultsHistory">					
 				</div>
 				<p id="iconNote"><i>Click the <img class='help-icon' src='images/help-icon.png'> icons to learn more about the animals.</i></p>

@@ -12,7 +12,7 @@
   if ($count == 1) {
     echo $email;
   } else {
-    echo "Invalid email address.";
+    echo "Invalid access code or email address.";
   }
 
 ?>
