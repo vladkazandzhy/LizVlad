@@ -3403,6 +3403,7 @@ function q16(tileNum) {
 			msg += "<p>" + robotName + " wasn't able to play anything. Click the deck to continue with your turn.</p>";
 		}
 		
+		clearQuestion();
 		$("#turnChoices").hide();
 		$("#pickNumber").addClass("cardHighlight");	
 	}
@@ -3573,6 +3574,7 @@ function q19(tileNum) {
 		}
 		
 		$(".robotTurnHighlight").removeClass("robotTurnHighlight");
+		
 		clearQuestion();
 		$("#continue").html('Continue');
 		$("#continue").show();
